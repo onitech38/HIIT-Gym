@@ -273,8 +273,6 @@ body{
   box-sizing: border-box;
   overflow-x: hidden;
 
-  
-
 }
 
 .welcome {
@@ -295,10 +293,12 @@ body{
     flex-direction: column;
     justify-content: center;
     align-items: center; */
+
     gap: 1rem;
 
     * {
       text-align: center;
+      align-content: center;
     }
   }
 }
