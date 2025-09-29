@@ -280,6 +280,10 @@ body{
 .welcome {
   height: 100svh;
 
+  *{
+    text-align: center;
+  }
+
   picture{
     position: absolute;
     z-index: 1;
