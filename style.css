@@ -317,6 +317,7 @@
   @media (width <= 768px) {
     details > summary  {
       color: #ae2e2e;
+      text-transform: uppercase;
     }
   }
 
