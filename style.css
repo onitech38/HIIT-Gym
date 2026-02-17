@@ -314,13 +314,11 @@
   }
 }
 @layer media-queries {
-  @media (max-width: 768px) {
+  @media (width <= 768px) {
     details > summary  {
       color: #ae2e2e;
     }
-
   }
-
 
 }
 
