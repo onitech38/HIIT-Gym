@@ -255,7 +255,7 @@
       color:var(--clr-3);
       background: var(--clr-4);
     }
-    &:focus {
+    &:focus-visible {
       outline: var(--border-size) var(--clr-5);  
       backdrop-filter: blur(15px);
       outline-offset: 2px;
@@ -314,12 +314,12 @@
   }
 }
 @layer media-queries {
-  @media (width <= 768px) {
-    details > summary  {
-      color: #ae2e2e;
+  @media (max-width: 768px) {
+    .local-info {
+      background: #ae2e2e;
     }
-  }
 
+  }
 }
 
 body{
@@ -330,36 +330,22 @@ body{
   .hidden {
     display: none;
   }
-  .welcome {
-    height: 100svh;
-    
-    
-    picture{
-      position: absolute;
-      z-index: 1;
-    }
-    
-    .welcome-intro{
-      position: relative;
-      z-index: 2;
-      margin-inline: auto;
-      width: 100%;
-      /* height: 100vh;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center; */
   
-      gap: 1rem;
-  
-      * {
-        text-align: center;
-        align-content: center;
-      }
-    }
+  .welcome-intro {
+    position: relative;
+    z-index: 2;
+    margin-inline: auto;
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+    
+    *{ padding-inline: 20px;}
   }
 }
-
 
 header {
   position: relative;
@@ -467,8 +453,6 @@ header {
       }
     }   
   }
-
-
 }
 
 details {
@@ -484,16 +468,43 @@ details {
   gap: 1rem;
 
   /* * {border:2px solid white} */
-  
+
   summary {
     place-self: center;
     padding: 20px;
-    
-    ::-webkit-details-marker {
+    display: inline-flex;
+    place-items: center;
+    color: var(--clr-4);
+    background: none;    
+    backdrop-filter: blur(1.5px);
+    border-radius: var(--border-radius);
+    border: var(--border-size) var(--clr-4);
+    font-size: var(--font-size);
+    cursor: pointer;
+    transition: all var(--tempo) ease;
+    list-style: none;
+
+    &::-webkit-details-marker {
       display: none;
     }
+
+    svg {
+      height: 2.5em;
+      fill: var(--clr-4);
+    }
+
+    &:hover {
+      backdrop-filter: blur(15px);
+      box-shadow: var(--bx-sdw);
+    }
+
+    &:active {
+      transform: scale(0.95);
+      background: var(--clr-4);
+      svg { fill: var(--clr-3); }
+    }
   }
-  
+
   .local {
     --min-height: 400px;
     /* < tablet */
@@ -566,5 +577,3 @@ main {
   
   * {border:2px solid white}
 }
-
-
