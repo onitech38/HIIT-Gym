@@ -566,7 +566,6 @@ details {
   margin-inline: auto;
   max-width: var(--container-mid);
   transform: translateY(-80px);
-  /* scroll-margin-top: 20px; */
   display: grid;
   justify-items: stretch;
   z-index: 10;
