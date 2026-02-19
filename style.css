@@ -33,7 +33,7 @@
     --clr-4: #FBA002;
     --clr-transp: #120d0f31;
     --blur: blur(1.5px);
-    --backdrop-filter: blur(15px);
+    --backdrop-filter: blur(5px);
 
     --light-bg: var(--clr-2);
     --light-color: var(--clr-1);
@@ -45,7 +45,7 @@
 
     --container-max: 1440px;
     --container-mid: 1024px;
-    --container-height: 740px;
+    --container-height: 92vh;
     --gap-items: 1.2rem;
     --border-size: 2px solid;
     --border-radius: 0.25em 0.75em 0.25em 1.125em;
@@ -247,7 +247,7 @@
     }
         
     &:hover {
-      backdrop-filter: blur(15px);
+      backdrop-filter: var(--backdrop-filter);
       border: var(--border-size) var(--clr-4);
       box-shadow: var(--bx-sdw);
 
@@ -262,7 +262,7 @@
     }
     &:focus-visible {
       outline: var(--border-size) var(--clr-5);  
-      backdrop-filter: blur(15px);
+      backdrop-filter: var(--backdrop-filter);
       outline-offset: 2px;
     }
   }
@@ -292,7 +292,7 @@
     transition: all var(--tempo) ease;
     
     &:hover {
-      backdrop-filter: blur(15px);
+      backdrop-filter: var(--backdrop-filter);
       border: var(--border-size) transparent;
       border-radius: var(--border-radius);
       text-decoration-color: var(--clr-4);
@@ -327,7 +327,7 @@
 
 body {
   position: relative;
-  background: var(--clr-3);
+  background: url(./src/BG-pattrn.png) center center / cover no-repeat var(--clr-3);
 
   .hidden {
     display: none;
