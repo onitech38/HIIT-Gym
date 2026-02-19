@@ -30,13 +30,13 @@
     --clr-1: #FFFAFA;
     --clr-2: #B9CFD4;
     --clr-3: #120D0F;
-    --clr-4: #FBA002;
+    --clr-4: #fba002;
     --clr-transp: #120d0f31;
     --blur: blur(1.5px);
     --backdrop-filter: blur(5px);
-    --glass-frost: 2px;                       /* blur (Frost) */
-    --glass-surface: rgba(255,255,255,0.06);  /* cor da superfície */
-    --glass-iridescent-opacity: 0.4;          /* borda iridescente */
+    --glass-frost: 5px;                       /* blur (Frost) */
+    --glass-surface: rgba(251, 160, 2, 0.15);  /* cor da superfície */
+    --glass-iridescent-opacity: 0.02;          /* borda iridescente */
 
     --light-bg: var(--clr-2);
     --light-color: var(--clr-1);
