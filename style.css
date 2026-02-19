@@ -326,7 +326,16 @@
 
 body {
   position: relative;
-  background: url(./src/BG-pattrn-light.png) center center / cover no-repeat var(--clr-3);
+  background:var(--clr-3);
+  
+  &::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background: url(./src/BG-pattrn-light.png) center center / cover no-repeat;
+    opacity: 0.05;
+    z-index: -1;
+  }
 
   .hidden {
     display: none;
