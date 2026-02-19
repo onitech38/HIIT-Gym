@@ -431,7 +431,6 @@ header {
 
   .bg {
     position: absolute;
-    /* height: var(--container-height); */
     height: calc(var(--container-height) - 50px);
     top: 0;
     left: 0;
