@@ -456,13 +456,27 @@ header {
     .logo { height: 40px; margin-inline: 1rem; }
     .link-btn { padding: 0px; }
 
-    ul { display: flex; flex-wrap: wrap; justify-content: flex-start; gap: var(--gap-items); }
+    ul { display: flex; flex-wrap: wrap; justify-content: flex-start; gap: var(--gap-items); }    
+
+    .nav-content {
+      width: 100%;
+      max-width: 600px;
+      padding: 0.5rem 1rem;
+      display: flex;
+      justify-content: space-between;
+      box-shadow: var(--bx-sdw);
+      
+      span {
+        border-left: var(--border-size) var(--clr-4);
+        border-right: var(--border-size) var(--clr-4);
+      }
+    }
+
 
     .login-sign_up {
       right: 20px;
       padding-left: 14px;
       display: flex;
-      border-left: #FBA002 solid 2px;
       gap: var(--gap-items);
     }
 
@@ -481,15 +495,6 @@ header {
       z-index: 100;
       span { display: block; width: 24px; height: 2px; background: var(--clr-1); border-radius: 2px; transition: all var(--tempo) ease; }
       &:hover { border-color: var(--clr-4); box-shadow: var(--bx-sdw); }
-    }
-
-    .nav-content {
-      width: 100%;
-      max-width: 600px;
-      padding: 0.5rem 1rem;
-      display: flex;
-      justify-content: space-between;
-    box-shadow: var(--bx-sdw);
     }
 
     @media (max-width: 768px) {
