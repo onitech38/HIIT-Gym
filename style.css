@@ -47,7 +47,7 @@
     --container-mid: 1024px;
     --container-height: 92vh;
     --gap-items: 1.2rem;
-    --border-size: 2px solid;
+    --border-size: 1.5px solid;
     --border-radius: 0.25em 0.75em 0.25em 1.125em;
     --bx-sdw: inset 0 0 0 1px var(--clr-3), 0 2px 4px var(--clr-3), 0 8px 14px var(--clr-3);
     
@@ -248,7 +248,6 @@
         
     &:hover {
       backdrop-filter: var(--backdrop-filter);
-      border: var(--border-size) var(--clr-4);
       box-shadow: var(--bx-sdw);
 
       * {
@@ -327,7 +326,7 @@
 
 body {
   position: relative;
-  background: url(./src/BG-pattrn.png) center center / cover no-repeat var(--clr-3);
+  background: url(./src/BG-pattrn-light.png) center center / cover no-repeat var(--clr-3);
 
   .hidden {
     display: none;
