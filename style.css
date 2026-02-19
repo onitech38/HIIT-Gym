@@ -259,7 +259,7 @@
     }
     &:active {
       transform: scale(0.95);
-      color: var(--clr-3);
+      color: var(--clr-2);
       background: var(--clr-4);
     }
     &:focus-visible {
@@ -303,6 +303,7 @@
     }
     
     &:focus, :active, :hover {
+      color: var(--clr-4);
       text-decoration: underline;
       text-decoration-color: var(--clr-4);
       text-underline-offset: .725rem;
@@ -326,7 +327,6 @@
     }
   }
 }
-
 @layer glass {
 
   .glass {
@@ -388,7 +388,6 @@
     z-index: 2;
   }
 }
-
 
 body {
   position: relative;
@@ -453,7 +452,7 @@ header {
 
     * { text-transform: uppercase; }
 
-    .logo { height: 40px; margin-inline: 1rem; }
+    .logo { height: 42px; margin-inline: 0.8rem; }
     .link-btn { padding: 0px; }
 
     ul { display: flex; flex-wrap: wrap; justify-content: flex-start; gap: var(--gap-items); }    
@@ -465,7 +464,7 @@ header {
       display: flex;
       justify-content: space-between;
       box-shadow: var(--bx-sdw);
-      
+
       span {
         border-left: var(--border-size) var(--clr-4);
         border-right: var(--border-size) var(--clr-4);
@@ -474,8 +473,6 @@ header {
 
 
     .login-sign_up {
-      right: 20px;
-      padding-left: 14px;
       display: flex;
       gap: var(--gap-items);
     }
@@ -497,7 +494,7 @@ header {
       &:hover { border-color: var(--clr-4); box-shadow: var(--bx-sdw); }
     }
 
-    @media (max-width: 768px) {
+    @media (max-width: 700px) {
       nav { background: var(--clr-transp); backdrop-filter: blur(15px); }
       .hamburger { display: flex; }
       .nav-content {
