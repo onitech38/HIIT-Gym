@@ -377,6 +377,11 @@
     z-index: 1;
   }
 
+  button.glass, .btn.glass {
+    background: none; /* o ::before trata do fundo */
+    border-color: transparent; /* opcional — a borda iridescente substitui */
+  }
+
   /* ── conteúdo sempre por cima ── */
   .glass > * {
     position: relative;
@@ -436,156 +441,6 @@ header {
     box-shadow: var(--bx-sdw);
     filter: brightness(0.5);
   }
-      
-  
-
-
-  /* nav {
-    width: 100%;
-    max-width: 1440px;
-    padding-block: 16px;
-    margin-inline: auto;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    align-items: center;
-
-    * {
-      text-transform: uppercase;
-    }
-
-    .logo {
-      height: 40px;
-      margin-inline: 1rem;
-    }
-
-    .link-btn {
-      padding: 0px;
-    }
-
-    ul {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: flex-start;
-      gap: var(--gap-items);
-    }
-
-    .login-sign_up {
-      right: 20px;
-      padding-left: 14px;
-      display: flex;
-      border-left: #FBA002 solid 2px;
-      gap: var(--gap-items);
-    }
-
-   
-    .menu-toggle {
-      display: none;
-    }
-
-    .hamburger {
-      display: none;
-      flex-direction: column;
-      justify-content: center;
-      gap: 5px;
-      cursor: pointer;
-      padding: 10px;
-      border-radius: var(--border-radius);
-      border: var(--border-size) transparent;
-      transition: all var(--tempo) ease;
-      z-index: 100;
-
-      span {
-        display: block;
-        width: 24px;
-        height: 2px;
-        background: var(--clr-1);
-        border-radius: 2px;
-      transition: all var(--tempo) ease;
-    }
-
-      &:hover {
-        border-color: var(--clr-4);
-        box-shadow: var(--bx-sdw);
-      }
-    }
-
-    .nav-content {
-      width: 100%;
-      max-width: 600px;
-      padding: 0.5rem 1rem;
-      display: flex;
-      justify-content: space-between;
-
-      transition: all var(--tempo) ease;
-      
-      &:hover {
-        backdrop-filter: var(--blur);
-        border-radius: var(--border-radius); 
-        box-shadow: var(--bx-sdw);
-        
-
-        * {
-          color: var(--clr-1);
-        }
-      }
-    }
-
-    
-    @media (max-width: 768px) {
-
-      nav {
-        background: var(--clr-transp);
-        backdrop-filter: blur(15px);
-      }
-
-      .hamburger {
-        display: flex;
-      }
-
-      .nav-content {
-        display: none;
-        position: absolute;
-        top: 70px;
-        left: 0;
-        right: 0;
-        flex-direction: column;
-        align-items: center;
-        gap: 1.5rem;
-        padding: 2rem 1rem;
-        backdrop-filter: var(--backdrop-filter);
-        border-radius: var(--border-radius);
-        box-shadow: var(--bx-sdw);
-        z-index: 99;
-      }
-      .login-sign_up {
-        right: 20px;
-        display: flex;
-        gap: var(--gap-items);
-      }
-
-      .menu {
-        flex-direction: column;
-        align-items: center;
-      }
-
-      .menu-toggle:checked ~ .nav-content {
-        display: flex;
-        margin-inline: auto;
-      }
-
-      .menu-toggle:checked ~ .hamburger span:nth-child(1) {
-        transform: translateY(7px) rotate(45deg);
-      }
-      .menu-toggle:checked ~ .hamburger span:nth-child(2) {
-        opacity: 0;
-      }
-      .menu-toggle:checked ~ .hamburger span:nth-child(3) {
-        transform: translateY(-7px) rotate(-45deg);
-      }
-    }
-  } */
-
   nav {
     width: 100%;
     max-width: 1440px;
@@ -633,8 +488,8 @@ header {
       max-width: 600px;
       padding: 0.5rem 1rem;
       display: flex;
-      /* glass substitui o background e backdrop-filter anteriores */
       justify-content: space-between;
+    box-shadow: var(--bx-sdw);
     }
 
     @media (max-width: 768px) {
@@ -660,9 +515,6 @@ header {
       .menu-toggle:checked ~ .hamburger span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
     }
   }
-
-
-
 
   .hero {
     position: relative;      
