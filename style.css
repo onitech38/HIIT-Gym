@@ -219,6 +219,12 @@
     padding: 0.25em;
     overflow: auto;
   }
+
+  .glass {
+    background: rgba(18, 13, 15, 0.2);
+    backdrop-filter: var(--backdrop-filter);
+    border: var(--border-size) rgba(255, 255, 255, 0.08);
+  }
 }
 @layer actions {
   button, .btn {  
@@ -332,7 +338,7 @@ body {
     content: "";
     position: fixed;
     inset: 0;
-    background: url(./src/BG-pattrn-light.png) center center / cover no-repeat;
+    background: url(./src/BG-pattrn-light.png) center center / 250% no-repeat;
     opacity: 0.05;
     z-index: -1;
   }
@@ -451,12 +457,20 @@ header {
       max-width: 600px;
       padding: 0.5rem 1rem;
       display: flex;
-      background: var(--clr-transp);
-      backdrop-filter: var(--blur);
-      border-radius: var(--border-radius);
-      box-shadow: var(--bx-sdw);
-      /* gap: calc(2 * var(--gap-items)); */
       justify-content: space-between;
+
+      transition: all var(--tempo) ease;
+      
+      &:hover {
+        backdrop-filter: var(--blur);
+        border-radius: var(--border-radius); 
+        box-shadow: var(--bx-sdw);
+        
+
+      * {
+        color: var(--clr-1);
+      }
+    }
     }
 
     /* ── Mobile ── */
