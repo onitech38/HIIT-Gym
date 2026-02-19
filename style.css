@@ -36,7 +36,7 @@
     --backdrop-filter: blur(5px);
     --glass-frost: 5px;                       /* blur (Frost) */
     --glass-surface: rgba(251, 160, 2, 0.15);  /* cor da superfície */
-    --glass-iridescent-opacity: 0.02;          /* borda iridescente */
+    --glass-iridescent-opacity: 1.8;          /* borda iridescente */
 
     --light-bg: var(--clr-2);
     --light-color: var(--clr-1);
