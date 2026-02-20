@@ -46,6 +46,11 @@
     --dark-color: var(--clr-2);
     --dark-code: var(--clr-4);
 
+    
+    --icon-size-height: 2.5em;
+
+    --margin-block-element: 2rem;
+    --margin-block-section: 1rem;
     --container-max: 1440px;
     --container-mid: 1024px;
     --container-height: 92vh;
@@ -64,11 +69,18 @@
     -ms-text-size-adjust: 100%;
 
     * {
-      scroll-margin-top: 20px;
+      scroll-margin-top: 1rem;
     }
   }
 
-  body, ul, li, p, h1, a, .h1-big, h3, .title {
+  h1, h2, h3, h4, h5, h6, .title {
+    color: var(--clr-1);  
+  }
+  body, ul, li, p, h1, a {
+    color: var(--clr-2);  
+  }
+
+  body, ul, li, a, .title {
     margin: 0;
     padding: 0;
     list-style: none;
@@ -79,10 +91,15 @@
     font-family: var(--fnt-body);
   }
 
+  main, footer {
+    margin-block: var(--margin-block-element);
+  }
+
   section, .container {
     width: 100%;
     max-width: 1440px;
     margin-inline: auto;
+    margin-block: var(--margin-block-section);
   }
 
   h1, .h1-big, h2, h3, .title {
@@ -244,10 +261,6 @@
     * {
       fill: var(--clr-4);
     }
-
-    svg {
-      height: 2.5em;
-    }
         
     &:hover {
       backdrop-filter: var(--backdrop-filter);
@@ -294,6 +307,7 @@
     transition: all var(--tempo) ease;
     
     &:hover {
+      color: var(--clr-2);
       backdrop-filter: var(--backdrop-filter);
       border: var(--border-size) transparent;
       border-radius: var(--border-radius);
@@ -302,9 +316,9 @@
       box-shadow: var(--bx-sdw);
     }
     
-    &:focus, :active, :hover {
+    &:focus, :active {
       color: var(--clr-4);
-      text-decoration: underline;
+      text-decoration: underline; 
       text-decoration-color: var(--clr-4);
       text-underline-offset: .725rem;
     }
@@ -335,7 +349,6 @@
     border-radius: var(--border-radius);
   }
 
-  /* ── distorção SVG + blur — fica atrás de tudo ── */
   .glass::before {
     content: "";
     position: absolute;
@@ -354,7 +367,6 @@
     z-index: 0;
   }
 
-  /* ── borda iridescente ── */
   .glass::after {
     content: "";
     position: absolute;
@@ -378,11 +390,10 @@
   }
 
   button.glass, .btn.glass {
-    background: none; /* o ::before trata do fundo */
-    border-color: transparent; /* opcional — a borda iridescente substitui */
+    background: none;
+    border-color: transparent;
   }
 
-  /* ── conteúdo sempre por cima ── */
   .glass > * {
     position: relative;
     z-index: 2;
@@ -417,8 +428,6 @@ body {
     justify-content: center;
     align-items: center;
     gap: 1rem;
-    
-    * { padding-inline: 20px; }
   }
 }
 
@@ -451,14 +460,19 @@ header {
 
     * { text-transform: uppercase; }
 
-    .logo { height: 42px; margin-inline: 0.8rem; }
+    .logo { height: var(--icon-size-height); margin-inline: 0.8rem; }
     .link-btn { padding: 0px; }
 
-    ul { display: flex; flex-wrap: wrap; justify-content: flex-start; gap: var(--gap-items); }    
+    ul { 
+      display: flex; 
+      flex-wrap: wrap; 
+      justify-content: flex-start; 
+      gap: var(--gap-items); 
+    }    
 
     .nav-content {
       width: 100%;
-      max-width: 600px;
+      max-width: 605px;
       padding: 0.5rem 1rem;
       display: flex;
       justify-content: space-between;
@@ -478,22 +492,37 @@ header {
     .menu-toggle { display: none; }
 
     .hamburger {
+      padding: 10px;
+      height: var(--icon-size-height);
       display: none;
       flex-direction: column;
-      justify-content: center;
+      justify-content: space-between;
+      align-items: stretch;
       gap: 5px;
       cursor: pointer;
-      padding: 10px;
       border-radius: var(--border-radius);
       border: var(--border-size) transparent;
       transition: all var(--tempo) ease;
       z-index: 100;
-      span { display: block; width: 24px; height: 2px; background: var(--clr-1); border-radius: 2px; transition: all var(--tempo) ease; }
-      &:hover { border-color: var(--clr-4); box-shadow: var(--bx-sdw); }
+
+      span { 
+        display: block; 
+        width: calc(var(--icon-size-height) - 15px); 
+        height: 2px; 
+        background: var(--clr-1); 
+        border-radius: 2px; 
+        transition: all var(--tempo) ease; 
+      }
+
+      &:hover { 
+        border-color: var(--clr-4); 
+        box-shadow: var(--bx-sdw); 
+
+        span { background-color: var(--clr-2); }
+      }
     }
 
     @media (max-width: 700px) {
-      nav { background: var(--clr-transp); backdrop-filter: blur(15px); }
       .hamburger { display: flex; }
       .nav-content {
         display: none;
@@ -510,9 +539,9 @@ header {
       .login-sign_up { display: flex; gap: var(--gap-items); }
       .menu { flex-direction: column; align-items: center; }
       .menu-toggle:checked ~ .nav-content { display: flex; margin-inline: auto; }
-      .menu-toggle:checked ~ .hamburger span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+      .menu-toggle:checked ~ .hamburger span:nth-child(1) { transform: translateY(8px) rotate(45deg); }
       .menu-toggle:checked ~ .hamburger span:nth-child(2) { opacity: 0; }
-      .menu-toggle:checked ~ .hamburger span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+      .menu-toggle:checked ~ .hamburger span:nth-child(3) { transform: translateY(-8px) rotate(-45deg); }
     }
   }
 
@@ -560,8 +589,8 @@ header {
         position: relative;
 
         .text {
-          animation: change 3.5s ease-in-out infinite;
           color: var(--clr-1);
+          animation: change 3.5s ease-in-out infinite;
           white-space: nowrap;
         }
       }
@@ -569,7 +598,7 @@ header {
   }
 }
 
-details {
+#map {
   position: relative;
   width: 100%;
   padding-inline: 1rem;
@@ -601,7 +630,7 @@ details {
     }
 
     svg {
-      height: 2.5em;
+      height: var(--icon-size-height);
       fill: var(--clr-4);
     }
 
@@ -666,11 +695,12 @@ details {
 main {
   position: relative;
   margin-inline: auto;
+  margin-block: 2rem;
   width: 100%;
   max-width: 1440px;
   display: grid;
   place-items: center;
-  gap: 1rem;  
+  gap:5rem;  
   z-index: 3;  
   
   /* * { border: 2px solid white; } */
@@ -697,6 +727,10 @@ main {
       max-width: 420px;
       display: grid;
       gap: var(--gap-items);
+
+      h3 {
+        color: var(--clr-2);
+      }
     }
 
     .facts {
@@ -710,9 +744,16 @@ main {
       border: var(--border-size) var(--clr-4);
       border-radius: var(--border-radius);
       background: var(--clr-3);
+
+      h3 { color: var(--clr-4); }
+
+      h5 { color: var(--clr-2); }
     }
 
-    .card h3 { color: var(--clr-4); }
+  }
+
+  .modalidades {
+    display: grid;
   }
 
 
