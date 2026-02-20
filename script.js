@@ -25,7 +25,7 @@ const modalidadesData = {
     horas:     '06h00 – 22h00',
     descricao: 'Treino de força com pesos e equipamentos, adaptado para desenvolver massa muscular e resistência, com orientação de treinador para garantir a técnica correta e maximizar resultados.',
     coaches:    ['Carlos Silva', 'Ana Costa', 'Rafael Mendes'],
-    imagem:     'src/musculacao.jpg',
+    imagem:     'src/pexels-amar-9958668.jpg',
     coachFotos: ['src/coaches/carlos.jpg', 'src/coaches/ana.jpg', 'src/coaches/rafael.jpg']
   },
   cardio: {
@@ -34,7 +34,7 @@ const modalidadesData = {
     horas:     '07h00 – 21h00',
     descricao: 'Atividades aeróbicas como corrida, CROSS-FIT, ciclismo e spinning, personalizadas em intensidade e duração, com suporte de profissionais para monitorar o teu progresso.',
     coaches:    ['Maria Oliveira', 'João Pereira'],
-    imagem:     'src/cardio.jpg',
+    imagem:     'src/pexels-amar-9958674.jpg',
     coachFotos: ['src/coaches/maria.jpg', 'src/coaches/joao.jpg']
   },
   yoga_pilates: {
@@ -43,7 +43,7 @@ const modalidadesData = {
     horas:     '17h00 – 19h30',
     descricao: 'Prática que combina posturas físicas, respiração e meditação, adaptada ao teu nível de experiência, com instrutores que oferecem acompanhamento individualizado.',
     coaches:    ['Sofia Almeida', 'Pedro Santos', 'Cláudia Ferreira', 'Tiago Ribeiro', 'Inês Martins'],
-    imagem:     'src/yoga.jpg',
+    imagem:     'src/pexels-anastasia-shuraeva-4944435.jpg',
     coachFotos: ['src/coaches/sofia.jpg', 'src/coaches/pedro.jpg', 'src/coaches/claudia.jpg', 'src/coaches/tiago.jpg', 'src/coaches/ines.jpg']
   },
   lutas: {
@@ -52,7 +52,7 @@ const modalidadesData = {
     horas:     '19h00 – 20h30',
     descricao: 'Aulas de boxe, jiu-jitsu, muay thai ou karaté, ajustadas ao teu nível e objetivos, com treinadores que oferecem suporte e feedback constante.',
     coaches:    ['Fernando Gomes', 'Patrícia Lima', 'Ricardo Alves'],
-    imagem:     'src/lutas.jpg',
+    imagem:     'src/pexels-artbovich-7031705.jpg',
     coachFotos: ['src/coaches/fernando.jpg', 'src/coaches/patricia.jpg', 'src/coaches/ricardo.jpg']
   },
   zumba_danca: {
@@ -61,7 +61,7 @@ const modalidadesData = {
     horas:     '20h00 – 21h30',
     descricao: 'Aulas energéticas com ritmos latinos e coreografias divertidas, perfeitas para perder calorias num ambiente descontraído e motivador.',
     coaches:    ['Maria Oliveira', 'João Pereira'],
-    imagem:     'src/zumba.jpg',
+    imagem:     'src/pexels-dimkidama-6796964.jpg',
     coachFotos: ['src/coaches/maria.jpg', 'src/coaches/joao.jpg']
   },
   natacao: {
@@ -70,7 +70,7 @@ const modalidadesData = {
     horas:     '08h00 – 20h00',
     descricao: 'Aulas para todos os níveis na nossa piscina semi-olímpica aquecida. Treinos personalizados para melhorar técnica, resistência e velocidade.',
     coaches:    ['André Sousa', 'Fernanda Rocha', 'Lucas Dias'],
-    imagem:     'src/natacao.jpg',
+    imagem:     'src/pexels-eyecon-design-500632474-17211446.jpg',
     coachFotos: ['src/coaches/andre.jpg', 'src/coaches/fernanda.jpg', 'src/coaches/lucas.jpg']
   }
 };
@@ -85,7 +85,7 @@ const coachesEl = document.getElementById('coaches-row');
 const escolhas  = document.getElementById('escolhas');
 const painel    = document.getElementById('painel');
 
-const imagemGeral = 'src/gym-geral.jpg';
+const imagemGeral = 'src/pexels-foadshariyati-29224211.jpg';
 const todosFotos  = Object.values(modalidadesData).flatMap(m => m.coachFotos).slice(0, 8);
 const todosNomes  = Object.values(modalidadesData).flatMap(m => m.coaches).slice(0, 8);
 
