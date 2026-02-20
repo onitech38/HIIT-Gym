@@ -143,86 +143,87 @@
         </section>
 
         <section class="modalidades" id="modalidades">
-            <h2>As nossa Modalidades</h2>
-            <p>Uma academia completa com diversas modalidades para encontrar a actividade perfeita para os teus objectivos e estilo de vida.</p>
-            <div class="actividades">
-                <div class="escolhas" id="escolhas">
-                    <details class="musculacao">
-                        <summary  aria-label="categoria de musculação">
-                            <a class="link-btn">musculação</a>
-                        </summary>
-                        <article class="horarios">
-                            <h5>TODOS OS DIAS <br>  
-                                06h00 - 22h00</h5>
-                        </article>
-                    </details>
-                    
-                    <details class="cardio">
-                        <summary  aria-label="categoria de cardio">
-                            <a class="link-btn">cardio</a>
-                        </summary>
-                        <article class="horarios">
-                            <h5>TODOS OS DIAS <br>  
-                                07h00 - 21h00</h5>
-                        </article>
-                    </details>
-              
-                    <details class="yoga_pilates">
-                        <summary  aria-label="categoria de yoga e pilates">
-                            <a class="link-btn">yoga & pilates</a>
-                        </summary>
-                        <article class="horarios">
-                            <h5>2ª, 4ª e 6ª feira <br>  
-                                17h00 - 19h30</h5>
-                        </article>
-                    </details>
+        <h2>As nossa Modalidades</h2>
+        <p>Uma academia completa com diversas modalidades para encontrar a actividade perfeita para os teus objectivos e estilo de vida.</p>
 
-                    <details class="lutas">
-                        <summary  aria-label="categoria de lutas e artes marciais">
-                            <a class="link-btn">lutas e artes marciais</a>
-                        </summary>
-                        <article class="horarios">
-                            <h5>2ª feira a sabado<br>  
-                                19h00 - 20h30</h5>
-                        </article>
-                    </details>
+        <div class="actividades">
 
-                    <details class="zumba_danca">
-                        <summary  aria-label="categoria de zumba e danças">
-                            <a class="link-btn">zumba e danças</a>
-                        </summary>
-                        <article class="horarios">
-                            <h5>3ª e 5ª feira<br>  
-                                20h00 - 21h30</h5>
-                        </article>
-                    </details>
+            <!-- COLUNA ESQUERDA -->
+            <div class="col-esquerda">
 
-                    <details class="natacao">
-                        <summary  aria-label="categoria de natacão">
-                            <a class="link-btn">natação</a>
-                        </summary>
-                        <article class="horarios">
-                            <h5>2ª, 4ª e 6ª feira <br>  
-                                17h00 - 19h30</h5>
-                        </article>
-                    </details>
+            <!-- ESTADO 1 + 2: lista -->
+            <div class="escolhas" id="escolhas">
+
+                <div class="modalidade-item" data-modal="musculacao">
+                <span class="link-btn">musculação</span>
+                <div class="horario-hover">
+                    <span>Todos os dias</span>
+                    <span>06h00 – 22h00</span>
+                </div>
                 </div>
 
-                <div class="galeria_info">
-                    <div class="ilust"></div>
-                    <div class="_info">
-                        <img src="" alt="">
-                        <p class="descricao" id="descricao">
-
-                        </p>
-                        <div class="coach">
-                            <img src="" alt="">
-                            <img src="" alt="">
-                            <img src="" alt="">
-                        </div>
-                    </div>
+                <div class="modalidade-item" data-modal="cardio">
+                <span class="link-btn">cardio</span>
+                <div class="horario-hover">
+                    <span>Todos os dias</span>
+                    <span>07h00 – 21h00</span>
                 </div>
-            </div>as>
+                </div>
+
+                <div class="modalidade-item" data-modal="yoga_pilates">
+                <span class="link-btn">yoga & pilates</span>
+                <div class="horario-hover">
+                    <span>2ª, 4ª e 6ª feira</span>
+                    <span>17h00 – 19h30</span>
+                </div>
+                </div>
+
+                <div class="modalidade-item" data-modal="lutas">
+                <span class="link-btn">lutas e artes marciais</span>
+                <div class="horario-hover">
+                    <span>2ª feira a sábado</span>
+                    <span>19h00 – 20h30</span>
+                </div>
+                </div>
+
+                <div class="modalidade-item" data-modal="zumba_danca">
+                <span class="link-btn">zumba e danças</span>
+                <div class="horario-hover">
+                    <span>3ª e 5ª feira</span>
+                    <span>20h00 – 21h30</span>
+                </div>
+                </div>
+
+                <div class="modalidade-item" data-modal="natacao">
+                <span class="link-btn">natação</span>
+                <div class="horario-hover">
+                    <span>2ª, 4ª e 6ª feira</span>
+                    <span>08h00 – 20h00</span>
+                </div>
+                </div>
+
+            </div><!-- /escolhas -->
+
+            <!-- ESTADO 3: painel -->
+            <article id="painel" class="hidden">
+                <a id="painel-fechar" class="btn" href="#">&#x2715;</a>
+                <h3 id="painel-titulo"></h3>
+                <div class="painel-horarios-bloco" id="painel-horarios-bloco"></div>
+                <ul id="painel-coaches-lista"></ul>
+                <a class="btn" href="/" aria-label="Inscrição">inscrever-me</a>
+            </article>
+
+            </div><!-- /col-esquerda -->
+
+            <!-- COLUNA DIREITA -->
+            <div class="col-direita">
+            <div class="imagem-principal" id="imagem-principal">
+                <p class="descricao-overlay" id="descricao-overlay"></p>
+            </div>
+            <div class="coaches-row" id="coaches-row"></div>
+            </div><!-- /col-direita -->
+
+        </div><!-- /actividades -->
         </section>
     </main>
     
