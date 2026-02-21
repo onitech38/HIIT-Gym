@@ -324,7 +324,7 @@ main {
   #painel {
     display: flex; flex-direction: column;
     justify-content: space-between; 
-    align-items: flex-start;
+    align-items: center;
     gap: 1rem;
     border-left: var(--border-size) var(--clr-4);
     border-bottom: var(--border-size) var(--clr-4);
