@@ -143,88 +143,368 @@
         </section>
 
         <section class="modalidades" id="modalidades">
-        <h2>As nossa Modalidades</h2>
-        <p>Uma academia completa com diversas modalidades para encontrar a actividade perfeita para os teus objectivos e estilo de vida.</p>
+            <h2>As nossa Modalidades</h2>
+            <p>Uma academia completa com diversas modalidades para encontrar a actividade perfeita para os teus objectivos e estilo de vida.</p>
 
-        <div class="actividades">
+            <div class="actividades">
 
-            <!-- COLUNA ESQUERDA -->
-            <div class="col-esquerda">
+                
+                <div class="col-esquerda">
 
-            <!-- ESTADO 1 + 2: lista -->
-            <div class="escolhas" id="escolhas">
+                    
+                    <div class="escolhas" id="escolhas">
 
-                <div class="modalidade-item" data-modal="musculacao">
-                <span class="link-btn">musculação</span>
-                <div class="horario-hover">
-                    <span>Todos os dias</span>
-                    <span>06h00 – 22h00</span>
+                        <div class="modalidade-item" data-modal="musculacao">
+                        <span class="link-btn">musculação</span>
+                        <div class="horario-hover">
+                            <span>Todos os dias</span>
+                            <span>06h00 – 22h00</span>
+                        </div>
+                        </div>
+
+                        <div class="modalidade-item" data-modal="cardio">
+                        <span class="link-btn">cardio</span>
+                        <div class="horario-hover">
+                            <span>Todos os dias</span>
+                            <span>07h00 – 21h00</span>
+                        </div>
+                        </div>
+
+                        <div class="modalidade-item" data-modal="yoga_pilates">
+                        <span class="link-btn">yoga & pilates</span>
+                        <div class="horario-hover">
+                            <span>2ª, 4ª e 6ª feira</span>
+                            <span>17h00 – 19h30</span>
+                        </div>
+                        </div>
+
+                        <div class="modalidade-item" data-modal="lutas">
+                        <span class="link-btn">lutas e artes marciais</span>
+                        <div class="horario-hover">
+                            <span>2ª feira a sábado</span>
+                            <span>19h00 – 20h30</span>
+                        </div>
+                        </div>
+
+                        <div class="modalidade-item" data-modal="zumba_danca">
+                        <span class="link-btn">zumba e danças</span>
+                        <div class="horario-hover">
+                            <span>3ª e 5ª feira</span>
+                            <span>20h00 – 21h30</span>
+                        </div>
+                        </div>
+
+                        <div class="modalidade-item" data-modal="natacao">
+                        <span class="link-btn">natação</span>
+                        <div class="horario-hover">
+                            <span>2ª, 4ª e 6ª feira</span>
+                            <span>08h00 – 20h00</span>
+                        </div>
+                        </div>
+
+                    </div>
+
+                    
+                    <article id="painel" class="hidden">
+                        <a id="painel-fechar" class="btn" href="#">&#x2715;</a>
+                        <h3 id="painel-titulo"></h3>
+                        <div class="painel-horarios-bloco" id="painel-horarios-bloco"></div>
+                        <ul id="painel-coaches-lista"></ul>
+                        <a class="btn" href="/" aria-label="Inscrição">inscrever-me</a>
+                    </article>
+
                 </div>
+
+                
+                <div class="col-direita">
+                <div class="imagem-principal" id="imagem-principal">
+                    <p class="descricao-overlay" id="descricao-overlay"></p>
+                </div>
+                <div class="coaches-row" id="coaches-row"></div>
                 </div>
 
-                <div class="modalidade-item" data-modal="cardio">
-                <span class="link-btn">cardio</span>
-                <div class="horario-hover">
-                    <span>Todos os dias</span>
-                    <span>07h00 – 21h00</span>
-                </div>
-                </div>
-
-                <div class="modalidade-item" data-modal="yoga_pilates">
-                <span class="link-btn">yoga & pilates</span>
-                <div class="horario-hover">
-                    <span>2ª, 4ª e 6ª feira</span>
-                    <span>17h00 – 19h30</span>
-                </div>
-                </div>
-
-                <div class="modalidade-item" data-modal="lutas">
-                <span class="link-btn">lutas e artes marciais</span>
-                <div class="horario-hover">
-                    <span>2ª feira a sábado</span>
-                    <span>19h00 – 20h30</span>
-                </div>
-                </div>
-
-                <div class="modalidade-item" data-modal="zumba_danca">
-                <span class="link-btn">zumba e danças</span>
-                <div class="horario-hover">
-                    <span>3ª e 5ª feira</span>
-                    <span>20h00 – 21h30</span>
-                </div>
-                </div>
-
-                <div class="modalidade-item" data-modal="natacao">
-                <span class="link-btn">natação</span>
-                <div class="horario-hover">
-                    <span>2ª, 4ª e 6ª feira</span>
-                    <span>08h00 – 20h00</span>
-                </div>
-                </div>
-
-            </div><!-- /escolhas -->
-
-            <!-- ESTADO 3: painel -->
-            <article id="painel" class="hidden">
-                <a id="painel-fechar" class="btn" href="#">&#x2715;</a>
-                <h3 id="painel-titulo"></h3>
-                <div class="painel-horarios-bloco" id="painel-horarios-bloco"></div>
-                <ul id="painel-coaches-lista"></ul>
-                <a class="btn" href="/" aria-label="Inscrição">inscrever-me</a>
-            </article>
-
-            </div><!-- /col-esquerda -->
-
-            <!-- COLUNA DIREITA -->
-            <div class="col-direita">
-            <div class="imagem-principal" id="imagem-principal">
-                <p class="descricao-overlay" id="descricao-overlay"></p>
             </div>
-            <div class="coaches-row" id="coaches-row"></div>
-            </div><!-- /col-direita -->
+        </section> 
+   
 
-        </div><!-- /actividades -->
-        </section>
+        <!-- <section class="modalidades" id="modalidades">
+            <h2>As nossa Modalidades</h2>
+            <p>Uma academia completa com diversas modalidades para encontrar a actividade perfeita para os teus objectivos e estilo de vida.</p>
+            <div class="actividades">
+                <div class="escolhas" id="escolhas">
+                    <details class="musculacao">
+                        <summary  aria-label="categoria de musculação">
+                            <a class="link-btn">musculação</a>
+                        </summary>
+                        <article class="horarios">
+                            <h5>TODOS OS DIAS <br>  
+                                06h00 - 22h00</h5>
+                        </article>
+                    </details>
+                    <article class="musculacao_open" id="musculacao_open">
+                        <a href="" class="btn">X</a>
+                        <h3>musculação</h3>
+                        <h5>todos os dias 06h00 - 22h00</h5>
+                        <ul>
+                            <li>carlos silva</li>
+                            <li>ana costa</li>
+                            <li>rafael mendes</li>
+                        </ul>
+                        <a class="btn" href="/" aria-label="Link para agendar visita a academia">inscrever-me</a>
+                    </article>
+                    
+                    <details class="cardio">
+                        <summary  aria-label="categoria de cardio">
+                            <a class="link-btn">cardio</a>
+                        </summary>
+                        <article class="horarios">
+                            <h5>TODOS OS DIAS <br>  
+                                07h00 - 21h00</h5>
+                        </article>
+                    </details>
+                    <article class="cardio_open" id="cardio_open">
+                        <a href="" class="btn">X</a>
+                        <h3>cardio</h3>
+                        <h5>todos os dias 07h00 - 21h00</h5>
+                        <ul>
+                            <li>Maria Oliveira</li>
+                            <li>João Pereira</li>
+                        </ul>
+                        <a class="btn" href="/" aria-label="Link para agendar visita a academia">inscrever-me</a>
+                    </article>
+              
+                    <details class="yoga_pilates">
+                        <summary  aria-label="categoria de yoga e pilates">
+                            <a class="link-btn">yoga & pilates</a>
+                        </summary>
+                        <article class="horarios">
+                            <h5>2ª, 4ª e 6ª feira <br>  
+                                17h00 - 19h30</h5>
+                        </article>
+                    </details>
+                    <article class="yoga_pilates_open" id="yoga_pilates_open">
+                        <a href="" class="btn">X</a>
+                        <h3>
+                            <span id="yoga_span" class="link-btn">
+                                yoga
+                            </span>
+                            / 
+                            <span id="pilates_span" class="link-btn">
+                                pilates
+                            </span>
+                        </h3>
+                        <h5>2ª, 4ª e 6ª feira 17h00 - 19h30</h5>
+                        <ul id="yoga">
+                            <li>Sofia Almeida</li>
+                            <li>Pedro Santos</li>
+                        </ul>
+                        <ul id="pilates">
+                            <li>Cláudia Ferreira</li>
+                            <li>Tiago Ribeiro</li>
+                            <li>Inês Martins</li>
+                        </ul>
+                        <a class="btn" href="/" aria-label="Link para agendar visita a academia">inscrever-me</a>
+                    </article>
+
+                    <details class="lutas">
+                        <summary  aria-label="categoria de lutas e artes marciais">
+                            <a class="link-btn">lutas e artes marciais</a>
+                        </summary>
+                        <article class="horarios">
+                            <h5>2ª feira a sabado<br>  
+                                19h00 - 20h30</h5>
+                        </article>
+                    </details>
+                    <article class="lutas_open" id="lutas_open">
+                        <a href="" class="btn">X</a>
+                        <h3>lutas e artes marciais</h3>
+                        <h5>2ª feira a sabado 19h00 - 20h30</h5>
+                        <ul>
+                            <li>Fernando Gomes</li>
+                            <li>Patrícia Lima</li>
+                            <li>Ricardo Alves</li>
+                        </ul>
+                        <a class="btn" href="/" aria-label="Link para agendar visita a academia">inscrever-me</a>
+                    </article>
+
+                    <details class="zumba_danca">
+                        <summary  aria-label="categoria de zumba e danças">
+                            <a class="link-btn">zumba e danças</a>
+                        </summary>
+                        <article class="horarios">
+                            <h5>3ª e 5ª feira<br>  
+                                20h00 - 21h30</h5>
+                        </article>
+                    </details>
+                    <article class="zumba_danca_open" id="zumba_danca_open">
+                        <a href="" class="btn">X</a>
+                        <h3>zumba e danças</h3>
+                        <h5>3ª e 5ª feira 20h00 - 21h30</h5>
+                        <ul>
+                            <li>Maria Oliveira</li>
+                            <li>João Pereira</li>
+                        </ul>
+                        <a class="btn" href="/" aria-label="Link para agendar visita a academia">inscrever-me</a>
+                    </article>
+
+                    <details class="natacao">
+                        <summary  aria-label="categoria de natacão">
+                            <a class="link-btn">natação</a>
+                        </summary>
+                        <article class="horarios">
+                            <h5>2ª, 4ª e 6ª feira <br>  
+                                08h00 - 20h00</h5>
+                        </article>
+                    </details>
+                    <article class="natacao_open" id="natacao_open">
+                        <a href="" class="btn">X</a>
+                        <h3>natação</h3>
+                        <h5>todos os dias 08h00 - 20h00</h5>
+                        <ul>
+                            <li>André Sousa</li>
+                            <li>Fernanda Rocha</li>
+                            <li>Lucas Dias</li>
+                        </ul>
+                        <a class="btn" href="/" aria-label="Link para agendar visita a academia">inscrever-me</a>
+                    </article>
+                </div>
+
+                <div class="galeria_info">
+                    <div class="ilust"></div>
+                    <div class="_info">
+                        <img src="" alt="">
+                        <p class="descricao" id="descricao">
+
+                        </p>
+                        <div class="coach">
+                            <img src="" alt="">
+                            <img src="" alt="">
+                            <img src="" alt="">
+                        </div>
+                    </div>
+                </div>
+                <div class="galeria_info-open">
+                    <div class="ilust"></div>
+                    <div class="_info">
+                        <article class="musculacao_info">
+                            <img src="" alt="">
+                            <p class="descricao" id="descricao">
+                                Treino de força com pesos e equipamentos, 
+                                que podem ser adaptado para desenvolver 
+                                massa muscular e resistência, com a 
+                                orientação de um treinador para garantir 
+                                a técnica correta e maximizar resultados.
+                            </p>
+                            <div class="coach">
+                                <img src="" alt="carlos silva">
+                                <img src="" alt="ana costa">
+                                <img src="" alt="rafael mendes">
+                            </div>
+                        </article>
+                        
+                        <article class="cardio_info">
+                            <img src="" alt="">
+                            <p class="descricao" id="descricao">
+                                Atividades aeróbicas, como corrida, 
+                                CROSS-FIT, ciclismo e aulas de spinning, 
+                                que podem ser personalizadas em 
+                                intensidade e duração, sempre com o 
+                                suporte de profissionais para monitorar 
+                                seu progresso e ajustar o plano 
+                                conforme necessário.
+                            </p>
+                            <div class="coach">
+                                <img src="" alt="Maria Oliveira">
+                                <img src="" alt="João Pereira">
+                            </div>
+                        </article>
+                        
+                        <article class="yoga_pilates_info">
+                            <img src="" alt="">
+                            <div id="yoga_info">
+                                <p class="descricao" id="descricao_yoga">
+                                    Prática que combina posturas físicas, 
+                                    respiração e meditação, podendo ser 
+                                    adaptada para atender às suas 
+                                    preferências e nível de experiência, 
+                                    com instrutores que oferecem 
+                                    acompanhamento individualizado para 
+                                    melhorar a sua prática.
+                                </p>
+                                <div class="coach">
+                                    <img src="" alt="Sofia Almeida">
+                                    <img src="" alt="Pedro Santos">
+                                </div>
+                            </div>
+                            <div id="pilates_info">
+                                <p class="descricao" id="descricao_pilates">
+                                    Método de exercício focado no fortalecimento do core e na flexibilidade, que pode ser personalizado para atender a lesões específicas ou metas de fitness, com acompanhamento para garantir a execução correta dos movimentos.
+                                </p>
+                                <div class="coach">
+                                    <img src="" alt="Cláudia Ferreira">
+                                    <img src="" alt="Tiago Ribeiro">
+                                    <img src="" alt="Inês Martins">
+                                </div>
+                            </div>
+                        </article>
+                        
+                        <article class="lutas_info">
+                            <img src="" alt="">
+                            <div id="lutas_info">
+                                <p class="descricao" id="descricao_lutas">
+                                    Aulas de modalidades como boxe, jiu-jitsu, 
+                                    muay thai ou karatê, que podem ser 
+                                    ajustadas ao seu nível de habilidade e 
+                                    objetivos pessoais, com treinadores que 
+                                    oferecem suporte e feedback constante.
+                                </p>
+                                <div class="coach">
+                                    <img src="" alt="Fernando Gomes">
+                                    <img src="" alt="Patrícia Lima">
+                                    <img src="" alt="Ricardo Alves">
+                                </div>
+                            </div>
+                        </article>
+                        
+                        <article class="dancas_info">
+                            <img src="" alt="">
+                            <div id="dancas_info">
+                                <p class="descricao" id="descricao_dancas">
+                                    Aulas de modalidades como boxe, jiu-jitsu, 
+                                    muay thai ou karatê, que podem ser 
+                                    ajustadas ao seu nível de habilidade e 
+                                    objetivos pessoais, com treinadores que 
+                                    oferecem suporte e feedback constante.
+                                </p>
+                                <div class="coach">
+                                    <img src="" alt="Maria Oliveira">
+                                    <img src="" alt="João Pereira">
+                                </div>
+                            </div>
+                        </article>
+                        
+                        <article class="natacao_info">
+                            <img src="" alt="">
+                            <div id="natacao_info">
+                                <p class="descricao" id="descricao_natacao">
+                                    Aulas de modalidades como boxe, jiu-jitsu, 
+                                    muay thai ou karatê, que podem ser 
+                                    ajustadas ao seu nível de habilidade e 
+                                    objetivos pessoais, com treinadores que 
+                                    oferecem suporte e feedback constante.
+                                </p>
+                                <div class="coach">
+                                    <img src="" alt="andré sousa">
+                                    <img src="" alt="Fernanda Rocha">
+                                    <img src="" alt="Lucas Dias">
+                                </div>
+                            </div>
+                        </article>
+                    </div>
+                </div>
+            </div>
+        </section> -->
+
     </main>
     
     <footer>
