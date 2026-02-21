@@ -323,7 +323,8 @@ main {
   /* Painel — estado 3 */
   #painel {
     display: flex; flex-direction: column;
-    justify-content: space-between; /* ✕ no topo, inscrever-me no fundo */
+    justify-content: space-between; 
+    align-items: flex-start;
     gap: 1rem;
     border-left: var(--border-size) var(--clr-4);
     border-bottom: var(--border-size) var(--clr-4);
