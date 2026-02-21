@@ -273,7 +273,7 @@ main {
   }
 
   /* ── MODALIDADES ── */
-  .modalidades { width: 100%; padding: 1rem; }
+  .modalidades { width: 100%; padding: 1rem; display: grid; gap: var(--gap-items); }
 
   .actividades {
     display: grid; grid-template-columns: 280px 1fr;
@@ -285,9 +285,6 @@ main {
 
   .escolhas {
     display: flex; flex-direction: column;
-    border-left: var(--border-size) var(--clr-4);
-    border-bottom: var(--border-size) var(--clr-4);
-    border-radius: 0 0 0 1rem;
     padding: 1rem 0 1.5rem 1.5rem; flex: 1;
   }
 
@@ -353,7 +350,10 @@ main {
   }
 
   /* Coluna direita */
-  .col-direita { display: flex; flex-direction: column; gap: 1rem; min-height: 520px; }
+  .col-direita { 
+   min-height: 520px; margin-block: 1rem; margin-right: 1rem; 
+   display: flex; flex-direction: column; gap: 1rem;  
+  }
 
   /* ── IMAGEM PRINCIPAL — container das fatias ── */
   .imagem-principal {
