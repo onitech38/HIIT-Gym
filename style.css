@@ -422,7 +422,7 @@ body {
   
   .welcome-intro {
     position: relative;
-    z-index: 2;
+    z-index: 3;
     margin-inline: auto;
     width: 100%;
     height: 100vh;
