@@ -290,7 +290,7 @@ main {
   .sobre {
     min-height: var(--container-height); margin-top: -2rem; padding: 1rem;
     display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: var(--gap-items);
-    background: url(./src/pexels-tubarones-9545907.jpg) center / cover;
+    background: url(./src/pexels-tubarones-9545907.webp) center / cover;
     border-radius: var(--border-radius); color: var(--clr-1);
 
     * { text-align: start; }
