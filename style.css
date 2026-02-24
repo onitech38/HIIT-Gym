@@ -298,144 +298,220 @@ main {
     .sobre-text { padding: 1rem; max-width: 420px; display: grid; gap: var(--gap-items); h3 { color: var(--clr-2); } }
     .facts { display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--gap-items); }
     .card { padding: 1rem; border: var(--border-size) var(--clr-4); border-radius: 
-      var(--border-radius); background: var(--clr-3); h3 { color: var(--clr-4); } h5 { color: var(--clr-2); } 
+      var(--border-radius); background: var(--clr-3); h4 { color: var(--clr-4); } h5 { color: var(--clr-2); } 
     }
   }
 
   /* ── MODALIDADES ── */
-  .modalidades { width: 100%; padding: 1rem; display: grid; gap: var(--gap-items); }
+  .modalidades {
+    width: 100%;
+    padding: 1rem;
+    display: grid;
+    gap: var(--gap-items);
 
-  .actividades {
-    display: grid; grid-template-columns: 280px 1fr;
-    gap: 2rem; align-items: stretch; min-height: 520px;
-  }
+    .actividades {
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      gap: 2rem;
+      align-items: stretch;
+      min-height: 520px;
 
-  /* Coluna esquerda */
-  .col-esquerda { display: flex; flex-direction: column; position: relative; }
+      /* ──────────────── */
+      /* COLUNA ESQUERDA */
+      /* ──────────────── */
+      .col-esquerda {
+        display: flex;
+        flex-direction: column;
+        position: relative;
 
-  .escolhas {
-    display: flex; flex-direction: column;
-    padding: 1rem 0 1.5rem 1.5rem; flex: 1;
-  }
+        .escolhas {
+          display: flex;
+          flex-direction: column;
+          padding: 1rem 0 1.5rem 1.5rem;
+          flex: 1;
 
-  .modalidade-item { padding: 0.7rem 0; cursor: pointer; }
+          .modalidade-item {
+            padding: 0.7rem 0;
+            cursor: pointer;
 
-  .modalidade-item .link-btn {
-    display: block; font-size: 0.78rem; font-weight: 400;
-    letter-spacing: 0.14em; text-transform: uppercase; color: var(--clr-1);
-    transition: color var(--tempo) ease; cursor: pointer;
-    padding: 0; border: none; box-shadow: none; backdrop-filter: none;
-  }
+            .link-btn {
+              display: block;
+              font-size: 0.78rem;
+              font-weight: 400;
+              letter-spacing: 0.14em;
+              text-transform: uppercase;
+              color: var(--clr-1);
+              transition: color var(--tempo) ease;
+              padding: 0;
+              border: none;
+              box-shadow: none;
+              backdrop-filter: none;
+            }
 
-  .modalidade-item .horario-hover {
-    display: flex; flex-direction: column; gap: 0.05rem;
-    padding: 0.35rem 0 0 1rem; border-left: var(--border-size) var(--clr-4);
-    margin-left: 0.2rem; margin-top: 0.35rem;
-    max-height: 0; opacity: 0; overflow: hidden;
-    transition: max-height 0.25s ease, opacity 0.2s ease;
-  }
+            .horario-hover {
+              display: flex;
+              flex-direction: column;
+              gap: 0.05rem;
+              padding: 0.35rem 0 0 1rem;
+              border-left: var(--border-size) var(--clr-4);
+              margin-left: 0.2rem;
+              margin-top: 0.35rem;
+              max-height: 0;
+              opacity: 0;
+              overflow: hidden;
+              transition: max-height 0.25s ease, opacity 0.2s ease;
 
-  .modalidade-item .horario-hover span {
-    font-size: 0.68rem; font-weight: 300; letter-spacing: 0.08em;
-    text-transform: uppercase; color: var(--clr-2); line-height: 1.9;
-  }
+              span {
+                font-size: 0.68rem;
+                font-weight: 300;
+                letter-spacing: 0.08em;
+                text-transform: uppercase;
+                color: var(--clr-2);
+                line-height: 1.9;
+              }
+            }
 
-  .modalidade-item:hover .link-btn {
-    color: var(--clr-4); text-decoration: underline;
-    text-decoration-color: var(--clr-4); text-underline-offset: 0.5rem;
-  }
+            &:hover {
+              .link-btn {
+                color: var(--clr-4);
+                text-decoration: underline;
+                text-decoration-color: var(--clr-4);
+                text-underline-offset: 0.5rem;
+              }
 
-  .modalidade-item:hover .horario-hover { max-height: 60px; opacity: 1; }
+              .horario-hover {
+                max-height: 60px;
+                opacity: 1;
+              }
+            }
+          }
+        }
 
-  /* Painel — estado 3 */
-  #painel {
-    display: flex; flex-direction: column;
-    justify-content: space-between; 
-    align-items: center;
-    gap: 1rem;
-    border-left: var(--border-size) var(--clr-4);
-    border-bottom: var(--border-size) var(--clr-4);
-    border-radius: 0 0 0 1rem;
-    padding: 1.5rem; flex: 1;
-    animation: fadeDown 0.25s ease;
-  }
+        /* Painel */
+        #painel {
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between;
+          align-items: center;
+          gap: 1rem;
+          border-left: var(--border-size) var(--clr-4);
+          border-bottom: var(--border-size) var(--clr-4);
+          border-radius: 0 0 0 1rem;
+          padding: 1.5rem;
+          flex: 1;
 
-  #painel-titulo {
-    color: var(--clr-4); text-align: left;
-    letter-spacing: 0.08em; text-transform: uppercase;
-  }
+          #painel-titulo {
+            color: var(--clr-4);
+            text-align: left;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+          }
 
-  .painel-horarios-bloco { display: flex; flex-direction: column; gap: 0.1rem; }
+          .painel-horarios-bloco {
+            display: flex;
+            flex-direction: column;
+            gap: 0.1rem;
 
-  .painel-horarios-bloco span {
-    font-size: 0.72rem; color: var(--clr-2); font-weight: 300;
-    letter-spacing: 0.08em; text-transform: uppercase;
-  }
+            span {
+              font-size: 0.72rem;
+              color: var(--clr-2);
+              font-weight: 300;
+              letter-spacing: 0.08em;
+              text-transform: uppercase;
+            }
+          }
 
-  #painel-coaches-lista { display: flex; flex-direction: column; gap: 0.35rem; margin-top: 0.25rem; }
+          #painel-coaches-lista {
+            display: flex;
+            flex-direction: column;
+            gap: 0.35rem;
+            margin-top: 0.25rem;
 
-  #painel-coaches-lista li {
-    font-size: 0.82rem; color: var(--clr-2); font-weight: 300; letter-spacing: 0.04em;
-    &::before { content: "· "; color: var(--clr-4); font-weight: 700; }
-  }
+            li {
+              font-size: 0.82rem;
+              color: var(--clr-2);
+              font-weight: 300;
+              letter-spacing: 0.04em;
 
-  /* Coluna direita */
-  .col-direita { 
-   min-height: 520px; margin-block: 1rem; margin-right: 1rem; 
-   display: flex; flex-direction: column; gap: 1rem;  
-  }
+              &::before {
+                content: "· ";
+                color: var(--clr-4);
+                font-weight: 700;
+              }
+            }
+          }
+        }
+      }
 
-  /* ── IMAGEM PRINCIPAL — container das fatias ── */
-  .imagem-principal {
-    flex: 1; display: flex; flex-direction: row;
-    overflow: hidden; border-radius: var(--border-radius);
-    position: relative; min-height: 420px;
-    background-image: none !important;
-    background-color: var(--clr-3);
-  }
+      /* ──────────────── */
+      /* COLUNA DIREITA  */
+      /* ──────────────── */
+      .col-direita {
+        min-height: 520px;
+        margin-block: 1rem;
+        margin-right: 1rem;
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
 
-  /* Overlay de descrição */
-  .descricao-overlay {
-    position: absolute; bottom: 1.2rem; left: 1.4rem; right: 1.4rem; z-index: 10;
-    font-size: 0.75rem; color: var(--clr-1); font-weight: 300;
-    letter-spacing: 0.04em; line-height: 1.8; text-align: left; text-transform: uppercase;
-    opacity: 0; transform: translateY(8px);
-    transition: opacity 0.3s ease, transform 0.3s ease;
-    &.visivel { opacity: 1; transform: translateY(0); }
-  }
+        .imagem-principal {
+          flex: 1;
+          display: flex;
+          flex-direction: row;
+          overflow: hidden;
+          border-radius: var(--border-radius);
+          position: relative;
+          min-height: 420px;
+          background-color: var(--clr-3);
 
-  /* Coaches */
-  .coaches-row { display: flex; gap: 0.7rem; flex-wrap: wrap; min-height: 52px; align-items: center; }
+          .descricao-overlay {
+            position: absolute;
+            bottom: 1.2rem;
+            left: 1.4rem;
+            right: 1.4rem;
+            z-index: 10;
+            font-size: 0.75rem;
+            color: var(--clr-1);
+            font-weight: 300;
+            letter-spacing: 0.04em;
+            line-height: 1.8;
+            text-align: left;
+            text-transform: uppercase;
+            opacity: 0;
+            transform: translateY(8px);
+            transition: opacity 0.3s ease, transform 0.3s ease;
 
-  .coach-avatar {
-    width: 48px; height: 48px; border-radius: 50%;
-    background-size: cover; background-position: center;
-    background-color: rgba(185, 207, 212, 0.1);
-    border: 1.5px solid rgba(251, 160, 2, 0.35);
-    box-shadow: var(--bx-sdw); position: relative; cursor: pointer;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 0.55rem; font-weight: 500; letter-spacing: 0.05em;
-    text-transform: uppercase; color: var(--clr-2); /* cor das iniciais fallback */
-    transition: all var(--tempo) ease;
-    &:hover { border-color: var(--clr-4); transform: scale(1.12); color: var(--clr-4); }
-  }
+            &.visivel {
+              opacity: 1;
+              transform: translateY(0);
+            }
+          }
+        }
 
-  .coach-nome {
-    display: none; position: absolute; bottom: calc(100% + 6px);
-    left: 50%; transform: translateX(-50%);
-    background: var(--clr-3); color: var(--clr-2);
-    font-size: 0.6rem; letter-spacing: 0.05em; text-transform: uppercase;
-    white-space: nowrap; padding: 3px 7px; border-radius: 4px;
-    border: 1px solid rgba(185, 207, 212, 0.15); pointer-events: none;
-  }
+        .coaches-row {
+          display: flex;
+          gap: 0.7rem;
+          flex-wrap: wrap;
+          min-height: 52px;
+          align-items: center;
+        }
+      }
+    }
 
-  .coach-avatar:hover .coach-nome { display: block; }
+    @media (max-width: 768px) {
+      .actividades {
+        grid-template-columns: 1fr;
 
-  /* Responsive */
-  @media (max-width: 768px) {
-    .actividades { grid-template-columns: 1fr; }
-    .col-direita { min-height: 300px; }
-    .imagem-principal { min-height: 260px; flex-direction: column; }
+        .col-direita {
+          min-height: 300px;
+
+          .imagem-principal {
+            min-height: 260px;
+            flex-direction: column;
+          }
+        }
+      }
+    }
   }
 }
 
