@@ -94,14 +94,24 @@ function iniciais(nome) {
 // coaches e fotos são arrays paralelos
 // Se a foto existir → background-image; se não → mostra iniciais como fallback
 function renderCoaches(coaches, fotos = []) {
-  coachesEl.innerHTML = coaches.map((nome, i) => {
-    const foto  = fotos[i] || '';
-    const bg    = foto ? `style="background-image:url('${foto}')"` : '';
-    const texto = foto ? '' : iniciais(nome);
+  const container = document.getElementById('coaches-row');
+  const getIniciais = (n) => n.split(' ').map(i => i[0]).join('').slice(0, 2).toUpperCase();
+
+  container.innerHTML = coaches.map((nome, i) => {
+    const foto = fotos[i] || '';
+    const popId = `pop-coach-${i}`; // ID único para cada popover
+
     return `
-      <div class="coach-avatar" ${bg}>
-        ${texto}
-        <span class="coach-nome">${nome}</span>
+      <div class="coach-wrapper" style="position: relative; display: inline-block;">
+        <button class="coach-avatar" 
+                popovertarget="${popId}" 
+                style="${foto ? `background-image: url('${foto}')` : ''}">
+          ${foto ? '' : getIniciais(nome)}
+        </button>
+
+        <div id="${popId}" popover class="coach-popover">
+          ${nome}
+        </div>
       </div>`;
   }).join('');
 }
