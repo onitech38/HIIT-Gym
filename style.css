@@ -55,9 +55,7 @@
   h1, h2, h3, h4, h5, h6, .title { color: var(--clr-1); }
   body, ul, li, p, h1, a { color: var(--clr-2); }
   body, ul, li, a, .title { margin: 0; padding: 0; list-style: none; text-decoration: none; }
-  body, p, .eyebrow { font-family: var(--fnt-body); }
-  main, footer { margin-block: var(--margin-block-element); }
-  section, .container { width: 100%; max-width: 1440px; margin-inline: auto; margin-block: var(--margin-block-section); }
+  body, p, .eyebrow { font-family: var(--fnt-body); }  
   h1, .h1-big, h2, h3, .title { text-wrap: balance; font-family: var(--fnt-sign); }
   h1, h2, h3, ul, li, .title { font-weight: 500; }
   body { font-size: clamp(.75rem, .3361vw + .6975rem, 1rem); background: light-dark(var(--light-bg), var(--dark-bg)); }
@@ -78,6 +76,27 @@
   .eyebrow { margin-bottom: 1.25rem; font-size: 0.9rem; font-weight: 400; line-height: 1.3; text-align: center; letter-spacing: .01em; text-transform: uppercase; color: var(--clr-current_mix); }
   .eyebrow-small { margin-bottom: 1.25rem; font-size: 0.6rem; font-weight: 300; line-height: 1.3; text-align: center; letter-spacing: .01em; text-transform: uppercase; color: var(--clr-current_mix); }
   li, a { font-size: 1.2rem; font-weight: 400; font-family: var(--fnt-body); cursor: pointer; color: var(--clr-1); &:hover { text-decoration: underline; } }
+
+  main, footer { margin-block: var(--margin-block-element); }
+  section, .container { width: 100%; max-width: 1440px; margin-inline: auto; margin-block: var(--margin-block-section); }
+ 
+  section {
+    view-timeline-name: --reveal;
+    view-timeline-axis: block;
+    animation: reveal linear forwards;
+    animation-timeline: --reveal;
+    animation-range: entry 25% cover 50%; /* Começa aos 25% de visibilidade */
+  }
+
+  @keyframes reveal {
+    from { opacity: 0; transform: translateY(40px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Unificação do "Docinho" para o olho */
+  .modalidade-item, .fatia, button, a, .coach-avatar {
+    transition: all var(--tempo) cubic-bezier(0.4, 0, 0.2, 1) !important;
+  }
 }
 
 @layer multimedia {
@@ -147,6 +166,17 @@
     80%  { transform: translateY(-4em); color: var(--clr-4); }
     100% { transform: translateY(0); }
   }
+  /* Revelação das Secções no Scroll */
+  @keyframes reveal {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Entrada Elástica do Popover */
+  @keyframes pop-in {
+    from { opacity: 0; transform: translateX(-50%) translateY(0) scale(0.9); }
+    to { opacity: 1; transform: translateX(-50%) translateY(-10px) scale(1); }
+  }
 }
 
 @layer glass {
@@ -191,9 +221,18 @@ header {
   display: grid; align-content: space-between; z-index: 3;
 
   .bg {
-    position: absolute; height: calc(var(--container-height) - 50px);
+    position: absolute; 
+    height: calc(var(--container-height) - 50px);
     top: 0; left: 0; z-index: -1;
-    border-radius: 0 0 4px 18px; box-shadow: var(--bx-sdw); filter: brightness(0.5);
+    border-radius: 0 0 4px 18px; 
+    box-shadow: var(--bx-sdw); 
+    filter: brightness(0.5);
+    
+    /* Efeito Parallax */
+    background-attachment: fixed; /* O efeito que pediste */
+    background-position: center;
+    background-size: cover;
+    filter: brightness(0.5);
   }
 
   nav {
@@ -316,9 +355,7 @@ main {
       align-items: stretch;
       min-height: 520px;
 
-      /* ──────────────── */
-      /* COLUNA ESQUERDA */
-      /* ──────────────── */
+      /* ── COLUNA ESQUERDA (Lista & Painel) ── */
       .col-esquerda {
         display: flex;
         flex-direction: column;
@@ -378,7 +415,6 @@ main {
                 text-decoration-color: var(--clr-4);
                 text-underline-offset: 0.5rem;
               }
-
               .horario-hover {
                 max-height: 60px;
                 opacity: 1;
@@ -387,12 +423,11 @@ main {
           }
         }
 
-        /* Painel */
         #painel {
           display: flex;
           flex-direction: column;
           justify-content: space-between;
-          align-items: center;
+          align-items: flex-start; /* Alinhado à esquerda */
           gap: 1rem;
           border-left: var(--border-size) var(--clr-4);
           border-bottom: var(--border-size) var(--clr-4);
@@ -402,7 +437,6 @@ main {
 
           #painel-titulo {
             color: var(--clr-4);
-            text-align: left;
             letter-spacing: 0.08em;
             text-transform: uppercase;
           }
@@ -443,9 +477,7 @@ main {
         }
       }
 
-      /* ──────────────── */
-      /* COLUNA DIREITA  */
-      /* ──────────────── */
+      /* ── COLUNA DIREITA (Imagens & Coaches) ── */
       .col-direita {
         min-height: 520px;
         margin-block: 1rem;
@@ -464,47 +496,150 @@ main {
           min-height: 420px;
           background-color: var(--clr-3);
 
+          /* Estado Ativo: Esconder as outras fatias */
+          &.ativo {
+            .fatia:not(.selecionada) {
+              display: none !important;
+            }
+            .fatia.selecionada {
+              flex: 1;
+              clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%) !important;
+              .fatia-video { opacity: 1; }
+            }
+          }
+
+          .fatia {
+            flex: 1;
+            position: relative;
+            background-size: cover;
+            background-position: center;
+            clip-path: polygon(8% 0%, 100% 0%, 92% 100%, 0% 100%);
+            transition: 
+              clip-path 500ms cubic-bezier(0.4, 0, 0.2, 1),
+              flex 500ms cubic-bezier(0.4, 0, 0.2, 1),
+              opacity 300ms ease, 
+              filter 300ms ease;
+
+            &:first-child { clip-path: polygon(0% 0%, 100% 0%, 92% 100%, 0% 100%); }
+            &:last-child  { clip-path: polygon(8% 0%, 100% 0%, 100% 100%, 0% 100%); }
+
+            &::after {
+              content: ""; position: absolute; inset: 0;
+              background: linear-gradient(to bottom, transparent 40%, rgba(18,13,15,0.7) 100%);
+              pointer-events: none; z-index: 1;
+            }
+
+            .fatia-video {
+              position: absolute; inset: 0;
+              width: 100%; height: 100%;
+              object-fit: cover;
+              opacity: 0;
+              z-index: 2;
+              transition: opacity 400ms ease 200ms;
+            }
+          }
+
           .descricao-overlay {
             position: absolute;
-            bottom: 1.2rem;
-            left: 1.4rem;
-            right: 1.4rem;
+            bottom: 1.2rem; left: 1.4rem; right: 1.4rem;
             z-index: 10;
             font-size: 0.75rem;
             color: var(--clr-1);
-            font-weight: 300;
-            letter-spacing: 0.04em;
             line-height: 1.8;
-            text-align: left;
             text-transform: uppercase;
             opacity: 0;
             transform: translateY(8px);
             transition: opacity 0.3s ease, transform 0.3s ease;
 
-            &.visivel {
-              opacity: 1;
-              transform: translateY(0);
-            }
+            &.visivel { opacity: 1; transform: translateY(0); }
           }
         }
 
+        /* ── COACHES COM ANCHOR POSITIONING ── */
         .coaches-row {
           display: flex;
-          gap: 0.7rem;
-          flex-wrap: wrap;
-          min-height: 52px;
-          align-items: center;
+          gap: 1rem;
+          padding-block: 0.5rem;
+
+          .coach-wrapper {
+            .coach-avatar {
+              width: 50px; height: 50px;
+              border-radius: 50%;
+              border: 2px solid var(--clr-4);
+              background-size: cover;
+              background-position: center;
+              background-color: var(--clr-3);
+              display: grid;
+              place-items: center; /* Centra iniciais */
+              cursor: pointer;
+              color: var(--clr-4);
+              font-weight: 700;
+              font-size: 0.9rem;
+              transition: all var(--tempo) ease;
+
+              &:hover {
+                transform: scale(1.1) rotate(5deg);
+                border-color: var(--clr-1);
+                & + [popover] { display: block; }
+              }
+            }
+
+            [popover] {
+              /* Anchor Positioning Nativo */
+              position: absolute;
+              inset: auto;
+              bottom: anchor(top);
+              left: anchor(center);
+              transform: translateX(-50%) translateY(-10px);
+              
+              border: none;
+              background: var(--clr-4);
+              color: var(--clr-3);
+              padding: 0.5rem 1rem;
+              border-radius: 4px;
+              font-size: 0.75rem;
+              font-weight: 600;
+              text-transform: uppercase;
+              white-space: nowrap;
+              margin: 0;
+              opacity: 0;
+              transition: opacity var(--tempo) ease, display var(--tempo) allow-discrete;
+
+              &:popover-open {
+                opacity: 1;
+                animation: pop-in var(--tempo) cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+              }
+
+              &::after { /* Seta do Popup */
+                content: ''; position: absolute; top: 100%; left: 50%;
+                transform: translateX(-50%);
+                border: 6px solid transparent; border-top-color: var(--clr-4);
+              }
+            }
+          }
         }
+      }
+
+      /* ── EFEITO HOVER NAS FATIAS (Via :has) ── */
+      &:has(.modalidade-item:hover) .fatia {
+        opacity: 0.2; filter: brightness(0.6) grayscale(0.4);
+      }
+      &:has([data-modal="musculacao"]:hover)   .fatia[data-modal="musculacao"],
+      &:has([data-modal="cardio"]:hover)       .fatia[data-modal="cardio"],
+      &:has([data-modal="yoga_pilates"]:hover) .fatia[data-modal="yoga_pilates"],
+      &:has([data-modal="lutas"]:hover)        .fatia[data-modal="lutas"],
+      &:has([data-modal="zumba_danca"]:hover)  .fatia[data-modal="zumba_danca"],
+      &:has([data-modal="natacao"]:hover)      .fatia[data-modal="natacao"] {
+        opacity: 1; filter: brightness(1); transform: scaleY(1.02); flex: 1.6;
       }
     }
 
+    /* ── RESPONSIVIDADE ── */
     @media (max-width: 768px) {
       .actividades {
         grid-template-columns: 1fr;
-
         .col-direita {
           min-height: 300px;
-
           .imagem-principal {
             min-height: 260px;
             flex-direction: column;
@@ -512,83 +647,5 @@ main {
         }
       }
     }
-  }
-}
-
-/* ============================================
-   FATIAS
-   ============================================ */
-
-.fatia {
-  flex: 1; position: relative;
-  background-size: cover; background-position: center; background-repeat: no-repeat;
-  transition:
-    clip-path  500ms cubic-bezier(0.4, 0, 0.2, 1),
-    flex       500ms cubic-bezier(0.4, 0, 0.2, 1),
-    opacity    300ms ease,
-    transform  400ms ease,
-    filter     300ms ease;
-  clip-path: polygon(8% 0%, 100% 0%, 92% 100%, 0% 100%);
-
-  &::after {
-    content: ""; position: absolute; inset: 0;
-    background: linear-gradient(to bottom, transparent 40%, rgba(18,13,15,0.7) 100%);
-    pointer-events: none; z-index: 1;
-  }
-}
-
-.fatia:first-child { clip-path: polygon(0% 0%, 100% 0%, 92% 100%, 0% 100%); }
-.fatia:last-child  { clip-path: polygon(8% 0%, 100% 0%, 100% 100%, 0% 100%); }
-
-/* ── Vídeo dentro da fatia ── */
-.fatia-video {
-  position: absolute; inset: 0;
-  width: 100%; height: 100%;
-  object-fit: cover;
-  opacity: 0;
-  /* delay de 200ms — a imagem expande primeiro, depois o vídeo aparece */
-  transition: opacity 400ms ease 200ms;
-  z-index: 2;
-}
-
-/* Vídeo aparece só no estado ativo, na fatia selecionada */
-.imagem-principal.ativo .fatia.selecionada .fatia-video { opacity: 1; }
-
-/* ── Hover — CSS puro via :has() ── */
-.actividades:has(.modalidade-item:hover) .fatia {
-  opacity: 0.2; filter: brightness(0.6) grayscale(0.4);
-}
-
-.actividades:has([data-modal="musculacao"]:hover)   .fatia[data-modal="musculacao"],
-.actividades:has([data-modal="cardio"]:hover)       .fatia[data-modal="cardio"],
-.actividades:has([data-modal="yoga_pilates"]:hover) .fatia[data-modal="yoga_pilates"],
-.actividades:has([data-modal="lutas"]:hover)        .fatia[data-modal="lutas"],
-.actividades:has([data-modal="zumba_danca"]:hover)  .fatia[data-modal="zumba_danca"],
-.actividades:has([data-modal="natacao"]:hover)      .fatia[data-modal="natacao"] {
-  opacity: 1; filter: brightness(1); transform: scaleY(1.03); flex: 1.6;
-}
-
-/* ── Estado ativo (click) ── */
-.imagem-principal.ativo .fatia {
-  flex: 0; opacity: 0;
-  clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%);
-}
-
-.imagem-principal.ativo .fatia.selecionada {
-  flex: 1; opacity: 1;
-  clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%);
-  filter: brightness(1);
-}
-
-/* ── Responsive ── */
-@media (max-width: 768px) {
-  .fatia {
-    clip-path: polygon(0% 8%, 100% 0%, 100% 92%, 0% 100%);
-    flex: 1; min-height: 80px;
-  }
-  .fatia:first-child { clip-path: polygon(0% 0%, 100% 0%, 100% 92%, 0% 100%); }
-  .fatia:last-child  { clip-path: polygon(0% 8%, 100% 0%, 100% 100%, 0% 100%); }
-  .imagem-principal.ativo .fatia.selecionada {
-    flex: 5; clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%);
-  }
+  }    
 }
