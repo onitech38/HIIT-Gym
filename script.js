@@ -202,9 +202,9 @@ document.getElementById('painel-fechar').addEventListener('click', e => {
   escolhas.classList.remove('hidden');
   estado1();
 });
+  
 
-
-// ============================================
+// ============================================  
 // EVENTOS NOS CARDS
 // ============================================
 document.querySelectorAll('.modalidade-item').forEach(item => {
