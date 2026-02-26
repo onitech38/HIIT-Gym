@@ -78,7 +78,7 @@
   li, a { font-size: 1.2rem; font-weight: 400; font-family: var(--fnt-body); cursor: pointer; color: var(--clr-1); &:hover { text-decoration: underline; } }
 
   main, footer { margin-block: var(--margin-block-element); }
-  section, .container { width: 100%; max-width: 1440px; margin-inline: auto; margin-block: var(--margin-block-section); }
+  section, .container { width: 100%; max-width: var(--container-max); margin-inline: auto; margin-block: var(--margin-block-section); }
  
   section {
     view-timeline-name: --reveal;
@@ -181,7 +181,7 @@
 
 @layer glass {
   .glass { position: relative; overflow: hidden; border-radius: var(--border-radius); 
-    background: none; border-color: transparent; 
+    background: var(--clr-transp); border-color: transparent; 
     * { position: relative; z-index: 2; }
   }
   .glass::before {
@@ -329,13 +329,30 @@ main {
   .sobre {
     min-height: var(--container-height); margin-top: -2rem; padding: 1rem;
     display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: var(--gap-items);
-    background: url(./src/pexels-tubarones-9545907.webp) center / cover;
+/*     background: url(./src/pexels-tubarones-9545907.webp) center / cover; */
     border-radius: var(--border-radius); color: var(--clr-1);
+    overflow: hidden;
 
     * { text-align: start; }
+    
+    video {
+      /* background-image: url('*** Poster image goes here ***'); */
+      background-size: cover;
+      height: auto;
+      min-width: 100%;
+      min-height: 100%;
+      -webkit-transform: translateX(-50%) translateY(-50%);
+              transform: translateX(-50%) translateY(-50%);
+      width: auto;
+      position: absolute;
+      top: 50%;
+      right: 0rem;
+      bottom: 0rem;
+      left: 50%;
+    }
 
     .sobre-text { padding: 1rem; max-width: 420px; display: grid; gap: var(--gap-items); h3 { color: var(--clr-2); } }
-    .facts { display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--gap-items); }
+    .facts { display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--gap-items); z-index:1;}
     .card { padding: 1rem; border: var(--border-size) var(--clr-4); border-radius: 
       var(--border-radius); background: var(--clr-3); h4 { color: var(--clr-4); } h5 { color: var(--clr-2); } 
     }
