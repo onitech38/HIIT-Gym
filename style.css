@@ -24,13 +24,18 @@
     --glass-frost: 5px;
     --glass-surface: rgba(251, 160, 2, 0.15);
     --glass-iridescent-opacity: 1.8;
+
+    /*theme*/
     --light-bg: var(--clr-2);
     --light-color: var(--clr-1);
     --light-code: var(--clr-4);
     --dark-bg: var(--clr-1);
     --dark-color: var(--clr-2);
     --dark-code: var(--clr-4);
+    /*=====*/
+
     --icon-size: 2rem;
+    --icon-logo-hamb-size: 2.5rem;
     --font-weight: 800;
     --margin-block-element: 2rem;
     --margin-block-section: 1rem;
@@ -83,9 +88,11 @@
   section {
     view-timeline-name: --reveal;
     view-timeline-axis: block;
-    animation: reveal linear forwards;
+    animation: reveal linear both;
     animation-timeline: --reveal;
     animation-range: entry 25% cover 50%; /* Começa aos 25% de visibilidade */
+
+    
   }
 
   @keyframes reveal {
@@ -116,16 +123,19 @@
     padding: 10px; display: grid; place-items: center; align-content: center;
     color: var(--clr-4); background: none; backdrop-filter: var(--blur);
     border-radius: var(--border-radius); border: var(--border-size) var(--clr-4);
-    font-size: var(--font-size); font-family: var(--fnt-body); object-fit: cover; text-decoration: none; 
-    text-align: center; text-transform: uppercase; cursor: pointer; list-style: none;
-    transition: all var(--tempo) ease;
+    font-size: var(--font-size); font-family: var(--fnt-body); object-fit: cover; 
+    text-decoration: none; text-align: center; text-transform: uppercase; 
+    cursor: pointer; list-style: none; transition: all var(--tempo) ease;
+
     * { fill: var(--clr-4); }
+
     &:hover { backdrop-filter: var(--backdrop-filter); box-shadow: var(--bx-sdw); 
       color: var(--clr-2); fill: var(--clr-2) !important;  
     }
     &:active { transform: scale(0.95); color: var(--clr-2); background: var(--clr-4); }
     &:focus-visible, &:focus { outline: var(--border-size) var(--clr-5); 
-      backdrop-filter: var(--backdrop-filter); outline-offset: 2px; border-color: var(--clr-4) !important;
+      backdrop-filter: var(--backdrop-filter); outline-offset: 2px; 
+      border-color: var(--clr-4) !important;
     }
   }
   .button.icon.glass, .btn.icon.glass {
@@ -157,6 +167,7 @@
   }
 }
 
+
 @layer animations {
   @keyframes change {
     0%   { transform: translateY(0); }
@@ -166,16 +177,23 @@
     80%  { transform: translateY(-4em); color: var(--clr-4); }
     100% { transform: translateY(0); }
   }
-  /* Revelação das Secções no Scroll */
+
   @keyframes reveal {
     from { opacity: 0; transform: translateY(30px); }
-    to { opacity: 1; transform: translateY(0); }
+    to   { opacity: 1; transform: translateY(0); }
   }
 
-  /* Entrada Elástica do Popover */
   @keyframes pop-in {
     from { opacity: 0; transform: translateX(-50%) translateY(0) scale(0.9); }
-    to { opacity: 1; transform: translateX(-50%) translateY(-10px) scale(1); }
+    to   { opacity: 1; transform: translateX(-50%) translateY(-10px) scale(1); }
+  }
+
+  /* MAP */
+  @starting-style {
+    details[open] .local {
+      opacity: 0;
+      transform: translateY(-15px);
+    }
   }
 }
 
@@ -238,8 +256,10 @@ header {
   nav {
     width: 100%; max-width: 1440px; padding-block: 16px; margin-inline: auto;
     display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center;
+    
     * { text-transform: uppercase; }
-    .logo { height: 2.5rem;padding-inline: 0.1rem; margin-inline: 0.8rem; border: none; 
+
+    .logo { height: var(--icon-logo-hamb-size); padding-inline: 0.1rem; margin-inline: 0.8rem; border: none; 
       &::after { background: none;} 
       * { height: auto; width: auto; } 
     }
@@ -253,11 +273,12 @@ header {
     .login-sign_up { display: flex; gap: var(--gap-items); }
     .menu-toggle { display: none; }
     .hamburger {
-      padding: 10px; height: var(--icon-size-height); display: none;
+      padding: 10px; height: var(--icon-logo-hamb-size); width: calc(var(--icon-size) + 10px); display: none;
       flex-direction: column; justify-content: space-between; align-items: stretch;
       gap: 5px; cursor: pointer; border-radius: var(--border-radius);
       border: var(--border-size) transparent; transition: all var(--tempo) ease; z-index: 100;
-      span { display: block; width: calc(var(--icon-size-height) - 15px); height: 2px; background: var(--clr-1); border-radius: 2px; transition: all var(--tempo) ease; }
+      span { display: block; width: calc(var(--icon-size-height) - 15px); height: 2px; background: var(--clr-1); 
+        border-radius: 2px; transition: all var(--tempo) ease; }
       &:hover { border-color: var(--clr-4); box-shadow: var(--bx-sdw); span { background-color: var(--clr-2); } }
     }
     @media (max-width: 700px) {
@@ -308,7 +329,19 @@ header {
     position: relative; width: 100%; max-width: var(--container-max);
     min-height: var(--min-height); padding: 1px; margin-inline: auto;
     border-radius: var(--border-radius); overflow: hidden; box-shadow: var(--bx-sdw);
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity 0.35s ease, transform 0.35s ease;
     iframe { width: 100%; min-height: var(--min-height); border-radius: var(--border-radius); }
+
+    
+
+    &.closing {
+      opacity: 0;
+      transform: translateY(-15px);
+      pointer-events: none;
+    }
+
     .local-info {
       position: absolute; max-width: 300px; width: auto; height: auto;
       padding: 1rem; margin: 1rem; display: flex; flex-wrap: wrap; justify-content: center;
@@ -327,6 +360,7 @@ main {
 
   /* ── SOBRE ── */
   .sobre {
+    scroll-margin-top: 3rem;
     min-height: var(--container-height); margin-top: -2rem; padding: 1rem;
     display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: var(--gap-items);
 /*     background: url(./src/pexels-tubarones-9545907.webp) center / cover; */
@@ -406,10 +440,7 @@ main {
               display: flex;
               flex-direction: column;
               gap: 0.05rem;
-              padding: 0.35rem 0 0 1rem;
-              border-left: var(--border-size) var(--clr-4);
-              margin-left: 0.2rem;
-              margin-top: 0.35rem;
+              padding-top: .5rem;
               max-height: 0;
               opacity: 0;
               overflow: hidden;
@@ -444,7 +475,7 @@ main {
           display: flex;
           flex-direction: column;
           justify-content: space-between;
-          align-items: flex-start; /* Alinhado à esquerda */
+          align-items: center;
           gap: 1rem;
           border-left: var(--border-size) var(--clr-4);
           border-bottom: var(--border-size) var(--clr-4);

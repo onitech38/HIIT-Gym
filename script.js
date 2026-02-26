@@ -1,19 +1,35 @@
+
 // ============================================
 // MAP
 // ============================================
-document.querySelector('#map summary').addEventListener('click', () => {
-  setTimeout(() => {
-    document.querySelector('#map').scrollIntoView({ behavior: 'smooth' });
-  }, 50);
-});
+const mapDetails = document.querySelector('#map');
+const mapSummary = document.querySelector('#map summary');
+const mapLocal   = document.querySelector('#map .local');
 
-document.addEventListener('click', (e) => {
-  const map = document.querySelector('#map');
-  if (map.open && !map.contains(e.target)) {
-    map.removeAttribute('open');
+function fecharMapa() {
+  mapLocal.classList.add('closing');
+  setTimeout(() => {
+    mapLocal.classList.remove('closing');
+    mapDetails.removeAttribute('open');
+  }, 350); // igual à duração da transition no CSS (0.35s)
+}
+
+mapSummary.addEventListener('click', (e) => {
+  if (mapDetails.open) {
+    e.preventDefault();
+    fecharMapa();
+  } else {
+    setTimeout(() => {
+      mapDetails.scrollIntoView({ behavior: 'smooth' });
+    }, 50);
   }
 });
 
+document.addEventListener('click', (e) => {
+  if (mapDetails.open && !mapDetails.contains(e.target)) {
+    fecharMapa();
+  }
+});
 
 // ============================================
 // DADOS DE CADA MODALIDADE — edita aqui!
