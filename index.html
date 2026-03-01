@@ -48,7 +48,31 @@
                 <img src="/src/logo/logo_def1.svg" alt="Hiit-Gym">
             </a>
 
-            <input type="checkbox" id="menu-toggle" class="menu-toggle" aria-hidden="true">
+            <details class="mobile-nav">
+                <summary class="hamburger btn">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </summary>
+                <div class="nav-content glass">                    
+                    <div class="menu" aria-label="Paginas do site">
+                        <a class="link-btn" href="#sobre">sobre</a>
+                        <a class="link-btn" href="#modalidades">modalidades</a>
+                        <a class="link-btn" href="#equipa">equipa</a>
+                        <a class="link-btn" href="#planos">planos</a>
+                        <a class="link-btn" href="#contactos">contactos</a>
+                    </div>
+
+                    <span></span>
+                    
+                    <div class="login-sign_up" aria-label="Area de Login e Registo">
+                        <a class="link-btn" href="">login</a>
+                        <a class="link-btn" href="">signup</a>
+                    </div>
+                </div>
+            </details>
+
+            <!-- <input type="checkbox" id="menu-toggle" class="menu-toggle" aria-hidden="true">
             <label for="menu-toggle" class="hamburger btn" aria-label="Abrir menu">
                 <span></span>
                 <span></span>
@@ -69,7 +93,7 @@
                     <a class="link-btn" href="">login</a>
                     <a class="link-btn" href="">signup</a>
                 </div>
-            </div>
+            </div> -->
         </nav>
 
         <section class="hero">
@@ -108,7 +132,6 @@
     </details>
     
     <main>
-
         <section class="sobre" id="sobre">
           <video autoplay muted playsinline loop preload="auto">
             <source src="https://d2ezlykacdqcnj.cloudfront.net/_assets/home-video/beach-waves-loop.mp4" type="video/mp4">
@@ -209,7 +232,7 @@
                         <h4 id="painel-titulo"></h4>
                         <div class="painel-horarios-bloco" id="painel-horarios-bloco"></div>
                         <ul id="painel-coaches-lista"></ul>
-                        <a class="btn glass" href="/" aria-label="Inscrição">inscrever-me</a>
+                        <a class="btn glass" href="/" aria-label="Inscrição">inscrever</a>
                     </article>
 
                 </div>
@@ -218,7 +241,7 @@
                 <div class="col-direita">
                     <div class="imagem-principal" id="imagem-principal">
 
-                        <!-- IMAGEM DA MODALIDADE → style="background-image:url('SEU_PATH')" -->
+                        <!-- IMAGEM DA MODALIDADE → style="background-image:url('O_TEU_PATH')" -->
                         <!-- VÍDEO DA MODALIDADE  → src="SEU_PATH_VIDEO" (apaga a tag se não tiver vídeo) -->
 
                         <div class="fatia" data-modal="musculacao"
