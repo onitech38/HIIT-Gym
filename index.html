@@ -19,7 +19,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link rel="stylesheet" href="style.css">
 </head>
-<body>
+<body id="home">
     <aside class="welcome hidden">
         <img src="" alt="">
         <div class="welcome-intro hidden">
@@ -35,15 +35,17 @@
             </div>
         </div>
     </aside>
+
+    <a class="logo btn" href="#home" aria-label="Logotipo do site">
+        <img src="src/logo/logo_def1.svg" alt="Hiit-Gym">
+    </a>
+
+    <aside class="q_a btn icon glass"> ? </aside>
     
     <header>
         <img class="bg" src="src/pexels-dimkidama-6796964 (1).webp" alt="Imagem de um ginásio">
     
         <nav aria-label="Navegação Principal">
-            <a class="logo btn" href="/index.html" aria-label="Logotipo do site">
-                <img src="src/logo/logo_def1.svg" alt="Hiit-Gym">
-            </a>
-
             <!-- só o summary (hamburger) dentro do details -->
             <details class="mobile-nav">
                 <summary class="hamburger btn" aria-label="Abrir menu">
@@ -58,8 +60,8 @@
                 <div class="menu" aria-label="Paginas do site">
                     <a class="link-btn" href="#sobre">sobre</a>
                     <a class="link-btn" href="#modalidades">modalidades</a>
-                    <a class="link-btn" href="#equipa">equipa</a>
                     <a class="link-btn" href="#planos">planos</a>
+                    <a class="link-btn" href="#equipa">equipa</a>
                     <a class="link-btn" href="#contactos">contactos</a>
                 </div>
                 <span></span>
@@ -261,13 +263,63 @@
             </div>
         </section>
 
-        <section class="planos">
-            <h3>As nossas Modalidades</h3>
-            <p>Uma academia completa com diversas modalidades para encontrar a actividade perfeita para os teus objectivos e estilo de vida.</p>
+        <section class="planos glass" id="planos">
+            <h3>Os nossos Planos</h3>
+            <p>Escolhe o plano ideal para os teus objectivos</p>
 
-            <article class="art_1">a</article>
-            <article class="art_2">b</article>
-            <article class="art_3">c</article>
+            <div class="planos-lista">
+                <article class="planos">
+                    <div class="valor">
+                        <h5>basico</h5>
+                        <div class="valor_mes">
+                            <h4>29€</h4>
+                            <h6>/mês</h6>
+                        </div>
+                    </div>
+                    <ul class="acessos">
+                        <li><span>✓</span>Acesso à academia</li>
+                        <li><span>✓</span>Vestuário e balnearios</li>
+                        <li><span>✓</span>Área de musculação</li>
+                        <li><span>✓</span>Horário livre</li>
+                    </ul>
+                    <button class="btn-small glass">comecar</button>
+                </article>
+
+                <article class="planos popular">
+                    <div class="valor">
+                        <h5>standard</h5>
+                        <div class="valor_mes">
+                            <h4>49€</h4>
+                            <h6>/mês</h6>
+                        </div>
+                    </div>
+                    <ul class="acessos">
+                        <li><span>✓</span>Tudo do basico</li>
+                        <li><span>✓</span>Aulas em grupo (ilimitadas)</li>
+                        <li><span>✓</span>Acesso à piscina</li>
+                        <li><span>✓</span>1 aula com PT por mês</li>
+                    </ul>
+                    <button class="btn-small glass">mais popular</button>
+                </article>
+
+                <article class="planos">
+                    <div class="valor">
+                        <h5>premium</h5>
+                        <div class="valor_mes">
+                            <h4>79€</h4>
+                            <h6>/mês</h6>
+                        </div>
+                    </div>
+
+                    <ul class="acessos">
+                        <li><span>✓</span>Tudo no standard</li>
+                        <li><span>✓</span>Personal Trainer (4x/mês)</li>
+                        <li><span>✓</span>Consulta de nutrição</li>
+                        <li><span>✓</span>Acesso total 24h/7</li>
+                    </ul>
+                    <button class="btn-small glass">aderir agora</button>
+                </article>
+            </div>
         </section>
 
     </main>
