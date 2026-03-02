@@ -1,4 +1,3 @@
-
 // ============================================
 // MAP
 // ============================================
@@ -11,7 +10,7 @@ function fecharMapa() {
   setTimeout(() => {
     mapLocal.classList.remove('closing');
     mapDetails.removeAttribute('open');
-  }, 350); // igual à duração da transition no CSS (0.35s)
+  }, 350);
 }
 
 mapSummary.addEventListener('click', (e) => {
@@ -30,6 +29,7 @@ document.addEventListener('click', (e) => {
     fecharMapa();
   }
 });
+
 
 // ============================================
 // DADOS DE CADA MODALIDADE — edita aqui!
@@ -91,11 +91,11 @@ const modalidadesData = {
 // ============================================
 const imagemEl    = document.getElementById('imagem-principal');
 const descEl      = document.getElementById('descricao-overlay');
-const coachesEl   = document.getElementById('coaches-row');
 const escolhas    = document.getElementById('escolhas');
 const painel      = document.getElementById('painel');
 const todasFatias = document.querySelectorAll('.fatia');
 
+// Coaches do estado idle — calculados uma vez
 const todosFotos = Object.values(modalidadesData).flatMap(m => m.coachFotos).slice(0, 8);
 const todosNomes = Object.values(modalidadesData).flatMap(m => m.coaches).slice(0, 8);
 
@@ -103,36 +103,25 @@ const todosNomes = Object.values(modalidadesData).flatMap(m => m.coaches).slice(
 // ============================================
 // HELPERS
 // ============================================
-function iniciais(nome) {
-  return nome.split(' ').map(w => w[0]).join('').slice(0, 2);
-}
-
-// coaches e fotos são arrays paralelos
-// Se a foto existir → background-image; se não → mostra iniciais como fallback
 function renderCoaches(coaches, fotos = []) {
   const container = document.getElementById('coaches-row');
   const getIniciais = (n) => n.split(' ').map(i => i[0]).join('').slice(0, 2).toUpperCase();
 
   container.innerHTML = coaches.map((nome, i) => {
     const foto = fotos[i] || '';
-    const popId = `pop-coach-${i}`; // ID único para cada popover
-
+    const popId = `pop-coach-${i}`;
     return `
-      <div class="coach-wrapper" style="position: relative; display: inline-block;">
-        <button class="coach-avatar" 
-                popovertarget="${popId}" 
-                style="${foto ? `background-image: url('${foto}')` : ''}">
+      <div class="coach-wrapper" style="position:relative;display:inline-block;">
+        <button class="coach-avatar"
+                popovertarget="${popId}"
+                style="${foto ? `background-image:url('${foto}')` : ''}">
           ${foto ? '' : getIniciais(nome)}
         </button>
-
-        <div id="${popId}" popover class="coach-popover">
-          ${nome}
-        </div>
+        <div id="${popId}" popover class="coach-popover">${nome}</div>
       </div>`;
   }).join('');
 }
 
-// Para todos os vídeos e reseta para o início
 function pararVideos() {
   document.querySelectorAll('.fatia-video').forEach(v => {
     v.pause();
@@ -159,40 +148,22 @@ function estado1() {
 
 
 // ============================================
-// ESTADO 2 — Hover
-// CSS :has() trata o visual das fatias.
-// JS só atualiza os coaches.
-// ============================================
-function estado2(key) {
-  const d = modalidadesData[key];
-  renderCoaches(d.coaches, d.coachFotos);
-}
-
-
-// ============================================
 // ESTADO 3 — Click
-// Fatia expande (500ms CSS) → vídeo faz fade in (delay 200ms no CSS)
 // ============================================
 function estado3(key) {
   const d = modalidadesData[key];
 
-  // 1. Para todos os vídeos primeiro
   pararVideos();
 
-  // 2. Marca container e fatia
   imagemEl.classList.add('ativo');
   todasFatias.forEach(f => f.classList.remove('selecionada'));
   const fatiaAlvo = imagemEl.querySelector(`.fatia[data-modal="${key}"]`);
   if (fatiaAlvo) {
     fatiaAlvo.classList.add('selecionada');
-
-    // 3. Arranca o vídeo (se existir e tiver src definido)
-    //    O CSS trata o delay de 200ms via transition-delay na opacidade
     const video = fatiaAlvo.querySelector('.fatia-video');
     if (video && video.src) video.play();
   }
 
-  // 4. Preenche o painel
   document.getElementById('painel-titulo').textContent = d.titulo;
   document.getElementById('painel-horarios-bloco').innerHTML =
     `<span>${d.dias}</span><span>${d.horas}</span>`;
@@ -202,7 +173,6 @@ function estado3(key) {
   escolhas.classList.add('hidden');
   painel.classList.remove('hidden');
 
-  // 5. Descrição e coaches
   descEl.textContent = d.descricao;
   descEl.classList.add('visivel');
   renderCoaches(d.coaches, d.coachFotos);
@@ -222,14 +192,10 @@ document.getElementById('painel-fechar').addEventListener('click', e => {
 
 // ============================================
 // EVENTOS NOS CARDS
+// Hover: só CSS :has() — zero JS, zero DOM manipulation
+// Click: estado3
 // ============================================
 document.querySelectorAll('.modalidade-item').forEach(item => {
-  item.addEventListener('mouseenter', () => {
-    if (painel.classList.contains('hidden')) estado2(item.dataset.modal);
-  });
-  item.addEventListener('mouseleave', () => {
-    if (painel.classList.contains('hidden')) estado1();
-  });
   item.addEventListener('click', () => estado3(item.dataset.modal));
 });
 

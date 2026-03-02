@@ -21,13 +21,9 @@
 </head>
 <body>
     <aside class="welcome hidden">
-        <picture>
-            <source media="(min-width: 900px)" srcset="src/ing_welcome_large.jpg">
-            <source media="(min-width: 400px)" srcset="src/ing_welcome_mid.jpg">
-            <img src="src/img_welc_mid.jpg" alt="Hiit-Gym">
-        </picture>
+        <img src="" alt="">
         <div class="welcome-intro hidden">
-            <img src="src/LOGO_large.svg" alt="Hiit-Gym">
+            <img src="src/logo/logo_def1.svg" alt="Hiit-Gym">
             <div>
                 <h3>Get ready to HIIT your body!</h3>
                 <h1 class="h1-big">HIIT THE GYM!</h1>
@@ -48,36 +44,16 @@
                 <img src="/src/logo/logo_def1.svg" alt="Hiit-Gym">
             </a>
 
+            <!-- só o summary (hamburger) dentro do details -->
             <details class="mobile-nav">
-                <summary class="hamburger btn">
+                <summary class="hamburger btn" aria-label="Abrir menu">
                     <span></span>
                     <span></span>
                     <span></span>
                 </summary>
-                <div class="nav-content glass">                    
-                    <div class="menu" aria-label="Paginas do site">
-                        <a class="link-btn" href="#sobre">sobre</a>
-                        <a class="link-btn" href="#modalidades">modalidades</a>
-                        <a class="link-btn" href="#equipa">equipa</a>
-                        <a class="link-btn" href="#planos">planos</a>
-                        <a class="link-btn" href="#contactos">contactos</a>
-                    </div>
-
-                    <span></span>
-                    
-                    <div class="login-sign_up" aria-label="Area de Login e Registo">
-                        <a class="link-btn" href="">login</a>
-                        <a class="link-btn" href="">signup</a>
-                    </div>
-                </div>
             </details>
 
-            <!-- <input type="checkbox" id="menu-toggle" class="menu-toggle" aria-hidden="true">
-            <label for="menu-toggle" class="hamburger btn" aria-label="Abrir menu">
-                <span></span>
-                <span></span>
-                <span></span>
-            </label>
+            <!-- nav-content é sempre um elemento normal, fora do details -->
             <div class="nav-content glass" aria-label="Conteúdo da navegação">
                 <div class="menu" aria-label="Paginas do site">
                     <a class="link-btn" href="#sobre">sobre</a>
@@ -86,14 +62,12 @@
                     <a class="link-btn" href="#planos">planos</a>
                     <a class="link-btn" href="#contactos">contactos</a>
                 </div>
-
                 <span></span>
-                
                 <div class="login-sign_up" aria-label="Area de Login e Registo">
                     <a class="link-btn" href="">login</a>
                     <a class="link-btn" href="">signup</a>
                 </div>
-            </div> -->
+            </div>
         </nav>
 
         <section class="hero">
@@ -107,12 +81,12 @@
                     <h1 class="text">the Gym</h1>
                 </div>
             </div>
-            <button class="btn_large glass" aria-label="Link para agendar visita a academia">free visit now</button>            
+            <button class="btn_large" aria-label="Link para agendar visita a academia">free visit now</button>            
         </section>
     </header>
     
     <details name="map" id="map">
-        <summary class="btn icon glass" aria-label="Botão para abrir o mapa">
+        <summary class="btn icon" aria-label="Botão para abrir o mapa">
             <i class="fa-solid fa-location-crosshairs"></i>
         </summary>
     
@@ -224,15 +198,14 @@
                         </div>
                     </div>
 
-                    <!-- PAINEL estado 3 — botão ✕ ACIMA do título -->
                     <article id="painel" class="hidden">
-                        <a id="painel-fechar" class="btn icon glass" href="#">
+                        <a id="painel-fechar" class="btn icon" href="#">
                             <i class="fa-solid fa-xmark"></i>   
                         </a>
                         <h4 id="painel-titulo"></h4>
                         <div class="painel-horarios-bloco" id="painel-horarios-bloco"></div>
                         <ul id="painel-coaches-lista"></ul>
-                        <a class="btn glass" href="/" aria-label="Inscrição">inscrever</a>
+                        <a class="btn" href="/" aria-label="Inscrição">inscrever</a>
                     </article>
 
                 </div>
@@ -245,37 +218,37 @@
                         <!-- VÍDEO DA MODALIDADE  → src="SEU_PATH_VIDEO" (apaga a tag se não tiver vídeo) -->
 
                         <div class="fatia" data-modal="musculacao"
-                             style="background-image:url('src/pexels-amar-9958668.webp')">
+                             style="background-image:url('src/musculacao.jpg')">
                             <video class="fatia-video" src="src/videos/musculacao.mp4"
                                    loop muted playsinline></video>
                         </div>
 
                         <div class="fatia" data-modal="cardio"
-                             style="background-image:url('src/pexels-amar-9958674.webp')">
+                             style="background-image:url('src/cardio.jpg')">
                             <video class="fatia-video" src="src/videos/cardio.mp4"
                                    loop muted playsinline></video>
                         </div>
 
                         <div class="fatia" data-modal="yoga_pilates"
-                             style="background-image:url('src/pexels-anastasia-shuraeva-4944435.webp')">
+                             style="background-image:url('src/yoga_pilates.jpg')">
                             <video class="fatia-video" src="src/videos/yoga_pilates.mp4"
                                    loop muted playsinline></video>
                         </div>
 
                         <div class="fatia" data-modal="lutas"
-                             style="background-image:url('src/pexels-artbovich-7031705.webp')">
+                             style="background-image:url('src/lutas.jpg')">
                             <video class="fatia-video" src="src/videos/lutas.mp4"
                                    loop muted playsinline></video>
                         </div>
 
                         <div class="fatia" data-modal="zumba_danca"
-                             style="background-image:url('src/pexels-dimkidama-6796964.webp')">
+                             style="background-image:url('src/zumba_danca.jpg')">
                             <video class="fatia-video" src="src/videos/zumba_danca.mp4"
                                    loop muted playsinline></video>
                         </div>
 
                         <div class="fatia" data-modal="natacao"
-                             style="background-image:url('src/pexels-eyecon-design-500632474-17211446.webp')">
+                             style="background-image:url('src/natacao.jpg')">
                             <video class="fatia-video" src="src/videos/natacao.mp4"
                                    loop muted playsinline></video>
                         </div>

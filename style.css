@@ -12,26 +12,30 @@
     --font-size: 1rem;
     --fnt-sign: "Saira", sans-serif;
     --fnt-body: "Jost", sans-serif;
-    color-scheme: light dark;
     --clr-current_mix: color-mix(in srgb, currentColor 70%, transparent);
     --clr-1: #FFFAFA;
     --clr-2: #B9CFD4;
     --clr-3: #120D0F;
     --clr-4: #fba002;
-    --clr-transp: #120d0f31;
+    --clr-transp: #120d0f71;
     --blur: blur(1.5px);
     --backdrop-filter: blur(5px);
     --glass-frost: 5px;
     --glass-surface: rgba(251, 160, 2, 0.15);
     --glass-iridescent-opacity: 1.8;
-
+    
     /*theme*/
+    color-scheme: light dark;
     --light-bg: var(--clr-2);
     --light-color: var(--clr-1);
     --light-code: var(--clr-4);
     --dark-bg: var(--clr-1);
     --dark-color: var(--clr-2);
     --dark-code: var(--clr-4);
+    
+    --bg_pattrn: url(./src/logo/logo_dark2.svg);
+    --bg_pttrn_size:1;
+    --bg_pttrn_calc: calc(var(--icon-size-logo) * var(--bg_pttrn_size));
     /*=====*/
 
     --icon-size: 2rem;
@@ -91,7 +95,7 @@
     view-timeline-axis: block;
     animation: reveal linear both;
     animation-timeline: --reveal;
-    animation-range: entry 25% cover 50%; /* Começa aos 25% de visibilidade */    
+    animation-range: entry 25% cover 50%;
   }
 
   @keyframes reveal {
@@ -99,17 +103,28 @@
     to { opacity: 1; transform: translateY(0); }
   }
 
-  /* Unificação do "Docinho" para o olho */
-  .modalidade-item, .fatia, button, a, .coach-avatar {
-    transition: all var(--tempo) cubic-bezier(0.4, 0, 0.2, 1) !important;
+  /* Transições específicas — evita monitorizar todas as propriedades CSS */
+  .modalidade-item, button, a {
+    transition: color var(--tempo) ease,
+                background var(--tempo) ease,
+                box-shadow var(--tempo) ease,
+                border-color var(--tempo) ease,
+                transform var(--tempo) ease,
+                backdrop-filter var(--tempo) ease;
+  }
+  .fatia {
+    will-change: opacity, transform, flex;
+    transition: clip-path 500ms cubic-bezier(0.4, 0, 0.2, 1),
+                flex 500ms cubic-bezier(0.4, 0, 0.2, 1),
+                opacity 300ms ease;
+  }
+  .coach-avatar {
+    transition: transform var(--tempo) ease, border-color var(--tempo) ease;
   }
 }
 
 @layer multimedia {
-  favicon{
-    width: 100px;
-    height: 100px;
-  }
+  favicon { width: 100px; height: 100px; }
   img, video { width: 100%; height: 100%; display: block; object-fit: cover; }
   img { vertical-align: middle; }
   
@@ -117,11 +132,7 @@
     height: fit-content; color: canvastext; background-color: var(--clr-transp); 
     inset: 0px; border: var(--clr-transp); padding: 0.25em; overflow: auto; 
   }
-  a {
-    align-items: center;
-  }
-
-
+  a { align-items: center; }
 }
 
 @layer actions {
@@ -139,11 +150,12 @@
     cursor: pointer; 
     list-style: none; 
     color: var(--clr-4); 
-    background: none; 
-    backdrop-filter: var(--blur);
+    background: var(--clr-transp); 
+    backdrop-filter: blur(var(--blur));
+    -webkit-backdrop-filter: blur(var(--glass-frost));
     border-radius: var(--border-radius);
-    border: var(--border-size) var(--clr-4);
-    transition: all var(--tempo) ease;
+    border: var(--border-size) var(--clr-2);
+    transition: color var(--tempo) ease, background var(--tempo) ease, box-shadow var(--tempo) ease, border-color var(--tempo) ease, transform var(--tempo) ease, backdrop-filter var(--tempo) ease;
     
     * { fill: var(--clr-4); }
 
@@ -161,7 +173,7 @@
     padding: 0px;
     border: var(--clr-transp);
     inline-size: 4rem;
-    aspect-ratio: 1;object-fit: contain;
+    aspect-ratio: 1; object-fit: contain;
 
     image { height: auto; width: auto; }   
 
@@ -181,39 +193,37 @@
     cursor: pointer; 
     border-radius: var(--border-radius);
     border: var(--border-size) transparent; 
-    transition: all var(--tempo) ease; 
+    transition: transform var(--tempo) ease, box-shadow var(--tempo) ease, backdrop-filter var(--tempo) ease; 
     z-index: 100;
+    list-style: none;
 
-    span { display: block; 
-      width: calc(var(--icon-size-height) - 15px); 
+    &::-webkit-details-marker { display: none; }
+
+    span { 
+      display: block; 
+      width: 100%;
       height: 2px; background: var(--clr-1); 
       border-radius: 2px; 
-      transition: all var(--tempo) ease;
+      transition: transform var(--tempo) ease, opacity var(--tempo) ease, background-color var(--tempo) ease;
     }
-    &.btn { * { fill: var(--clr-3) !important; color: var(--clr-3);} }
     &:hover { span { background-color: var(--clr-2); } } 
-    
-    &.btn:active { transform: scale(0.95); color: var(--clr-2); background: var(--clr-4); }
-    &.btn:focus-visible, .btn:focus{ outline: var(--border-size) var(--clr-4); outline-offset: -1px; }
-
-    /* &:hover { 
-      color: var(--clr-3); fill: var(--clr-3) !important;
+    &:active { transform: scale(0.95); }
+    &:focus-visible { 
+      outline: var(--border-size) var(--clr-4); 
+      outline-offset: 4px;
+      backdrop-filter: var(--backdrop-filter);
+      box-shadow: var(--bx-sdw);
     }
-    &:active { transform: scale(0.95); color: var(--clr-2); background: var(--clr-4); }
-    &:focus-visible, &:focus { outline: var(--border-size) var(--clr-5); 
-      backdrop-filter: var(--backdrop-filter); outline-offset: 2px; 
-      border-color: var(--clr-4) !important;
-    } */
   }
 
-  .button.icon.glass, .btn.icon.glass {
+  button.icon, .btn.icon {
     padding: calc(0.275rem + var(--font-size)) var(--font-size);
 
     * { font-size: var(--icon-size) !important; width: auto !important; 
       font-weight: var(--font-weight) !important;
       margin-inline: .5rem; font-size: var(--font-size); place-items: center;
     }
-    &:hover { * { fill: var(--clr-3) !important; } }
+    &:hover { box-shadow: var(--bx-sdw); * { fill: var(--clr-3) !important; } }
     &:active { transform: scale(0.95); color: var(--clr-2); background: var(--clr-4); }
     &:focus-visible { outline: var(--border-size) var(--clr-5); outline-offset: 2px; }
   }
@@ -222,10 +232,9 @@
   .btn_large { padding: 16px 24px; font-size: 1.2rem; }
   .link-btn {
     padding-inline: 7px; color: var(--clr-1); font-weight: 400; letter-spacing: .01em; font-size: 0.9rem;
-
     background: transparent; border: var(--border-size) transparent; 
     border-radius: calc(var(--border-radius) / 2); cursor: pointer;
-    transition: all var(--tempo) ease;
+    transition: color var(--tempo) ease, box-shadow var(--tempo) ease, backdrop-filter var(--tempo) ease;
     &:hover { color: var(--clr-2); backdrop-filter: var(--backdrop-filter); 
       border: var(--border-size) transparent; border-radius: var(--border-radius); 
       text-decoration-color: var(--clr-4); text-underline-offset: .725rem; box-shadow: var(--bx-sdw);
@@ -256,7 +265,6 @@
     to   { opacity: 1; transform: translateX(-50%) translateY(-10px) scale(1); }
   }
 
-  /* MAP */
   @starting-style {
     details[open] .local {
       opacity: 0;
@@ -291,8 +299,9 @@ body {
   position: relative;
   background: var(--clr-3);
   &::before {
-    content: ""; position: fixed; inset: 0;
-    background: url(./src/BG-pattrn-light.png) center center / 250% no-repeat;
+    content: ""; 
+    position: absolute; inset: 0;
+    background: var(--bg_pattrn) top left / var(--bg_pttrn_calc) auto repeat;
     opacity: 0.05; z-index: -1;
   }
   .welcome-intro {
@@ -313,23 +322,16 @@ header {
     border-radius: 0 0 4px 18px; 
     box-shadow: var(--bx-sdw); 
     filter: brightness(0.5);
-    
-    /* Efeito Parallax */
-    background-attachment: fixed; /* O efeito que pediste */
-    background-position: center;
-    background-size: cover;
-    filter: brightness(0.5);
   }
 
   nav {
     width: 100%; max-width: 1440px; margin-inline: auto; padding: 1rem;
-    display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center;   
+    display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center;
     * { text-transform: uppercase; }
 
-    /* ── DESKTOP: esconde hamburger, mostra nav-content sempre ── */
+    /* ── DESKTOP ── */
     .mobile-nav {
-      & > summary { display: none; }
-      .nav-content { display: inline-flex; }
+      display: none;
     }
 
     .nav-content {
@@ -339,35 +341,36 @@ header {
       box-shadow: var(--bx-sdw);
       justify-content: space-around;
       .menu { display: inline-flex; }
-      span { border-left: var(--border-size) var(--clr-4); 
-      border-right: var(--border-size) var(--clr-4); }
+      span { border-left: var(--border-size) var(--clr-4); border-right: var(--border-size) var(--clr-4); }
     }
 
     /* ── MOBILE ── */
     @media (max-width: 700px) {
       .mobile-nav {
-        /* mostra hamburger */
-        & > summary { display: flex; }
-
-        /* esconde menu por defeito */
-        .nav-content {
-          display: none;
-          position: absolute; top: 70px; left: 0; right: 0; padding: 2rem 1rem;
-          flex-direction: column; align-items: center; gap: 2rem;
-          border-radius: var(--border-radius); box-shadow: var(--bx-sdw); z-index: 99;
-        }
-        .login-sign_up { display: flex; gap: var(--gap-items); }
-        .menu { flex-direction: column; align-items: center; gap: var(--gap-items); }
-
-        /* aberto: mostra menu + animação X */
-        &[open] .nav-content {
-          display: flex; margin-inline: auto;
-          span { width: 200px; border: var(--border-size) var(--clr-4); }
-        }
-        &[open] > summary span:nth-child(1) { transform: translateY(8px) rotate(45deg); }
-        &[open] > summary span:nth-child(2) { opacity: 0; }
-        &[open] > summary span:nth-child(3) { transform: translateY(-8px) rotate(-45deg); }
+        display: block;
       }
+
+      .nav-content {
+        display: none;
+        position: absolute; top: 70px; left: 0; right: 0; padding: 2rem 1rem;
+        flex-direction: column; align-items: center; gap: 2rem;
+        border-radius: var(--border-radius); box-shadow: var(--bx-sdw); z-index: 99;
+      }
+      .login-sign_up { display: flex; gap: var(--gap-items); }
+      .menu { flex-direction: column; align-items: center; gap: var(--gap-items); }
+
+      /* :has() — quando o details está aberto, mostra o nav-content irmão */
+      &:has(.mobile-nav[open]) .nav-content {
+        display: flex; margin-inline: auto;
+        span { width: 200px; border: var(--border-size) var(--clr-4); }
+      }
+
+      /* animação X no hamburger */
+      .mobile-nav[open] > summary span:nth-child(1) { transform: translateY(8px) rotate(45deg); }
+      .mobile-nav[open] > summary span:nth-child(2) { opacity: 0; }
+      .mobile-nav[open] > summary span:nth-child(3) { transform: translateY(-8px) rotate(-45deg); }
+
+      .hamburger { display: flex; }
     }
   }
 
@@ -412,8 +415,6 @@ header {
     transition: opacity 0.35s ease, transform 0.35s ease;
     iframe { width: 100%; min-height: var(--min-height); border-radius: var(--border-radius); }
 
-    
-
     &.closing {
       opacity: 0;
       transform: translateY(-15px);
@@ -436,19 +437,16 @@ main {
   width: 100%; max-width: 1440px;
   display: grid; place-items: center; gap: 5rem; z-index: 3;
 
-  /* ── SOBRE ── */
   .sobre {
     scroll-margin-top: 3rem;
     min-height: var(--container-height); margin-top: -2rem; padding: 1rem;
     display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: var(--gap-items);
-/*     background: url(./src/pexels-tubarones-9545907.webp) center / cover; */
     border-radius: var(--border-radius); color: var(--clr-1);
     overflow: hidden;
 
     * { text-align: start; }
     
     video {
-      /* background-image: url('*** Poster image goes here ***'); */
       background-size: cover;
       height: auto;
       min-width: 100%;
@@ -470,7 +468,6 @@ main {
     }
   }
 
-  /* ── MODALIDADES ── */
   .modalidades {
     width: 100%;
     padding: 1rem;
@@ -484,7 +481,6 @@ main {
       align-items: stretch;
       min-height: 520px;
 
-      /* ── COLUNA ESQUERDA (Lista & Painel) ── */
       .col-esquerda {
         display: flex;
         flex-direction: column;
@@ -603,7 +599,6 @@ main {
         }
       }
 
-      /* ── COLUNA DIREITA (Imagens & Coaches) ── */
       .col-direita {
         min-height: 520px;
         margin-block: 1rem;
@@ -622,11 +617,8 @@ main {
           min-height: 420px;
           background-color: var(--clr-3);
 
-          /* Estado Ativo: Esconder as outras fatias */
           &.ativo {
-            .fatia:not(.selecionada) {
-              display: none !important;
-            }
+            .fatia:not(.selecionada) { display: none !important; }
             .fatia.selecionada {
               flex: 1;
               clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%) !important;
@@ -681,7 +673,6 @@ main {
           }
         }
 
-        /* ── COACHES COM ANCHOR POSITIONING ── */
         .coaches-row {
           display: flex;
           flex-wrap: wrap;
@@ -697,12 +688,12 @@ main {
               background-position: center;
               background-color: var(--clr-3);
               display: grid;
-              place-items: center; /* Centra iniciais */
+              place-items: center;
               cursor: pointer;
               color: var(--clr-4);
               font-weight: 700;
               font-size: 0.9rem;
-              transition: all var(--tempo) ease;
+              transition: transform var(--tempo) ease, border-color var(--tempo) ease;
 
               &:hover {
                 transform: scale(1.1) rotate(5deg);
@@ -712,13 +703,11 @@ main {
             }
 
             [popover] {
-              /* Anchor Positioning Nativo */
               position: absolute;
               inset: auto;
               bottom: anchor(top);
               left: anchor(center);
               transform: translateX(-50%) translateY(-10px);
-              
               border: none;
               background: var(--clr-4);
               color: var(--clr-3);
@@ -737,7 +726,7 @@ main {
                 animation: pop-in var(--tempo) cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
               }
 
-              &::after { /* Seta do Popup */
+              &::after {
                 content: ''; position: absolute; top: 100%; left: 50%;
                 transform: translateX(-50%);
                 border: 6px solid transparent; border-top-color: var(--clr-4);
@@ -747,9 +736,8 @@ main {
         }
       }
 
-      /* ── EFEITO HOVER NAS FATIAS (Via :has) ── */
       &:has(.modalidade-item:hover) .fatia {
-        opacity: 0.2; filter: brightness(0.6) grayscale(0.4);
+        opacity: 0.2;
       }
       &:has([data-modal="musculacao"]:hover)   .fatia[data-modal="musculacao"],
       &:has([data-modal="cardio"]:hover)       .fatia[data-modal="cardio"],
@@ -757,11 +745,10 @@ main {
       &:has([data-modal="lutas"]:hover)        .fatia[data-modal="lutas"],
       &:has([data-modal="zumba_danca"]:hover)  .fatia[data-modal="zumba_danca"],
       &:has([data-modal="natacao"]:hover)      .fatia[data-modal="natacao"] {
-        opacity: 1; filter: brightness(1); transform: scaleY(1.02); flex: 1.6;
+        opacity: 1; transform: scaleY(1.02); flex: 1.6;
       }
     }
 
-    /* ── RESPONSIVIDADE ── */
     @media (max-width: 768px) {
       .actividades {
         grid-template-columns: 135px 1fr;
@@ -774,9 +761,7 @@ main {
           }
         }
         .col-esquerda {
-          #painel {
-            align-items: flex-start;
-          }
+          #painel { align-items: flex-start; }
         }
       }
     }
