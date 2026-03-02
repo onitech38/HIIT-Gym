@@ -17,7 +17,7 @@
     --clr-2: #B9CFD4;
     --clr-3: #120D0F;
     --clr-4: #fba002;
-    --clr-transp: #120d0f71;
+    --clr-transp: #120d0f31;
     --blur: blur(1.5px);
     --backdrop-filter: blur(5px);
     --glass-frost: 5px;
@@ -150,11 +150,10 @@
     cursor: pointer; 
     list-style: none; 
     color: var(--clr-4); 
-    background: var(--clr-transp); 
-    backdrop-filter: blur(var(--blur));
-    -webkit-backdrop-filter: blur(var(--glass-frost));
+    background: none; 
+    backdrop-filter: var(--blur);
     border-radius: var(--border-radius);
-    border: var(--border-size) var(--clr-2);
+    border: var(--border-size) var(--clr-4);
     transition: color var(--tempo) ease, background var(--tempo) ease, box-shadow var(--tempo) ease, border-color var(--tempo) ease, transform var(--tempo) ease, backdrop-filter var(--tempo) ease;
     
     * { fill: var(--clr-4); }
@@ -216,14 +215,14 @@
     }
   }
 
-  button.icon, .btn.icon {
+  .button.icon.glass, .btn.icon.glass {
     padding: calc(0.275rem + var(--font-size)) var(--font-size);
 
     * { font-size: var(--icon-size) !important; width: auto !important; 
       font-weight: var(--font-weight) !important;
       margin-inline: .5rem; font-size: var(--font-size); place-items: center;
     }
-    &:hover { box-shadow: var(--bx-sdw); * { fill: var(--clr-3) !important; } }
+    &:hover { * { fill: var(--clr-3) !important; } }
     &:active { transform: scale(0.95); color: var(--clr-2); background: var(--clr-4); }
     &:focus-visible { outline: var(--border-size) var(--clr-5); outline-offset: 2px; }
   }
