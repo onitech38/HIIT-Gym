@@ -8,15 +8,25 @@
     <meta property="og:description" content="O teu ginásio HIIT em Montijo.">
     <meta property="og:image" content="/src/og-image.jpg">
     <meta property="og:type" content="website">
+    <meta name="description" content="Uma academia desportiva à disposição de todos completa com diversas modalidades">
 
-    <meta name="description" content="Uma academia desportiva à disposição de todos  completa com diversas modalidades">
-    <title> Hiit-Gym - A academia disportiva completa </title>  
-    <link rel="icon" type="image/x-icon" href="/src/logo/favicon.svg"> 
-    
+    <title>Hiit-Gym - A academia desportiva completa</title>
+    <link rel="icon" type="image/x-icon" href="/src/logo/favicon.svg">
+
+    <!-- 1. Preloads primeiro — avisam o browser o mais cedo possível -->
+    <link rel="preload" href="src/pexels-dimkidama-6796964 (1).webp" as="image">
+    <link rel="preload" href="style.css?v=1.0.0" as="style">
+    <link rel="preload" href="/script.js?v=1.0.0" as="script">
+
+    <!-- 2. Fontes -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Jost:ital,wght@0,100..900;1,100..900&family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Saira:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <!-- 3. Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw==" crossorigin="anonymous" referrerpolicy="no-referrer">
+
+    <!-- 4. O teu CSS — mesma versão que o preload -->
     <link rel="stylesheet" href="style.css?v=1.0.0">
 </head>
 <body id="home">
@@ -339,7 +349,16 @@
             </filter>
         </defs>
     </svg>
-    
-    <script src="script.js"></script>
+  
+    <script src="/script.js?v=1.0.0"></script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+            navigator.serviceWorker.register('/sw.js')
+                .then(() => console.log('SW: ativo'))
+                .catch(err => console.warn('SW: erro', err));
+            });
+        }
+    </script>
 </body>
 </html>
