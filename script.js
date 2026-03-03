@@ -1,4 +1,167 @@
 // ============================================
+// FONTE DE VERDADE — edita só aqui
+// ============================================
+const coaches = {
+  carlos: { 
+    nome: 'Carlos Silva',     
+    avatar: 'src/coaches/carlos.jpg',    
+    card: 'src/equipa/carlos_card.jpg',    
+    modalidades: ['musculacao'] 
+  },
+
+  ana: { 
+    nome: 'Ana Costa',        
+    avatar: 'src/coaches/ana.jpg',        
+    card: 'src/equipa/ana_card.jpg',        
+    modalidades: ['musculacao'] 
+  },
+
+  rafael: { 
+    nome: 'Rafael Mendes',    
+    avatar: 'src/coaches/rafael.jpg',     
+    card: 'src/equipa/rafael_card.jpg',     
+    modalidades: ['musculacao'] 
+  },
+
+  maria: { 
+    nome: 'Maria Oliveira',   
+    avatar: 'src/coaches/maria.jpg',      
+    card: 'src/equipa/maria_card.jpg',      
+    modalidades: ['cardio', 'zumba_danca'] 
+  },
+
+  joao: { 
+    nome: 'João Pereira',     
+    avatar: 'src/coaches/joao.jpg',       
+    card: 'src/equipa/joao_card.jpg',       
+    modalidades: ['cardio', 'zumba_danca'] 
+  },
+
+  sofia: { 
+    nome: 'Sofia Almeida',    
+    avatar: 'src/coaches/sofia.jpg',      
+    card: 'src/equipa/sofia_card.jpg',      
+    modalidades: ['yoga_pilates'] 
+  },
+
+  pedro: { 
+    nome: 'Pedro Santos',     
+    avatar: 'src/coaches/pedro.jpg',      
+    card: 'src/equipa/pedro_card.jpg',      
+    modalidades: ['yoga_pilates'] 
+  },
+
+  claudia: { 
+    nome: 'Cláudia Ferreira', 
+    avatar: 'src/coaches/claudia.jpg',    
+    card: 'src/equipa/claudia_card.jpg',    
+    modalidades: ['yoga_pilates'] },
+
+  tiago: { 
+    nome: 'Tiago Ribeiro',    
+    avatar: 'src/coaches/tiago.jpg',      
+    card: 'src/equipa/tiago_card.jpg',     
+     modalidades: ['yoga_pilates'] 
+  },
+
+  ines: { 
+    nome: 'Inês Martins',     
+    avatar: 'src/coaches/ines.jpg',       
+    card: 'src/equipa/ines_card.jpg',       
+    modalidades: ['yoga_pilates'] 
+  },
+
+  fernando: { 
+    nome: 'Fernando Gomes',   
+    avatar: 'src/coaches/fernando.jpg',   
+    card: 'src/equipa/fernando_card.jpg',   
+    modalidades: ['lutas'] 
+  },
+
+  patricia: { 
+    nome: 'Patrícia Lima',    
+    avatar: 'src/coaches/patricia.jpg',   
+    card: 'src/equipa/patricia_card.jpg',   
+    modalidades: ['lutas'] 
+  },
+
+  ricardo: { 
+    nome: 'Ricardo Alves',    
+    avatar: 'src/coaches/ricardo.jpg',    
+    card: 'src/equipa/ricardo_card.jpg',    
+    modalidades: ['lutas'] 
+  },
+
+  andre: { 
+    nome: 'André Sousa',      
+    avatar: 'src/coaches/andre.jpg',      
+    card: 'src/equipa/andre_card.jpg',      
+    modalidades: ['natacao'] 
+  },
+
+  fernanda: {
+     nome: 'Fernanda Rocha',   
+    avatar: 'src/coaches/fernanda.jpg',   
+    card: 'src/equipa/fernanda_card.jpg',   
+    modalidades: ['natacao'] 
+  },
+
+  lucas: { 
+    nome: 'Lucas Dias',       
+    avatar: 'src/coaches/lucas.jpg',      
+    card: 'src/equipa/lucas_card.jpg',      
+    modalidades: ['natacao'] 
+  },
+
+};
+
+const modalidadesData = {
+  musculacao: {
+    titulo:    'Musculação',
+    dias:      'Todos os dias',
+    horas:     '06h00 – 22h00',
+    descricao: 'Treino de força com pesos e equipamentos, adaptado para desenvolver massa muscular e resistência, com orientação de treinador para garantir a técnica correta e maximizar resultados.',
+    coaches:   ['carlos', 'ana', 'rafael'],
+  },
+  cardio: {
+    titulo:    'Cardio',
+    dias:      'Todos os dias',
+    horas:     '07h00 – 21h00',
+    descricao: 'Atividades aeróbicas como corrida, CROSS-FIT, ciclismo e spinning, personalizadas em intensidade e duração, com suporte de profissionais para monitorar o teu progresso.',
+    coaches:   ['maria', 'joao'],
+  },
+  yoga_pilates: {
+    titulo:    'Yoga & Pilates',
+    dias:      '2ª, 4ª e 6ª feira',
+    horas:     '17h00 – 19h30',
+    descricao: 'Prática que combina posturas físicas, respiração e meditação, adaptada ao teu nível de experiência, com instrutores que oferecem acompanhamento individualizado.',
+    coaches:   ['sofia', 'pedro', 'claudia', 'tiago', 'ines'],
+  },
+  lutas: {
+    titulo:    'Lutas e Artes Marciais',
+    dias:      '2ª feira a sábado',
+    horas:     '19h00 – 20h30',
+    descricao: 'Aulas de boxe, jiu-jitsu, muay thai ou karaté, ajustadas ao teu nível e objetivos, com treinadores que oferecem suporte e feedback constante.',
+    coaches:   ['fernando', 'patricia', 'ricardo'],
+  },
+  zumba_danca: {
+    titulo:    'Zumba e Danças',
+    dias:      '3ª e 5ª feira',
+    horas:     '20h00 – 21h30',
+    descricao: 'Aulas energéticas com ritmos latinos e coreografias divertidas, perfeitas para perder calorias num ambiente descontraído e motivador.',
+    coaches:   ['maria', 'joao'],
+  },
+  natacao: {
+    titulo:    'Natação',
+    dias:      '2ª, 4ª e 6ª feira',
+    horas:     '08h00 – 20h00',
+    descricao: 'Aulas para todos os níveis na nossa piscina semi-olímpica aquecida. Treinos personalizados para melhorar técnica, resistência e velocidade.',
+    coaches:   ['andre', 'fernanda', 'lucas'],
+  }
+};
+
+
+// ============================================
 // MAP
 // ============================================
 const mapDetails = document.querySelector('#map');
@@ -32,61 +195,6 @@ document.addEventListener('click', (e) => {
 
 
 // ============================================
-// DADOS DE CADA MODALIDADE — edita aqui!
-// ============================================
-const modalidadesData = {
-  musculacao: {
-    titulo:    'Musculação',
-    dias:      'Todos os dias',
-    horas:     '06h00 – 22h00',
-    descricao: 'Treino de força com pesos e equipamentos, adaptado para desenvolver massa muscular e resistência, com orientação de treinador para garantir a técnica correta e maximizar resultados.',
-    coaches:    ['Carlos Silva', 'Ana Costa', 'Rafael Mendes'],
-    coachFotos: ['src/coaches/carlos.jpg', 'src/coaches/ana.jpg', 'src/coaches/rafael.jpg']
-  },
-  cardio: {
-    titulo:    'Cardio',
-    dias:      'Todos os dias',
-    horas:     '07h00 – 21h00',
-    descricao: 'Atividades aeróbicas como corrida, CROSS-FIT, ciclismo e spinning, personalizadas em intensidade e duração, com suporte de profissionais para monitorar o teu progresso.',
-    coaches:    ['Maria Oliveira', 'João Pereira'],
-    coachFotos: ['src/coaches/maria.jpg', 'src/coaches/joao.jpg']
-  },
-  yoga_pilates: {
-    titulo:    'Yoga & Pilates',
-    dias:      '2ª, 4ª e 6ª feira',
-    horas:     '17h00 – 19h30',
-    descricao: 'Prática que combina posturas físicas, respiração e meditação, adaptada ao teu nível de experiência, com instrutores que oferecem acompanhamento individualizado.',
-    coaches:    ['Sofia Almeida', 'Pedro Santos', 'Cláudia Ferreira', 'Tiago Ribeiro', 'Inês Martins'],
-    coachFotos: ['src/coaches/sofia.jpg', 'src/coaches/pedro.jpg', 'src/coaches/claudia.jpg', 'src/coaches/tiago.jpg', 'src/coaches/ines.jpg']
-  },
-  lutas: {
-    titulo:    'Lutas e Artes Marciais',
-    dias:      '2ª feira a sábado',
-    horas:     '19h00 – 20h30',
-    descricao: 'Aulas de boxe, jiu-jitsu, muay thai ou karaté, ajustadas ao teu nível e objetivos, com treinadores que oferecem suporte e feedback constante.',
-    coaches:    ['Fernando Gomes', 'Patrícia Lima', 'Ricardo Alves'],
-    coachFotos: ['src/coaches/fernando.jpg', 'src/coaches/patricia.jpg', 'src/coaches/ricardo.jpg']
-  },
-  zumba_danca: {
-    titulo:    'Zumba e Danças',
-    dias:      '3ª e 5ª feira',
-    horas:     '20h00 – 21h30',
-    descricao: 'Aulas energéticas com ritmos latinos e coreografias divertidas, perfeitas para perder calorias num ambiente descontraído e motivador.',
-    coaches:    ['Maria Oliveira', 'João Pereira'],
-    coachFotos: ['src/coaches/maria.jpg', 'src/coaches/joao.jpg']
-  },
-  natacao: {
-    titulo:    'Natação',
-    dias:      '2ª, 4ª e 6ª feira',
-    horas:     '08h00 – 20h00',
-    descricao: 'Aulas para todos os níveis na nossa piscina semi-olímpica aquecida. Treinos personalizados para melhorar técnica, resistência e velocidade.',
-    coaches:    ['André Sousa', 'Fernanda Rocha', 'Lucas Dias'],
-    coachFotos: ['src/coaches/andre.jpg', 'src/coaches/fernanda.jpg', 'src/coaches/lucas.jpg']
-  }
-};
-
-
-// ============================================
 // REFERÊNCIAS DOM
 // ============================================
 const imagemEl    = document.getElementById('imagem-principal');
@@ -95,29 +203,26 @@ const escolhas    = document.getElementById('escolhas');
 const painel      = document.getElementById('painel');
 const todasFatias = document.querySelectorAll('.fatia');
 
-// Coaches do estado idle — calculados uma vez
-const todosFotos = Object.values(modalidadesData).flatMap(m => m.coachFotos).slice(0, 8);
-const todosNomes = Object.values(modalidadesData).flatMap(m => m.coaches).slice(0, 8);
+const todosCoachKeys = Object.keys(coaches).slice(0, 8);
 
 
 // ============================================
 // HELPERS
 // ============================================
-function renderCoaches(coaches, fotos = []) {
-  const container = document.getElementById('coaches-row');
-  const getIniciais = (n) => n.split(' ').map(i => i[0]).join('').slice(0, 2).toUpperCase();
+const getIniciais = (n) => n.split(' ').map(i => i[0]).join('').slice(0, 2).toUpperCase();
 
-  container.innerHTML = coaches.map((nome, i) => {
-    const foto = fotos[i] || '';
-    const popId = `pop-coach-${i}`;
+function renderCoaches(coachKeys) {
+  const container = document.getElementById('coaches-row');
+  container.innerHTML = coachKeys.map(key => {
+    const c = coaches[key];
     return `
-      <div class="coach-wrapper" style="position:relative;display:inline-block;">
+      <div class="coach-wrapper">
         <button class="coach-avatar"
-                popovertarget="${popId}"
-                style="${foto ? `background-image:url('${foto}')` : ''}">
-          ${foto ? '' : getIniciais(nome)}
+                ${c.avatar ? `style="background-image:url('${c.avatar}')"` : ''}
+                aria-label="${c.nome}">
+          ${c.avatar ? '' : getIniciais(c.nome)}
         </button>
-        <div id="${popId}" popover class="coach-popover">${nome}</div>
+        <span class="coach-tooltip">${c.nome}</span>
       </div>`;
   }).join('');
 }
@@ -143,7 +248,7 @@ function estado1() {
   limparFatias();
   descEl.textContent = '';
   descEl.classList.remove('visivel');
-  renderCoaches(todosNomes, todosFotos);
+  renderCoaches(todosCoachKeys);
 }
 
 
@@ -152,11 +257,9 @@ function estado1() {
 // ============================================
 function estado3(key) {
   const d = modalidadesData[key];
-
-  pararVideos();
-
+  limparFatias();
   imagemEl.classList.add('ativo');
-  todasFatias.forEach(f => f.classList.remove('selecionada'));
+
   const fatiaAlvo = imagemEl.querySelector(`.fatia[data-modal="${key}"]`);
   if (fatiaAlvo) {
     fatiaAlvo.classList.add('selecionada');
@@ -168,14 +271,13 @@ function estado3(key) {
   document.getElementById('painel-horarios-bloco').innerHTML =
     `<span>${d.dias}</span><span>${d.horas}</span>`;
   document.getElementById('painel-coaches-lista').innerHTML =
-    d.coaches.map(c => `<li>${c}</li>`).join('');
+    d.coaches.map(k => `<li>${coaches[k].nome}</li>`).join('');
 
   escolhas.classList.add('hidden');
   painel.classList.remove('hidden');
-
   descEl.textContent = d.descricao;
   descEl.classList.add('visivel');
-  renderCoaches(d.coaches, d.coachFotos);
+  renderCoaches(d.coaches);
 }
 
 
@@ -192,12 +294,35 @@ document.getElementById('painel-fechar').addEventListener('click', e => {
 
 // ============================================
 // EVENTOS NOS CARDS
-// Hover: só CSS :has() — zero JS, zero DOM manipulation
-// Click: estado3
 // ============================================
 document.querySelectorAll('.modalidade-item').forEach(item => {
   item.addEventListener('click', () => estado3(item.dataset.modal));
 });
+
+
+// ============================================
+// EQUIPA — carrossel
+// ============================================
+const equipaTrack = document.getElementById('equipa-track');
+
+equipaTrack.innerHTML = Object.values(coaches).map(c => `
+  <div class="equipa-card"
+       ${c.card ? `style="background-image:url('${c.card}')"` : ''}>
+    ${!c.card ? `<span class="equipa-card-iniciais">${getIniciais(c.nome)}</span>` : ''}
+    <div class="equipa-info">
+      <span class="equipa-nome">${c.nome}</span>
+      <span class="equipa-tags">${c.modalidades.map(m => modalidadesData[m].titulo).join(' · ')}</span>
+    </div>
+  </div>
+`).join('');
+
+const scrollPorCard = () => equipaTrack.querySelector('.equipa-card')?.offsetWidth + 16 || 300;
+
+document.getElementById('equipa-prev')
+  .addEventListener('click', () => equipaTrack.scrollBy({ left: -scrollPorCard(), behavior: 'smooth' }));
+
+document.getElementById('equipa-next')
+  .addEventListener('click', () => equipaTrack.scrollBy({ left: scrollPorCard(), behavior: 'smooth' }));
 
 
 // ============================================
