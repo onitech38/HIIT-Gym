@@ -11,7 +11,7 @@
     <meta name="description" content="Uma academia desportiva à disposição de todos completa com diversas modalidades">
 
     <title>Hiit-Gym - A academia desportiva completa</title>
-    <link rel="icon" type="image/svg+xml" href="/src/logo/favicon.svg">
+    <link rel="icon" type="image/svg+xml" href="src/logo/favicon.svg">
 
     <!-- 1. Preloads primeiro — avisam o browser o mais cedo possível -->
     <link rel="preload" href="src/modalidades/pexels-dimkidama-6796964 (1).webp" as="image">
@@ -46,26 +46,28 @@
         </div>
     </aside>
 
-    <a class="logo btn" href="#home" aria-label="Logotipo do site">
-        <img src="src/logo/logo_def1.svg" alt="Hiit-Gym">
-    </a>
+    <aside class="q_a">
+        <a class="btn to_top icon-small glass" href="#home"><i class="fa-solid fa-arrow-up-from-bracket"></i></a>
 
-    <aside class="q_a btn icon glass"> ? </aside>
+        <button class="chat icon glass"><i class="fa-regular fa-comment-dots fa-flip-horizontal"></i></button>
+    </aside>
     
     <header>
         <img class="bg" src="src/modalidades/pexels-dimkidama-6796964 (1).webp" alt="Imagem de um ginásio">
     
         <nav aria-label="Navegação Principal">
-            <!-- só o summary (hamburger) dentro do details -->
+            <a class="logo btn" href="#home" aria-label="Logotipo do site">
+                <img src="src/logo/logo_def1.svg" alt="Hiit-Gym">
+            </a>
+
             <details class="mobile-nav">
                 <summary class="hamburger btn" aria-label="Abrir menu">
                     <span></span>
                     <span></span>
                     <span></span>
                 </summary>
-            </details>
+            </details>            
 
-            <!-- nav-content é sempre um elemento normal, fora do details -->
             <div class="nav-content glass" aria-label="Conteúdo da navegação">
                 <div class="menu" aria-label="Paginas do site">
                     <a class="link-btn" href="#sobre">sobre</a>
@@ -99,7 +101,7 @@
     
     <details name="map" id="map">
         <summary class="btn icon glass" aria-label="Botão para abrir o mapa">
-            <i class="fa-solid fa-location-crosshairs"></i>
+            <i class="fa-solid fa-arrows-split-up-and-left" ></i>
         </summary>
     
         <section class="local">
@@ -155,9 +157,8 @@
         <section class="modalidades" id="modalidades">
             <h3>As nossas Modalidades</h3>
             <p>Uma academia completa com diversas modalidades para encontrar a actividade perfeita para os teus objectivos e estilo de vida.</p>
-
-            <div class="actividades glass">
-                <!-- COL ESQUERDA -->
+            
+            <div class="actividades golden-border">
                 <div class="col-esquerda">
 
                     <div class="escolhas" id="escolhas">
@@ -222,13 +223,8 @@
 
                 </div>
 
-                <!-- COL DIREITA — fatias com vídeo opcional -->
                 <div class="col-direita">
                     <div class="imagem-principal" id="imagem-principal">
-
-                        <!-- IMAGEM DA MODALIDADE → style="background-image:url('O_TEU_PATH')" -->
-                        <!-- VÍDEO DA MODALIDADE  → src="SEU_PATH_VIDEO" (apaga a tag se não tiver vídeo) -->
-
                         <div class="fatia" data-modal="musculacao"
                              style="background-image:url('src/modalidades/musculacao.jpg')">
                             <video class="fatia-video" src="src/modalidades/videos/musculacao.mp4"
