@@ -4,112 +4,112 @@
 const coaches = {
   carlos: { 
     nome: 'Carlos Silva',     
-    avatar: 'src/coaches/carlos.jpg',    
-    card: 'src/equipa/carlos_card.jpg',    
+    avatar: 'src/coaches/carlos/carlos.jpg',    
+    card: 'src/coaches/carlos/carlos_card.jpg',    
     modalidades: ['musculacao'] 
   },
 
   ana: { 
     nome: 'Ana Costa',        
-    avatar: 'src/coaches/ana.jpg',        
-    card: 'src/equipa/ana_card.jpg',        
+    avatar: 'src/coaches/ana/Ana.jpg',        
+    card: 'src/coaches/ana/ana_card.jpg',        
     modalidades: ['musculacao'] 
   },
 
   rafael: { 
     nome: 'Rafael Mendes',    
-    avatar: 'src/coaches/rafael.jpg',     
-    card: 'src/equipa/rafael_card.jpg',     
+    avatar: 'src/coaches/rafael/rafael.jpg',     
+    card: 'src/coaches/rafael/rafael_card.jpg',     
     modalidades: ['musculacao'] 
   },
 
   maria: { 
     nome: 'Maria Oliveira',   
-    avatar: 'src/coaches/maria.jpg',      
-    card: 'src/equipa/maria_card.jpg',      
+    avatar: 'src/coaches/maria/maria.png',      
+    card: 'src/coaches/maria/maria_card.png',      
     modalidades: ['cardio', 'zumba_danca'] 
   },
 
   joao: { 
     nome: 'João Pereira',     
-    avatar: 'src/coaches/joao.jpg',       
-    card: 'src/equipa/joao_card.jpg',       
+    avatar: 'src/coaches/joao/joao.png',       
+    card: 'src/coaches/joao/joao_card.png',       
     modalidades: ['cardio', 'zumba_danca'] 
   },
 
   sofia: { 
     nome: 'Sofia Almeida',    
-    avatar: 'src/coaches/sofia.jpg',      
-    card: 'src/equipa/sofia_card.jpg',      
+    avatar: 'src/coaches/sofia/sofia.png',      
+    card: 'src/coaches/sofia/sofia_card.',      
     modalidades: ['yoga_pilates'] 
   },
 
   pedro: { 
     nome: 'Pedro Santos',     
-    avatar: 'src/coaches/pedro.jpg',      
-    card: 'src/equipa/pedro_card.jpg',      
+    avatar: 'src/coaches/pedro/pedro.jpg',      
+    card: 'src/coaches/pedro/pedro_card.jpg',      
     modalidades: ['yoga_pilates'] 
   },
 
   claudia: { 
     nome: 'Cláudia Ferreira', 
-    avatar: 'src/coaches/claudia.jpg',    
-    card: 'src/equipa/claudia_card.jpg',    
+    avatar: 'src/coaches/claudia/claudia.jpg',    
+    card: 'src/coaches/claudia/claudia_card.jpg',    
     modalidades: ['yoga_pilates'] },
 
   tiago: { 
     nome: 'Tiago Ribeiro',    
-    avatar: 'src/coaches/tiago.jpg',      
-    card: 'src/equipa/tiago_card.jpg',     
+    avatar: 'src/coaches/tiago/tiago.jpg',      
+    card: 'src/coaches/tiago/tiago_card.jpg',     
      modalidades: ['yoga_pilates'] 
   },
 
   ines: { 
     nome: 'Inês Martins',     
-    avatar: 'src/coaches/ines.jpg',       
-    card: 'src/equipa/ines_card.jpg',       
+    avatar: 'src/coaches/ines/ines.jpg',       
+    card: 'src/coaches/ines/ines_card.jpg',       
     modalidades: ['yoga_pilates'] 
   },
 
   fernando: { 
     nome: 'Fernando Gomes',   
-    avatar: 'src/coaches/fernando.jpg',   
-    card: 'src/equipa/fernando_card.jpg',   
+    avatar: 'src/coaches/fernando/fernando.jpg',   
+    card: 'src/coaches/fernando/fernando_card.jpg',   
     modalidades: ['lutas'] 
   },
 
   patricia: { 
     nome: 'Patrícia Lima',    
-    avatar: 'src/coaches/patricia.jpg',   
-    card: 'src/equipa/patricia_card.jpg',   
+    avatar: 'src/coaches/patricia/patricia.jpg',   
+    card: 'src/coaches/patricia/patricia_card.jpg',   
     modalidades: ['lutas'] 
   },
 
   ricardo: { 
     nome: 'Ricardo Alves',    
-    avatar: 'src/coaches/ricardo.jpg',    
-    card: 'src/equipa/ricardo_card.jpg',    
+    avatar: 'src/coaches/ricardo/ricardo.jpg',    
+    card: 'src/coaches/ricardo/ricardo_card.jpg',    
     modalidades: ['lutas'] 
   },
 
   andre: { 
     nome: 'André Sousa',      
-    avatar: 'src/coaches/andre.jpg',      
-    card: 'src/equipa/andre_card.jpg',      
+    avatar: 'src/coaches/andre/andre.jpg',      
+    card: 'src/coaches/andre/andre_card.jpg',      
     modalidades: ['natacao'] 
   },
 
   fernanda: {
      nome: 'Fernanda Rocha',   
-    avatar: 'src/coaches/fernanda.jpg',   
-    card: 'src/equipa/fernanda_card.jpg',   
+    avatar: 'src/coaches/fernanda/fernanda.jpg',   
+    card: 'src/coaches/fernanda/fernanda_card.jpg',   
     modalidades: ['natacao'] 
   },
 
   lucas: { 
     nome: 'Lucas Dias',       
-    avatar: 'src/coaches/lucas.jpg',      
-    card: 'src/equipa/lucas_card.jpg',      
+    avatar: 'src/coaches/lucas/lucas.jpg',      
+    card: 'src/coaches/lucas/lucas_card.jpg',      
     modalidades: ['natacao'] 
   },
 
