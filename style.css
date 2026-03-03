@@ -49,7 +49,7 @@
     --margin-block-section: 1rem;
     --container-max: 1440px;
     --container-mid: 1024px;
-    --container-height: 92vh;
+    --container-height: 90vh;
     --gap-items: 1.2rem;
     --border-size: 1.5px solid;
     --border-radius: 0.25rem 0.75rem 0.25rem 1.125rem;
@@ -107,7 +107,8 @@
   } 
 
   main, footer { margin-block: var(--margin-block-element); text-align: center; }
-  section, .container {
+  section, .container {    
+    scroll-margin-top: 4rem;
     width: 100%; max-width: var(--container-max);
     padding: 1rem;
     margin-inline: auto; margin-block: var(--margin-block-section);
@@ -301,7 +302,7 @@ header {
   display: grid; align-content: space-between; z-index: 3;
 
   .bg {
-    position: absolute; height: calc(var(--container-height) - 50px);
+    position: absolute; height: calc(var(--container-height) - 10px);
     top: 0; left: 0; z-index: -1;
     border-radius: 0 0 4px 18px; box-shadow: var(--bx-sdw); filter: brightness(0.5);
   }
@@ -362,7 +363,7 @@ header {
 
 #map {
   position: relative; width: 100%; padding-inline: 1rem; margin-inline: auto;
-  max-width: var(--container-mid); transform: translateY(-80px);
+  max-width: var(--container-mid); transform: translateY(-2.5rem);
   display: grid; justify-items: stretch; z-index: 10; gap: 1rem;
 
   summary {
@@ -394,12 +395,13 @@ header {
 
 main {
   position: relative; margin-inline: auto; margin-block: 2rem;
-  width: 100%; max-width: 1440px;
+  width: 100%;
   display: grid; place-items: center; gap: 5rem; z-index: 3;
 
   .sobre {
-    scroll-margin-top: 3rem;
-    min-height: var(--container-height); margin-top: -8rem; padding: 1rem;
+    scroll-margin-top: 6rem;
+    min-height: calc(var(--container-height) - 18px); max-width: stretch;
+    margin-top: -6rem; padding: 1rem;
     display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: var(--gap-items);
     border-radius: var(--border-radius); color: var(--clr-1); overflow: hidden;
     * { text-align: start; }
@@ -424,10 +426,12 @@ main {
   }
 
   .modalidades {
+    width: 100%; max-height: var(--container-height);
     .actividades {
-      width: 100%; display: grid;
+      width: 100%;
+      display: grid;
       grid-template-columns: 280px 1fr;
-      gap: 2rem; align-items: stretch; min-height: 520px;
+      gap: 2rem; align-items: stretch; min-height: 420px;
 
       .col-esquerda {
         display: flex; flex-direction: column; position: relative;
