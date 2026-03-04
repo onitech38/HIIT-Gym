@@ -116,7 +116,8 @@
     scroll-margin-top: 2rem;
     width: 100%; max-width: var(--container-max);
     padding: 1rem;
-    margin-inline: auto; margin-block: var(--margin-block-section);
+    margin-inline: auto; 
+    /* margin-block: var(--margin-block-section); */
     display: grid; gap: var(--gap-items);
     place-items: center; text-align: center;
 
