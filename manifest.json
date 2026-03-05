@@ -1,0 +1,35 @@
+{
+  "name": "HIIT-Gym Montijo",
+  "short_name": "HIIT-Gym",
+  "description": "A academia desportiva completa de Montijo. Treina mais, vive melhor.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#120D0F",
+  "theme_color": "#fba002",
+  "lang": "pt-PT",
+  "icons": [
+    {
+      "src": "src/logo/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["health", "fitness", "sports"],
+  "shortcuts": [
+    {
+      "name": "O meu Perfil",
+      "short_name": "Perfil",
+      "url": "/user/user.html",
+      "icons": [{ "src": "src/logo/favicon.svg", "sizes": "any" }]
+    },
+    {
+      "name": "Blog",
+      "short_name": "Blog",
+      "url": "/blog/blog.html",
+      "icons": [{ "src": "src/logo/favicon.svg", "sizes": "any" }]
+    }
+  ]
+}

@@ -445,40 +445,6 @@ const modalidadesData = {
   }
 };
 
-
-// ============================================
-// MAP
-// ============================================
-const mapDetails = document.querySelector('#map');
-const mapSummary = document.querySelector('#map summary');
-const mapLocal   = document.querySelector('#map .local');
-
-function fecharMapa() {
-  mapLocal.classList.add('closing');
-  setTimeout(() => {
-    mapLocal.classList.remove('closing');
-    mapDetails.removeAttribute('open');
-  }, 350);
-}
-
-mapSummary.addEventListener('click', (e) => {
-  if (mapDetails.open) {
-    e.preventDefault();
-    fecharMapa();
-  } else {
-    setTimeout(() => {
-      mapDetails.scrollIntoView({ behavior: 'smooth' });
-    }, 50);
-  }
-});
-
-document.addEventListener('click', (e) => {
-  if (mapDetails.open && !mapDetails.contains(e.target)) {
-    fecharMapa();
-  }
-});
-
-
 // ============================================
 // REFERÊNCIAS DOM
 // ============================================

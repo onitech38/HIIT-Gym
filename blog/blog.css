@@ -1,0 +1,374 @@
+/* ============================================
+   BLOG.CSS
+   Depende de style.css: variáveis, .btn, .glass,
+   .hidden, .link-btn, .golden-border, tipografia
+
+   BUGS CORRIGIDOS (iguais ao user.css):
+   1. section { opacity:0 } de style.css
+      Fix: body#blog-page section { animation:none }
+   2. header { height: 100svh } de style.css
+      Fix: header.blog-header { height: auto }
+
+   TRUQUE CSS — filtros sem JS:
+   5 <input type="radio" class="filter-radio"> no
+   <body> antes de .blog-filters-section e
+   .blog-grid → são irmãos deles via ~.
+   ============================================ */
+
+/* ── RESET DE BUGS DO STYLE.CSS ─────────────── */
+body#blog-page section {
+  animation: none !important;
+  opacity: 1 !important;
+  transform: none !important;
+}
+
+body#blog-page header.blog-header {
+  height: auto !important;
+}
+
+/* ── RADIO INPUTS (filtros — invisíveis) ─────── */
+.filter-radio { display: none !important; }
+
+/* ── PÁGINA ──────────────────────────────────── */
+body#blog-page {
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+
+  /* ── Header ─────────────────────────────────
+     nav herda tudo de style.css automaticamente.
+     Só mudamos height e posição.
+  ── */
+  & header.blog-header {
+    height: auto;
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: var(--clr-3);
+    border-bottom: 1.5px solid rgba(251, 160, 2, 0.15);
+
+    & nav {
+      padding: 0.75rem 1rem;
+
+      & .active-page {
+        color: var(--clr-4) !important;
+        opacity: 1;
+      }
+    }
+  }
+
+  /* ── Hero ─────────────────────────────────── */
+  & .blog-hero {
+    min-height: 45svh;
+    display: flex;
+    align-items: flex-end;
+    padding: 3rem 1rem 4rem;
+    max-width: var(--container-max);
+    margin-inline: auto;
+    width: 100%;
+
+    & .blog-hero-content {
+      max-width: 600px;
+
+      & .blog-eyebrow {
+        display: block;
+        font-size: 0.72rem;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--clr-4);
+        margin-bottom: 0.75rem;
+      }
+
+      & h1 {
+        font-size: clamp(2.5rem, 5vw, 5rem);
+        color: var(--clr-1);
+        text-align: start;
+        line-height: 1.1;
+        letter-spacing: -0.01em;
+        margin-bottom: 0.75rem;
+
+        & span { color: var(--clr-4); font-style: italic; }
+      }
+
+      & p {
+        font-size: 1rem;
+        color: var(--clr-2);
+        opacity: 0.8;
+        text-align: start;
+      }
+    }
+  }
+
+  /* ── Artigo em destaque ──────────────────── */
+  /* .glass herdado de style.css */
+  & .blog-featured {
+    max-width: var(--container-max);
+    margin-inline: auto;
+    padding-inline: 1rem;
+    margin-bottom: 3rem;
+
+    & .featured-card {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      min-height: 380px;
+      overflow: hidden;
+
+      @media (max-width: 700px) { grid-template-columns: 1fr; }
+    }
+
+    & .featured-img {
+      position: relative;
+      background-size: cover;
+      background-position: center;
+      min-height: 300px;
+    }
+
+    & .featured-body {
+      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 1rem;
+
+      & h2 {
+        font-size: clamp(1.1rem, 2vw, 1.6rem);
+        color: var(--clr-1);
+        text-align: start;
+        line-height: 1.35;
+      }
+
+      & p {
+        font-size: 0.85rem;
+        color: var(--clr-2);
+        opacity: 0.8;
+        text-align: start;
+        line-height: 1.7;
+      }
+    }
+  }
+
+  /* ── Filtros ─────────────────────────────── */
+  & .blog-filters-section {
+    max-width: var(--container-max);
+    margin-inline: auto;
+    padding-inline: 1rem;
+    margin-bottom: 2rem;
+
+    & .blog-filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+  }
+
+  /* ── Grid de artigos ─────────────────────── */
+  & .blog-grid {
+    max-width: var(--container-max);
+    margin-inline: auto;
+    padding-inline: 1rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 4rem;
+
+    & .article-card {
+      border: 1.5px solid rgba(251, 160, 2, 0.08);
+      background: rgba(18, 13, 15, 0.5);
+      transition: transform var(--tempo) ease, border-color var(--tempo) ease;
+      overflow: hidden;
+
+      &:hover {
+        transform: translateY(-4px);
+        border-color: rgba(251, 160, 2, 0.25);
+      }
+
+      & .article-img {
+        position: relative;
+        height: 200px;
+        background-size: cover;
+        background-position: center;
+
+        &::after {
+          content: '';
+          position: absolute;
+          inset: 0;
+          background: linear-gradient(to bottom, transparent 50%, rgba(18,13,15,0.5));
+        }
+      }
+
+      & .article-body {
+        padding: 1.25rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.65rem;
+
+        & h3 {
+          font-size: clamp(0.9rem, 1.5vw, 1.05rem);
+          color: var(--clr-1);
+          text-align: start;
+          line-height: 1.4;
+          letter-spacing: 0.02em;
+        }
+
+        & p {
+          font-size: 0.8rem;
+          color: var(--clr-2);
+          opacity: 0.75;
+          text-align: start;
+          line-height: 1.7;
+          margin: 0;
+        }
+
+        /* Herda .link-btn de style.css */
+        & .article-read-more {
+          align-self: flex-start;
+          font-size: 0.75rem !important;
+          color: var(--clr-4) !important;
+          opacity: 0.8;
+          padding: 0 !important;
+          border: none !important;
+
+          &:hover { opacity: 1; }
+        }
+      }
+    }
+  }
+
+  /* ── Newsletter ──────────────────────────── */
+  /* .glass herdado de style.css */
+  & .blog-newsletter {
+    max-width: 680px;
+    margin-inline: auto;
+    margin-block: 1rem 4rem;
+    padding: 2.5rem;
+    border: 1.5px solid rgba(251, 160, 2, 0.15);
+    text-align: center;
+
+    & .newsletter-content {
+      & h3 {
+        font-size: clamp(1.1rem, 2vw, 1.5rem);
+        color: var(--clr-1);
+        margin-bottom: 0.5rem;
+
+        & i { color: var(--clr-4); margin-right: 0.5rem; }
+      }
+
+      & p {
+        font-size: 0.85rem;
+        color: var(--clr-2);
+        opacity: 0.75;
+      }
+    }
+
+    & .newsletter-form {
+      display: flex;
+      gap: 0.75rem;
+      margin-block: 1.25rem;
+      flex-wrap: wrap;
+      justify-content: center;
+
+      /* botão herda .btn .glass de style.css */
+      & input[type="email"] {
+        flex: 1;
+        min-width: 200px;
+        padding: 0.65rem 1rem;
+        background: rgba(18,13,15,0.6);
+        border: 1.5px solid rgba(185,207,212,0.1);
+        border-bottom-color: rgba(251,160,2,0.35);
+        border-radius: 0.25rem 0.5rem 0.25rem 0.75rem;
+        color: var(--clr-1);
+        font-family: var(--fnt-body);
+        font-size: 0.9rem;
+        outline: none;
+        transition: border-color var(--tempo) ease;
+
+        &:focus { border-color: var(--clr-4); }
+        &::placeholder { color: var(--clr-2); opacity: 0.4; }
+      }
+    }
+
+    & .newsletter-nota {
+      font-size: 0.68rem;
+      color: var(--clr-2);
+      opacity: 0.4;
+      letter-spacing: 0.04em;
+    }
+  }
+}
+
+/* ── FILTRO ACTIVO (CSS-only) ────────────────── */
+/* Botão de filtro — estilo pill (não herda .btn) */
+.filter-btn {
+  padding: 0.45rem 1.1rem;
+  border-radius: 100px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--clr-2);
+  border: 1.5px solid rgba(185, 207, 212, 0.15);
+  background: transparent;
+  cursor: pointer;
+  opacity: 0.6;
+  transition: opacity var(--tempo) ease,
+              border-color var(--tempo) ease,
+              color var(--tempo) ease,
+              background var(--tempo) ease;
+
+  &:hover {
+    opacity: 0.9;
+    border-color: rgba(251, 160, 2, 0.3);
+    color: var(--clr-1);
+  }
+}
+
+/* Tab activa */
+#filter-todos:checked    ~ .blog-filters-section label[for="filter-todos"],
+#filter-treino:checked   ~ .blog-filters-section label[for="filter-treino"],
+#filter-nutricao:checked ~ .blog-filters-section label[for="filter-nutricao"],
+#filter-saude:checked    ~ .blog-filters-section label[for="filter-saude"],
+#filter-novidade:checked ~ .blog-filters-section label[for="filter-novidade"] {
+  background: var(--clr-4);
+  color: var(--clr-3);
+  border-color: var(--clr-4);
+  opacity: 1;
+}
+
+/* Esconde artigos fora da categoria */
+#filter-treino:checked   ~ .blog-grid .article-card:not(.cat-treino)   { display: none; }
+#filter-nutricao:checked ~ .blog-grid .article-card:not(.cat-nutricao) { display: none; }
+#filter-saude:checked    ~ .blog-grid .article-card:not(.cat-saude)    { display: none; }
+#filter-novidade:checked ~ .blog-grid .article-card:not(.cat-novidade) { display: none; }
+
+/* ── COMPONENTES PARTILHADOS ─────────────────── */
+
+/* Meta de artigo */
+.article-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.68rem;
+  color: var(--clr-2);
+  opacity: 0.55;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+/* Badge de categoria na imagem */
+.article-category {
+  position: absolute;
+  top: 0.75rem;
+  left: 0.75rem;
+  padding: 0.2rem 0.65rem;
+  border-radius: 100px;
+  font-size: 0.62rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  z-index: 2;
+
+  &.cat-treino-label   { background: rgba(251,160,2,0.9);   color: #120D0F; }
+  &.cat-nutricao-label { background: rgba(100,200,120,0.9); color: #120D0F; }
+  &.cat-saude-label    { background: rgba(100,150,220,0.9); color: #fff; }
+  &.cat-novidade-label { background: rgba(200,100,200,0.9); color: #fff; }
+}

@@ -115,3 +115,80 @@ self.addEventListener('fetch', event => {
     return;
   }
 });
+
+/* ============================================
+   HIIT-GYM — SERVICE WORKER
+   
+   O que faz:
+   - "Instala" o site no telefone/pc como uma App
+   - Guarda cópias das páginas (cache) para 
+     funcionar mesmo sem internet
+   ============================================ */
+
+const CACHE_NAME = 'hiitgym-v1.0';
+
+// Ficheiros a guardar em cache na instalação
+const STATIC_ASSETS = [
+  '/',
+  '/index.html',
+  '/style.css',
+  '/script.js',
+  '/auth.css',
+  '/manifest.json',
+  '/user/user.html',
+  '/user/user.css',
+  '/user/user.js',
+  '/blog/blog.html',
+  '/blog/blog.css',
+  '/src/logo/logo_def1.svg',
+  '/src/logo/favicon.svg'
+];
+
+// INSTALAR: guarda os ficheiros no cache
+self.addEventListener('install', e => {
+  e.waitUntil(
+    caches.open(CACHE_NAME)
+      .then(cache => {
+        // Tenta guardar cada ficheiro; se algum falhar, não bloqueia
+        return Promise.allSettled(
+          STATIC_ASSETS.map(url => cache.add(url).catch(() => null))
+        );
+      })
+      .then(() => self.skipWaiting())
+  );
+});
+
+// ACTIVAR: remove caches antigas de versões anteriores
+self.addEventListener('activate', e => {
+  e.waitUntil(
+    caches.keys()
+      .then(keys =>
+        Promise.all(keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k)))
+      )
+      .then(() => self.clients.claim())
+  );
+});
+
+// FETCH: estratégia cache-first com fallback para rede
+// Ou seja: tenta o cache primeiro; se não tiver, vai à internet
+self.addEventListener('fetch', e => {
+  if (e.request.method !== 'GET') return;
+  
+  // Não interceptar pedidos a fontes externas (Google Fonts, CDN, etc.)
+  const url = new URL(e.request.url);
+  if (url.origin !== self.location.origin) return;
+
+  e.respondWith(
+    caches.match(e.request)
+      .then(cached => {
+        if (cached) return cached;
+        return fetch(e.request).then(response => {
+          // Guarda no cache para a próxima vez
+          const clone = response.clone();
+          caches.open(CACHE_NAME).then(c => c.put(e.request, clone));
+          return response;
+        });
+      })
+      .catch(() => caches.match('/index.html'))
+  );
+});

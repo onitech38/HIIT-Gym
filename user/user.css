@@ -1,0 +1,771 @@
+/* ============================================
+   USER.CSS
+   Depende de style.css: variáveis, .btn, .glass,
+   .hidden, .golden-border, tipografia
+   Depende de auth.css: .campo, .campos-row, .opt,
+   .form-error
+
+   BUGS CORRIGIDOS:
+   1. style.css → section { animation: reveal;
+      opacity:0 } — scroll-driven animation que
+      nunca dispara em páginas sem scroll longo.
+      Fix: body#user-page section { animation:none }
+   2. style.css → header { height: 100svh }
+      aplica-se a todos os headers.
+      Fix: header.user-header { height: auto }
+      com !important para ganhar especificidade.
+
+   TRUQUE CSS — tabs sem JS:
+   5 <input type="radio" class="tab-radio"> no
+   topo do <body>, antes de .user-wrapper.
+   São irmãos de .user-wrapper via ~.
+   ============================================ */
+
+/* ── RESET DE BUGS DO STYLE.CSS ─────────────── */
+
+/* BUG 1: cancela a scroll-driven animation que
+   mantém as secções em opacity:0 */
+body#user-page section {
+  animation: none !important;
+  opacity: 1 !important;
+  transform: none !important;
+}
+
+/* BUG 2: o header global tem height:100svh;
+   aqui forçamos auto para não cobrir a página */
+body#user-page header.user-header {
+  height: auto !important;
+}
+
+/* ── RADIO INPUTS (tabs — invisíveis) ───────── */
+.tab-radio { display: none !important; }
+
+/* ── LAYOUT DA PÁGINA ───────────────────────── */
+body#user-page {
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+
+  /* ── Header ─────────────────────────────────
+     Herda nav, hamburger, breakpoints de style.css.
+     Só sobrescrevemos o que muda.
+  ── */
+  & header.user-header {
+    height: auto;
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: var(--clr-3);
+    border-bottom: 1.5px solid rgba(251, 160, 2, 0.15);
+
+    /* Nav mais compacto vs hero */
+    & nav { padding: 0.75rem 1rem; }
+  }
+
+  /* ── Wrapper: sidebar + conteúdo ─────────── */
+  & .user-wrapper {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    max-width: var(--container-max);
+    width: 100%;
+    margin-inline: auto;
+    padding: 2rem 1rem;
+    gap: 2rem;
+    align-items: start;
+
+    /* ── Sidebar ─────────────────────────────
+       .glass herdado de style.css
+    ── */
+    & .user-sidebar {
+      position: sticky;
+      top: 80px;
+      padding: 1.5rem;
+      border: 1.5px solid rgba(251, 160, 2, 0.15);
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+
+      & .user-avatar-area {
+        position: relative;
+        width: 90px;
+        height: 90px;
+        margin-inline: auto;
+
+        & .user-avatar-big {
+          width: 90px;
+          height: 90px;
+          border-radius: 50%;
+          border: 3px solid var(--clr-4);
+          background-size: cover;
+          background-position: center;
+          background-color: rgba(18, 13, 15, 0.8);
+          display: grid;
+          place-items: center;
+          font-family: var(--fnt-sign);
+          font-size: 2rem;
+          font-weight: 700;
+          color: var(--clr-4);
+        }
+
+        & .avatar-upload-btn {
+          position: absolute;
+          bottom: 0;
+          right: 0;
+          width: 28px;
+          height: 28px;
+          border-radius: 50%;
+          background: var(--clr-4);
+          color: var(--clr-3);
+          display: grid;
+          place-items: center;
+          font-size: 0.7rem;
+          cursor: pointer;
+          transition: transform var(--tempo) ease;
+
+          &:hover { transform: scale(1.15); }
+        }
+      }
+
+      & .user-sidebar-name {
+        text-align: center;
+
+        & h3 {
+          color: var(--clr-1);
+          font-size: 1rem;
+          letter-spacing: 0.05em;
+          margin: 0;
+        }
+
+        & .sidebar-email {
+          font-size: 0.72rem;
+          color: var(--clr-2);
+          opacity: 0.6;
+        }
+      }
+
+      & .user-tabs-nav {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+        border-top: 1px solid rgba(251, 160, 2, 0.12);
+        padding-top: 1rem;
+
+        & .user-tab-btn {
+          display: flex;
+          align-items: center;
+          gap: 0.75rem;
+          padding: 0.65rem 0.85rem;
+          border-radius: calc(var(--border-radius) / 2);
+          font-size: 0.82rem;
+          font-weight: 400;
+          letter-spacing: 0.06em;
+          text-transform: uppercase;
+          color: var(--clr-2);
+          cursor: pointer;
+          opacity: 0.6;
+          transition: background var(--tempo) ease,
+                      opacity var(--tempo) ease,
+                      color var(--tempo) ease;
+
+          & i {
+            font-size: 0.9rem;
+            width: 1rem;
+            text-align: center;
+            color: var(--clr-4);
+          }
+
+          &:hover {
+            background: rgba(251, 160, 2, 0.08);
+            opacity: 0.9;
+            color: var(--clr-1);
+          }
+        }
+      }
+
+      /* Logout — herda .btn .glass de style.css */
+      & .user-logout-btn {
+        font-size: 0.78rem;
+        letter-spacing: 0.08em;
+        color: var(--clr-2);
+        border-color: rgba(185, 207, 212, 0.15);
+        opacity: 0.6;
+
+        &:hover {
+          color: #ff6b6b;
+          border-color: #ff6b6b;
+          opacity: 1;
+        }
+      }
+    }
+
+    /* ── Conteúdo principal ───────────────── */
+    & .user-main {
+      min-height: 60vh;
+
+      /* Todas as tabs escondidas por defeito */
+      & .tab-content { display: none; }
+    }
+  }
+}
+
+/* ── TABS ACTIVAS (CSS-only) ─────────────────
+   Os radio inputs estão no <body> ANTES de
+   .user-wrapper → são irmãos via ~
+── */
+
+/* Tab activa: colore a label */
+#tab-dashboard:checked   ~ .user-wrapper .user-sidebar label[for="tab-dashboard"],
+#tab-treinos:checked     ~ .user-wrapper .user-sidebar label[for="tab-treinos"],
+#tab-modalidades:checked ~ .user-wrapper .user-sidebar label[for="tab-modalidades"],
+#tab-perfil:checked      ~ .user-wrapper .user-sidebar label[for="tab-perfil"] {
+  background: rgba(251, 160, 2, 0.12);
+  color: var(--clr-4);
+  opacity: 1;
+  border-left: 2px solid var(--clr-4);
+}
+
+/* Mostra o conteúdo da tab activa */
+#tab-dashboard:checked   ~ .user-wrapper .user-main #content-dashboard,
+#tab-treinos:checked     ~ .user-wrapper .user-main #content-treinos,
+#tab-modalidades:checked ~ .user-wrapper .user-main #content-modalidades,
+#tab-perfil:checked      ~ .user-wrapper .user-main #content-perfil {
+  display: block;
+  animation: tabReveal 0.3s ease;
+}
+
+@keyframes tabReveal {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── CABEÇALHO DE CADA TAB ───────────────────── */
+.tab-header {
+  margin-bottom: 2rem;
+
+  & h2 {
+    font-size: clamp(1.25rem, 2.5vw, 2rem);
+    color: var(--clr-1);
+    text-align: start;
+    letter-spacing: 0.08em;
+    margin-bottom: 0.3rem;
+  }
+
+  & p {
+    font-size: 0.82rem;
+    color: var(--clr-2);
+    opacity: 0.7;
+    text-align: start;
+    margin: 0;
+  }
+}
+
+/* ── DASHBOARD: STATS ────────────────────────
+   .golden-border herdado de style.css
+── */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+  margin-bottom: 2rem;
+
+  & .stat-card {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.25rem;
+
+    & .stat-icon {
+      font-size: 1.5rem;
+      color: var(--clr-4);
+      width: 2rem;
+      text-align: center;
+      flex-shrink: 0;
+    }
+
+    & div {
+      display: flex;
+      flex-direction: column;
+      gap: 0.1rem;
+
+      & .stat-value {
+        font-family: var(--fnt-sign);
+        font-size: 1.4rem;
+        font-weight: 700;
+        color: var(--clr-4);
+        line-height: 1;
+      }
+
+      & .stat-label {
+        font-size: 0.68rem;
+        color: var(--clr-2);
+        opacity: 0.7;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+      }
+    }
+  }
+}
+
+/* ── BLOCOS DE SECÇÃO ────────────────────────── */
+.section-block {
+  margin-bottom: 2rem;
+
+  & .block-title {
+    font-size: 0.78rem;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--clr-4);
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid rgba(251, 160, 2, 0.15);
+    text-align: start;
+  }
+
+  & .ver-todos-link {
+    display: inline-block;
+    margin-top: 0.75rem;
+    font-size: 0.75rem;
+    cursor: pointer;
+    color: var(--clr-4) !important;
+    opacity: 0.8;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+}
+
+/* Lista mini de treinos */
+.treinos-mini-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+
+  & .treino-mini-card {
+    display: grid;
+    grid-template-columns: auto 1fr auto auto;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    border-radius: calc(var(--border-radius) / 2);
+    background: rgba(18, 13, 15, 0.5);
+    border: 1px solid rgba(251, 160, 2, 0.08);
+    transition: background var(--tempo) ease;
+
+    &:hover { background: rgba(251, 160, 2, 0.06); }
+
+    & .treino-icon {
+      font-size: 1rem;
+      color: var(--clr-4);
+      width: 1.2rem;
+      text-align: center;
+    }
+
+    & .treino-info {
+      display: flex;
+      flex-direction: column;
+      gap: 0.1rem;
+
+      & .treino-nome {
+        font-size: 0.82rem;
+        color: var(--clr-1);
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+      }
+
+      & .treino-data {
+        font-size: 0.68rem;
+        color: var(--clr-2);
+        opacity: 0.6;
+      }
+    }
+
+    & .treino-dur  { font-size: 0.75rem; color: var(--clr-2); white-space: nowrap; }
+    & .treino-kcal { font-size: 0.75rem; color: var(--clr-4); white-space: nowrap; }
+  }
+}
+
+/* Badges de modalidades inscritas */
+.modalidades-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+
+  & .modalidade-badge {
+    padding: 0.35rem 0.85rem;
+    border-radius: 100px;
+    border: 1.5px solid var(--clr-4);
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--clr-4);
+    background: rgba(251, 160, 2, 0.08);
+  }
+}
+
+/* ── TAB TREINOS ─────────────────────────────── */
+.sync-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  margin-bottom: 1.25rem;
+  font-size: 0.78rem;
+  color: var(--clr-2);
+  flex-wrap: wrap;
+
+  & i      { color: var(--clr-4); font-size: 0.9rem; }
+  & strong { color: var(--clr-1); }
+  & .btn-small { margin-left: auto; }
+}
+
+/* <details> para adicionar treino manual */
+.add-treino-details {
+  margin-bottom: 1.5rem;
+  border: 1px dashed rgba(251, 160, 2, 0.2);
+
+  & .add-treino-summary {
+    list-style: none;
+    padding: 0.75rem 1rem;
+    cursor: pointer;
+    font-size: 0.82rem;
+    letter-spacing: 0.08em;
+
+    &::-webkit-details-marker { display: none; }
+  }
+
+  &[open] .add-treino-summary {
+    border-bottom: 1px solid rgba(251, 160, 2, 0.1);
+  }
+
+  & .add-treino-form {
+    display: grid;
+    gap: 1rem;
+    padding: 1.25rem;
+  }
+}
+
+/* Lista de treinos */
+.treinos-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+
+  & .treino-item {
+    border: 1px solid rgba(251, 160, 2, 0.1);
+    transition: border-color var(--tempo) ease;
+
+    &:hover { border-color: rgba(251, 160, 2, 0.25); }
+
+    & summary {
+      list-style: none;
+      padding: 0.9rem 1.1rem;
+      cursor: pointer;
+      display: grid;
+      grid-template-columns: auto 1fr auto auto auto;
+      align-items: center;
+      gap: 0.75rem;
+
+      &::-webkit-details-marker { display: none; }
+    }
+
+    &[open] summary {
+      border-bottom: 1px solid rgba(251, 160, 2, 0.1);
+      background: rgba(251, 160, 2, 0.04);
+    }
+
+    & .treino-details-body {
+      padding: 0.75rem 1.1rem;
+      font-size: 0.78rem;
+      color: var(--clr-2);
+      display: grid;
+      gap: 0.3rem;
+
+      & .notes { color: var(--clr-1); opacity: 0.7; font-style: italic; }
+    }
+  }
+}
+
+/* Badge de fonte */
+.source-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.62rem;
+  padding: 0.2rem 0.5rem;
+  border-radius: 100px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+
+  &.smartwatch {
+    background: rgba(185, 207, 212, 0.1);
+    color: var(--clr-2);
+    border: 1px solid rgba(185, 207, 212, 0.2);
+  }
+
+  &.manual {
+    background: rgba(251, 160, 2, 0.08);
+    color: var(--clr-4);
+    border: 1px solid rgba(251, 160, 2, 0.2);
+  }
+}
+
+/* ── TAB MODALIDADES ─────────────────────────── */
+.modalidades-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+
+  & .modalidade-card {
+    border: 1.5px solid rgba(251, 160, 2, 0.1);
+    transition: border-color var(--tempo) ease, transform var(--tempo) ease;
+
+    &:hover {
+      border-color: rgba(251, 160, 2, 0.3);
+      transform: translateY(-2px);
+    }
+
+    & .mod-header {
+      padding: 1rem;
+      background: rgba(18, 13, 15, 0.6);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      & .mod-titulo {
+        font-family: var(--fnt-sign);
+        font-size: 0.85rem;
+        font-weight: 600;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--clr-1);
+      }
+
+      & .mod-status {
+        font-size: 0.65rem;
+        padding: 0.2rem 0.6rem;
+        border-radius: 100px;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+
+        &.inscrito   { background: rgba(100,200,120,0.15); color: #64c878; border: 1px solid #64c87840; }
+        &.disponivel { background: rgba(185,207,212,0.1);  color: var(--clr-2); border: 1px solid rgba(185,207,212,0.2); }
+      }
+    }
+
+    & .mod-body {
+      padding: 0.85rem 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+
+      & .mod-horario {
+        font-size: 0.72rem;
+        color: var(--clr-2);
+        opacity: 0.7;
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+
+        & i { color: var(--clr-4); font-size: 0.65rem; }
+      }
+    }
+
+    & .mod-actions {
+      padding: 0.75rem 1rem;
+      border-top: 1px solid rgba(251, 160, 2, 0.08);
+      display: flex;
+      gap: 0.5rem;
+
+      & .btn-inscr,
+      & .btn-desactiv {
+        flex: 1;
+        padding: 0.5rem;
+        font-size: 0.7rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        cursor: pointer;
+        border: 1px solid;
+        background: transparent;
+        font-family: var(--fnt-body);
+        border-radius: calc(var(--border-radius) / 2);
+        transition: background var(--tempo) ease;
+      }
+
+      & .btn-inscr {
+        border-color: var(--clr-4);
+        color: var(--clr-4);
+        &:hover { background: rgba(251,160,2,0.12); }
+      }
+
+      & .btn-desactiv {
+        border-color: rgba(255,107,107,0.4);
+        color: #ff6b6b;
+        &:hover { background: rgba(255,107,107,0.08); }
+      }
+    }
+  }
+}
+
+.modalidades-nota {
+  font-size: 0.75rem;
+  color: var(--clr-2);
+  opacity: 0.6;
+  text-align: start;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  & i { color: var(--clr-4); }
+}
+
+/* ── TAB PERFIL ──────────────────────────────── */
+.perfil-avatar-area {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+  padding: 1.25rem;
+  background: rgba(18, 13, 15, 0.4);
+  border: 1px solid rgba(251, 160, 2, 0.1);
+
+  & .perfil-avatar-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+
+    /* Herda .btn .glass de style.css */
+    & label, & button {
+      font-size: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      cursor: pointer;
+    }
+  }
+}
+
+/* Formulário de edição */
+.perfil-form {
+  display: grid;
+  gap: 1rem;
+  max-width: 600px;
+
+  & .campo-separator {
+    padding-block: 0.5rem;
+    border-top: 1px solid rgba(251, 160, 2, 0.1);
+
+    & span {
+      font-size: 0.72rem;
+      color: var(--clr-2);
+      opacity: 0.6;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+  }
+}
+
+/* Mensagem de sucesso */
+.form-success {
+  font-size: 0.75rem;
+  color: #64c878;
+  padding: 0.5rem 0.75rem;
+  background: rgba(100, 200, 120, 0.08);
+  border-left: 2px solid #64c878;
+  border-radius: 4px;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+/* Zona perigosa — .glass herdado de style.css */
+.zona-perigo {
+  margin-top: 3rem;
+  border: 1px solid rgba(255, 107, 107, 0.2);
+
+  & h5 {
+    font-size: 0.82rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #ff6b6b;
+    margin-bottom: 0.3rem;
+    text-align: start;
+
+    & i { margin-right: 0.5rem; }
+  }
+
+  & p {
+    font-size: 0.75rem;
+    color: var(--clr-2);
+    opacity: 0.6;
+    text-align: start;
+    margin-bottom: 1rem;
+  }
+
+  & .danger-btn {
+    font-size: 0.75rem;
+    border-color: rgba(255,107,107,0.4) !important;
+    color: #ff6b6b !important;
+
+    &:hover {
+      background: rgba(255,107,107,0.1) !important;
+    }
+  }
+}
+
+/* ── RESPONSIVIDADE ──────────────────────────── */
+@media (max-width: 900px) {
+  body#user-page .user-wrapper {
+    grid-template-columns: 220px 1fr;
+    padding: 1rem;
+    gap: 1rem;
+  }
+
+  .stats-grid { grid-template-columns: 1fr 1fr; }
+}
+
+@media (max-width: 650px) {
+  body#user-page .user-wrapper {
+    grid-template-columns: 1fr;
+
+    & .user-sidebar {
+      position: static;
+      flex-direction: row;
+      flex-wrap: wrap;
+      justify-content: center;
+      padding: 1rem;
+
+      & .user-avatar-area  { order: 0; }
+
+      & .user-sidebar-name {
+        order: 1;
+        flex-basis: 100%;
+        text-align: center;
+      }
+
+      & .user-tabs-nav {
+        order: 2;
+        flex-direction: row;
+        flex-basis: 100%;
+        border-top: 1px solid rgba(251,160,2,0.12);
+        padding-top: 0.75rem;
+        justify-content: center;
+
+        & .user-tab-btn {
+          padding: 0.5rem;
+          justify-content: center;
+
+          & span { display: none; }
+          & i    { font-size: 1.1rem; width: auto; }
+        }
+      }
+
+      & .user-logout-btn { order: 3; flex-basis: 100%; }
+    }
+  }
+
+  .campos-row { grid-template-columns: 1fr; }
+}
