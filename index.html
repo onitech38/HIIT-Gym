@@ -343,94 +343,96 @@
                 </button>
             </div>
         </section>
+        
+        <section class="contactos" id="contactos">
+            <h3>Fala connosco</h3>
+            <p>Tens dúvidas? Entra em contacto — respondemos em menos de 24h.</p>
+    
+            <div class="contactos-grid">
+    
+                <!-- COL ESQUERDA — Formulário -->
+                <form class="contactos-form glass" action="#" aria-label="Formulário de contacto">
+                    <div class="campo">
+                        <label for="ct-nome">Nome</label>
+                        <input id="ct-nome" type="text" name="nome" placeholder="O teu nome" required autocomplete="name">
+                    </div>
+                    <div class="campo">
+                        <label for="ct-email">Email</label>
+                        <input id="ct-email" type="email" name="email" placeholder="email@exemplo.com" required autocomplete="email">
+                    </div>
+                    <div class="campo">
+                        <label for="ct-assunto">Assunto</label>
+                        <select id="ct-assunto" name="assunto" required>
+                            <option value="" disabled selected>Seleciona um assunto</option>
+                            <option value="visita">Visita gratuita</option>
+                            <option value="inscricao">Inscrição</option>
+                            <option value="planos">Planos e preços</option>
+                            <option value="duvida">Dúvida geral</option>
+                        </select>
+                    </div>
+                    <div class="campo">
+                        <label for="ct-mensagem">Mensagem</label>
+                        <textarea id="ct-mensagem" name="mensagem" rows="5" placeholder="Escreve aqui a tua mensagem..." required></textarea>
+                    </div>
+                    <button type="submit" class="btn glass">Enviar mensagem</button>
+                </form>
+    
+                <!-- COL DIREITA — Info + Sociais -->
+                <div class="contactos-info">
+    
+                    <div class="info-bloco glass">
+                        <div class="info-item">
+                            <i class="fa-solid fa-location-dot"></i>
+                            <div>
+                                <span class="info-label">Morada</span>
+                                <span>Rua Exemplo, 123, Montijo</span>
+                            </div>
+                        </div>
+                        <div class="info-item">
+                            <i class="fa-solid fa-clock"></i>
+                            <div>
+                                <span class="info-label">Horário</span>
+                                <span>Seg – Sex: 06h00 – 22h00</span>
+                                <span>Sáb – Dom: 08h00 – 20h00</span>
+                            </div>
+                        </div>
+                        <div class="info-item">
+                            <i class="fa-solid fa-phone"></i>
+                            <div>
+                                <span class="info-label">Telefone</span>
+                                <a href="tel:+351912345678">+351 912 345 678</a>
+                            </div>
+                        </div>
+                        <div class="info-item">
+                            <i class="fa-solid fa-envelope"></i>
+                            <div>
+                                <span class="info-label">Email</span>
+                                <a href="mailto:info@hiitgym.pt">info@hiitgym.pt</a>
+                            </div>
+                        </div>
+                    </div>
+    
+                    <div class="sociais">
+                        <a class="btn icon glass social-wa" href="https://wa.me/351912345678" target="_blank" rel="noopener" aria-label="WhatsApp">
+                            <i class="fa-brands fa-whatsapp"></i>
+                        </a>
+                        <a class="btn icon glass" href="https://instagram.com/hiitgym" target="_blank" rel="noopener" aria-label="Instagram">
+                            <i class="fa-brands fa-instagram"></i>
+                        </a>
+                        <a class="btn icon glass" href="https://facebook.com/hiitgym" target="_blank" rel="noopener" aria-label="Facebook">
+                            <i class="fa-brands fa-facebook-f"></i>
+                        </a>
+                        <a class="btn icon glass" href="https://tiktok.com/@hiitgym" target="_blank" rel="noopener" aria-label="TikTok">
+                            <i class="fa-brands fa-tiktok"></i>
+                        </a>
+                    </div>
+    
+                </div>
+            </div>
+        </section>
     </main>
 
-      <section class="contactos" id="contactos">
-        <h3>Fala connosco</h3>
-        <p>Tens dúvidas? Entra em contacto — respondemos em menos de 24h.</p>
-
-        <div class="contactos-grid">
-
-            <!-- COL ESQUERDA — Formulário -->
-            <form class="contactos-form glass" action="#" aria-label="Formulário de contacto">
-                <div class="campo">
-                    <label for="ct-nome">Nome</label>
-                    <input id="ct-nome" type="text" name="nome" placeholder="O teu nome" required autocomplete="name">
-                </div>
-                <div class="campo">
-                    <label for="ct-email">Email</label>
-                    <input id="ct-email" type="email" name="email" placeholder="email@exemplo.com" required autocomplete="email">
-                </div>
-                <div class="campo">
-                    <label for="ct-assunto">Assunto</label>
-                    <select id="ct-assunto" name="assunto" required>
-                        <option value="" disabled selected>Seleciona um assunto</option>
-                        <option value="visita">Visita gratuita</option>
-                        <option value="inscricao">Inscrição</option>
-                        <option value="planos">Planos e preços</option>
-                        <option value="duvida">Dúvida geral</option>
-                    </select>
-                </div>
-                <div class="campo">
-                    <label for="ct-mensagem">Mensagem</label>
-                    <textarea id="ct-mensagem" name="mensagem" rows="5" placeholder="Escreve aqui a tua mensagem..." required></textarea>
-                </div>
-                <button type="submit" class="btn glass">Enviar mensagem</button>
-            </form>
-
-            <!-- COL DIREITA — Info + Sociais -->
-            <div class="contactos-info">
-
-                <div class="info-bloco glass">
-                    <div class="info-item">
-                        <i class="fa-solid fa-location-dot"></i>
-                        <div>
-                            <span class="info-label">Morada</span>
-                            <span>Rua Exemplo, 123, Montijo</span>
-                        </div>
-                    </div>
-                    <div class="info-item">
-                        <i class="fa-solid fa-clock"></i>
-                        <div>
-                            <span class="info-label">Horário</span>
-                            <span>Seg – Sex: 06h00 – 22h00</span>
-                            <span>Sáb – Dom: 08h00 – 20h00</span>
-                        </div>
-                    </div>
-                    <div class="info-item">
-                        <i class="fa-solid fa-phone"></i>
-                        <div>
-                            <span class="info-label">Telefone</span>
-                            <a href="tel:+351912345678">+351 912 345 678</a>
-                        </div>
-                    </div>
-                    <div class="info-item">
-                        <i class="fa-solid fa-envelope"></i>
-                        <div>
-                            <span class="info-label">Email</span>
-                            <a href="mailto:info@hiitgym.pt">info@hiitgym.pt</a>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="sociais">
-                    <a class="btn icon glass social-wa" href="https://wa.me/351912345678" target="_blank" rel="noopener" aria-label="WhatsApp">
-                        <i class="fa-brands fa-whatsapp"></i>
-                    </a>
-                    <a class="btn icon glass" href="https://instagram.com/hiitgym" target="_blank" rel="noopener" aria-label="Instagram">
-                        <i class="fa-brands fa-instagram"></i>
-                    </a>
-                    <a class="btn icon glass" href="https://facebook.com/hiitgym" target="_blank" rel="noopener" aria-label="Facebook">
-                        <i class="fa-brands fa-facebook-f"></i>
-                    </a>
-                    <a class="btn icon glass" href="https://tiktok.com/@hiitgym" target="_blank" rel="noopener" aria-label="TikTok">
-                        <i class="fa-brands fa-tiktok"></i>
-                    </a>
-                </div>
-
-            </div>
-        </div>
-    </section>
+      
     
     <footer>
         <div class="footer-grid">
