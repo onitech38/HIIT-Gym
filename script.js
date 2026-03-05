@@ -1,3 +1,287 @@
+/* ============================================
+   HIIT-GYM — SCRIPT.JS
+
+   ÍNDICE:
+   1. AUTH — funções de login/signup/logout
+   2. NAV  — actualiza o nav consoante o estado
+   3. WELCOME — timer 1s + handlers dos forms
+   4. MAP — funcionalidade do mapa existente
+   5. DADOS DAS MODALIDADES (existente)
+   6. ESTADOS 1/2/3 das modalidades (existente)
+   7. EQUIPA — carrossel (existente)
+   ============================================ */
+
+
+// ============================================
+// 1. AUTH — BASE DE DADOS SIMULADA (localStorage)
+//
+// Pensa no localStorage como uma "gaveta" no
+// browser onde guardamos a informação do user.
+// Não precisa de internet nem de servidor!
+//
+// Chave usada: 'hiitgym_user'
+// Valor: um objecto JSON com todos os dados
+// ============================================
+
+const AUTH_KEY = 'hiitgym_user';
+
+/** Lê o user da "gaveta" */
+function getUser() {
+  try {
+    return JSON.parse(localStorage.getItem(AUTH_KEY));
+  } catch { return null; }
+}
+
+/** Guarda o user na "gaveta" */
+function saveUser(user) {
+  localStorage.setItem(AUTH_KEY, JSON.stringify(user));
+}
+
+/** Remove o user da "gaveta" (logout) */
+function removeUser() {
+  localStorage.removeItem(AUTH_KEY);
+}
+
+/**
+ * Cria treinos simulados para um novo utilizador.
+ * Simula dados sincronizados de um smartwatch
+ * + alguns inseridos manualmente.
+ */
+function criarTreinosSimulados() {
+  const hoje = new Date();
+  const diaMenos = (n) => {
+    const d = new Date(hoje);
+    d.setDate(d.getDate() - n);
+    return d.toISOString().split('T')[0];
+  };
+
+  return [
+    { id: 't1', date: diaMenos(1),  duration: 55, modality: 'musculacao',   calories: 420, source: 'smartwatch', notes: '' },
+    { id: 't2', date: diaMenos(3),  duration: 30, modality: 'natacao',      calories: 280, source: 'smartwatch', notes: '' },
+    { id: 't3', date: diaMenos(5),  duration: 60, modality: 'yoga_pilates', calories: 190, source: 'manual',     notes: 'Sessão de relaxamento' },
+    { id: 't4', date: diaMenos(7),  duration: 45, modality: 'cardio',       calories: 350, source: 'smartwatch', notes: '' },
+    { id: 't5', date: diaMenos(10), modality: 'musculacao',   duration: 50, calories: 400, source: 'smartwatch', notes: '' },
+    { id: 't6', date: diaMenos(14), modality: 'lutas',        duration: 90, calories: 520, source: 'smartwatch', notes: 'Treino intenso' },
+    { id: 't7', date: diaMenos(18), modality: 'zumba_danca',  duration: 60, calories: 310, source: 'manual',     notes: '' },
+  ];
+}
+
+
+// ============================================
+// 2. NAV — actualiza login/signup ↔ avatar
+//
+// Depois de entrar, escondemos os links
+// "login" e "signup" e mostramos o avatar
+// do user (com a sua foto ou iniciais).
+// ============================================
+
+function actualizarNav() {
+  const user = getUser();
+  const navLogin  = document.getElementById('nav-login');
+  const navSignup = document.getElementById('nav-signup');
+  const navAvatar = document.getElementById('nav-avatar');
+  const navAvatarImg = document.getElementById('nav-avatar-img');
+
+  if (!navLogin) return; // Nesta página pode não existir (user page)
+
+  if (user) {
+    // Está autenticado → esconde login/signup, mostra avatar
+    navLogin.classList.add('hidden');
+    navSignup.classList.add('hidden');
+    navAvatar.classList.remove('hidden');
+
+    if (navAvatarImg) {
+      if (user.avatar) {
+        navAvatarImg.style.backgroundImage = `url('${user.avatar}')`;
+        navAvatarImg.textContent = '';
+      } else {
+        // Sem foto → mostra iniciais (ex: "JS" para João Silva)
+        navAvatarImg.textContent = (user.firstName[0] + user.lastName[0]).toUpperCase();
+        navAvatarImg.style.backgroundImage = '';
+      }
+    }
+  } else {
+    // Não autenticado → mostra login/signup
+    navLogin.classList.remove('hidden');
+    navSignup.classList.remove('hidden');
+    navAvatar?.classList.add('hidden');
+  }
+}
+
+/**
+ * Quando clicamos em "login" ou "signup" no nav
+ * abre o welcome modal (se não estiver autenticado)
+ */
+function bindNavAuthLinks() {
+  const navLogin  = document.getElementById('nav-login');
+  const navSignup = document.getElementById('nav-signup');
+  const welcome   = document.getElementById('welcome');
+  if (!welcome) return;
+
+  navLogin?.addEventListener('click', e => {
+    e.preventDefault();
+    // Garante que está no tab "Login"
+    document.getElementById('mode-login')?.click();
+    mostrarWelcome();
+  });
+
+  navSignup?.addEventListener('click', e => {
+    e.preventDefault();
+    // Garante que está no tab "Criar Conta"
+    document.getElementById('mode-signup')?.click();
+    mostrarWelcome();
+  });
+}
+
+
+// ============================================
+// 3. WELCOME MODAL
+//
+// Aparece 1 segundo após a página carregar,
+// mas SÓ SE o user não estiver autenticado.
+//
+// O toggle entre Login ↔ Signup é feito
+// 100% em CSS (radio buttons ocultos).
+// O JS só trata de: timer, guardar dados, fechar.
+// ============================================
+
+function mostrarWelcome() {
+  const welcome = document.getElementById('welcome');
+  if (welcome) welcome.classList.add('visible');
+}
+
+function fecharWelcome() {
+  const welcome = document.getElementById('welcome');
+  if (welcome) welcome.classList.remove('visible');
+}
+
+/** Formulário de LOGIN */
+function bindLoginForm() {
+  const form = document.getElementById('form-login');
+  if (!form) return;
+
+  form.addEventListener('submit', e => {
+    e.preventDefault();
+    const email = form.email.value.trim().toLowerCase();
+    const pass  = form.password.value;
+    const user  = getUser();
+    const erro  = document.getElementById('login-error');
+
+    // Verifica se o email e password batem certo
+    if (user && user.email.toLowerCase() === email && user.password === pass) {
+      erro?.classList.add('hidden');
+      fecharWelcome();
+      actualizarNav();
+    } else {
+      erro?.classList.remove('hidden');
+    }
+  });
+}
+
+/** Formulário de CRIAR CONTA */
+function bindSignupForm() {
+  const form = document.getElementById('form-signup');
+  if (!form) return;
+
+  form.addEventListener('submit', e => {
+    e.preventDefault();
+    const erro = document.getElementById('signup-error');
+
+    // Validação extra: password com mínimo 6 chars
+    if (form.password.value.length < 6) {
+      erro.textContent = 'A password deve ter pelo menos 6 caracteres.';
+      erro.classList.remove('hidden');
+      return;
+    }
+
+    // Cria o objecto do user
+    const novoUser = {
+      id:         'usr_' + Date.now(),
+      firstName:  form.firstName.value.trim(),
+      lastName:   form.lastName.value.trim(),
+      email:      form.email.value.trim().toLowerCase(),
+      password:   form.password.value,       // NOTA: em produção usaria hashing!
+      phone:      form.phone.value.trim(),
+      age:        parseInt(form.age.value),
+      weight:     form.weight.value  ? parseFloat(form.weight.value)  : null,
+      address:    form.address.value ? form.address.value.trim()      : null,
+      avatar:     null,
+      // Inscreve-o nas modalidades mais populares por defeito
+      enrolledModalities: ['musculacao'],
+      // Dá-lhe treinos simulados para a dashboard parecer preenchida
+      trainings:  criarTreinosSimulados(),
+      createdAt:  new Date().toISOString()
+    };
+
+    saveUser(novoUser);
+    erro?.classList.add('hidden');
+    fecharWelcome();
+    actualizarNav();
+
+    // Redirige para a página de perfil
+    setTimeout(() => {
+      window.location.href = 'user/user.html';
+    }, 300);
+  });
+}
+
+/** Fecha ao clicar no backdrop ou no botão ✕ */
+function bindWelcomeClose() {
+  document.getElementById('welcome-backdrop')?.addEventListener('click', fecharWelcome);
+  document.getElementById('welcome-skip')?.addEventListener('click', fecharWelcome);
+
+  // ESC também fecha
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') fecharWelcome();
+  });
+}
+
+/** Timer de 1s — mostra o welcome se não estiver autenticado */
+window.addEventListener('load', () => {
+  actualizarNav();
+  bindNavAuthLinks();
+  bindLoginForm();
+  bindSignupForm();
+  bindWelcomeClose();
+
+  if (!getUser()) {
+    setTimeout(mostrarWelcome, 1000);
+  }
+});
+
+// ============================================
+// MAP
+// ============================================
+const mapDetails = document.querySelector('#map');
+const mapSummary = document.querySelector('#map summary');
+const mapLocal   = document.querySelector('#map .local');
+
+function fecharMapa() {
+  mapLocal.classList.add('closing');
+  setTimeout(() => {
+    mapLocal.classList.remove('closing');
+    mapDetails.removeAttribute('open');
+  }, 350);
+}
+
+mapSummary.addEventListener('click', (e) => {
+  if (mapDetails.open) {
+    e.preventDefault();
+    fecharMapa();
+  } else {
+    setTimeout(() => {
+      mapDetails.scrollIntoView({ behavior: 'smooth' });
+    }, 50);
+  }
+});
+
+document.addEventListener('click', (e) => {
+  if (mapDetails.open && !mapDetails.contains(e.target)) {
+    fecharMapa();
+  }
+});
+
+
 // ============================================
 // FONTE DE VERDADE — edita só aqui
 // ============================================
