@@ -7,6 +7,14 @@
   }
 }
 
+@font-face {
+  font-family: 'Roboto-Thin';
+  src: url('https://fonts.gstatic.com/s/roboto/v51/KFO7CnqEu92Fr1ME7kSn66aGLdTylUAMa3yUBA.woff2') format('woff2');
+  font-weight: 100;
+  font-style: normal;
+  font-display: optional; /* 'auto' | 'block' | 'swap' | 'fallback' | 'optional' */
+}
+
 @layer variables {
   :root {
     --font-size: 1rem;
