@@ -40,22 +40,23 @@ const coaches = {
   sofia: { 
     nome: 'Sofia Almeida',    
     avatar: 'src/coaches/sofia/sofia.png',      
-    card: 'src/coaches/sofia/sofia_card.',      
+    card: 'src/coaches/sofia/sofia_card.png',      
     modalidades: ['yoga_pilates'] 
   },
 
   pedro: { 
     nome: 'Pedro Santos',     
-    avatar: 'src/coaches/pedro/pedro.jpg',      
-    card: 'src/coaches/pedro/pedro_card.jpg',      
+    avatar: 'src/coaches/pedro/pedro.png',      
+    card: 'src/coaches/pedro/pedro_card.png',      
     modalidades: ['yoga_pilates'] 
   },
 
   claudia: { 
     nome: 'Cláudia Ferreira', 
-    avatar: 'src/coaches/claudia/claudia.jpg',    
-    card: 'src/coaches/claudia/claudia_card.jpg',    
-    modalidades: ['yoga_pilates'] },
+    avatar: 'src/coaches/claudia/claudia.png',    
+    card: 'src/coaches/claudia/claudia_card.png',    
+    modalidades: ['yoga_pilates'] 
+  },
 
   tiago: { 
     nome: 'Tiago Ribeiro',    
