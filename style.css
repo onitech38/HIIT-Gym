@@ -33,6 +33,20 @@
     --glass-surface: rgba(251, 160, 2, 0.15);
     --glass-iridescent-opacity: 1.8;
 
+    /*social*/
+    --clr-social_wa:#25D366;
+    --clr-social_wa_shdw:0 0 20px 5px color-mix(in hsl shorter hue, var(--clr-social_wa) 30%, transparent 90%);
+
+    --clr-social_ig:hsl(322, 70%, 49%);
+    --clr-social_ig_shdw:0 0 20px 5px color-mix(in hsl shorter hue, var(--clr-social_ig) 30%, transparent 90%);
+
+    --clr-social_fb:#3b5998;
+    --clr-social_fb_shdw:0 0 20px 5px color-mix(in hsl shorter hue, var(--clr-social_fb) 30%, transparent 90%);
+
+    --clr-social_tt:#2590d3;
+    --clr-social_tt_shdw:0 0 20px 5px color-mix(in hsl shorter hue, var(--clr-social_tt) 30%, transparent 90%);
+
+    /*light/dark mode*/
     color-scheme: light dark;
     --light-bg: var(--clr-2);
     --dark-bg: var(--clr-1);
@@ -57,7 +71,7 @@
     --margin-block-section: 1rem;
     --container-max: 1440px;
     --container-mid: 1024px;
-    --container-height: 100svh;/*90vh*/
+    --container-height: 100svh;
     --gap-items: 1.2rem;
     --border-size: 1.5px solid;
     --border-radius: 0.25rem 0.75rem 0.25rem 1.125rem;
@@ -940,9 +954,28 @@ main {
         }
   
         .social-wa {
-          color: #25D366 !important;
-          border-color: #25D366 !important;
-          &:hover { box-shadow: 0 0 12px rgba(37, 211, 102, 0.3) !important; }
+          color: var(--clr-4) !important;
+          &:hover { color: var(--clr-social_wa) !important; box-shadow: var(--clr-social_wa_shdw) !important; }
+          &:active { background-color: var(--clr-4); color: var(--clr-2) !important; box-shadow: var(--clr-social_wa_shdw) !important; }
+          &:focus-visible, &:focus { box-shadow: var(--clr-social_wa_shdw) !important; } 
+        }
+        .social-ig {
+          color: var(--clr-4) !important;
+          &:hover { color: var(--clr-social_ig) !important; box-shadow: var(--clr-social_ig_shdw) !important; }
+          &:active { background-color: var(--clr-4); color: var(--clr-2) !important; box-shadow: var(--clr-social_ig_shdw) !important; }
+          &:focus-visible, &:focus { box-shadow: var(--clr-social_ig_shdw) !important; } 
+        }
+        .social-fb {
+          color: var(--clr-4) !important;
+          &:hover { color: var(--clr-social_fb) !important; box-shadow: var(--clr-social_fb_shdw) !important; }
+          &:active { background-color: var(--clr-4); color: var(--clr-2) !important; box-shadow: var(--clr-social_fb_shdw) !important; }
+          &:focus-visible, &:focus { box-shadow: var(--clr-social_fb_shdw) !important; }
+        }
+        .social-tt {
+          color: var(--clr-4) !important;
+          &:hover { color: var(--clr-social_tt) !important; box-shadow: var(--clr-social_tt_shdw) !important; }
+          &:active { background-color: var(--clr-4); color: var(--clr-2) !important; box-shadow: var(--clr-social_tt_shdw) !important; }
+          &:focus-visible, &:focus { box-shadow: var(--clr-social_tt_shdw) !important; }
         }
       }
     }
