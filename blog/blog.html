@@ -12,276 +12,201 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Jost:ital,wght@0,100..900;1,100..900&family=Saira:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" 
-    integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw==" 
-    crossorigin="anonymous" referrerpolicy="no-referrer">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
+          integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw=="
+          crossorigin="anonymous" referrerpolicy="no-referrer">
 
     <link rel="stylesheet" href="../style.css">
     <link rel="stylesheet" href="../auth.css">
     <link rel="stylesheet" href="blog.css">
+
+    <!-- AUTH GUARD — redirige se não estiver autenticado -->
+    <script>
+      (function() {
+        try {
+          const user = JSON.parse(localStorage.getItem('hiitgym_user'));
+          if (!user) {
+            // Guarda destino para voltar após login
+            sessionStorage.setItem('hiitgym_redirect', 'blog/blog.html');
+            window.location.replace('../index.html');
+          }
+        } catch(e) {
+          window.location.replace('../index.html');
+        }
+      })();
+    </script>
 </head>
 
-<!-- ============================================
-     TRUQUE CSS PARA FILTRO DE CATEGORIAS:
-     
-     Radio buttons antes do .blog-grid
-     controlam quais artigos estão visíveis.
-     Cada artigo tem uma class de categoria
-     (ex: .cat-treino, .cat-nutricao…)
-     
-     CSS:
-       #filter-treino:checked ~ .blog-grid 
-         .article-card:not(.cat-treino) { display: none; }
-     
-     Resultado: filtro sem nenhum JS!
-     ============================================ -->
 <body id="blog-page">
 
-    <!-- FILTROS RADIO (invisíveis) — antes do grid -->
-    <input type="radio" name="blog-filter" id="filter-todos"    class="filter-radio" checked>
-    <input type="radio" name="blog-filter" id="filter-treino"   class="filter-radio">
-    <input type="radio" name="blog-filter" id="filter-nutricao" class="filter-radio">
-    <input type="radio" name="blog-filter" id="filter-saude"    class="filter-radio">
-    <input type="radio" name="blog-filter" id="filter-novidade" class="filter-radio">
+    <!-- ══════════════════════════════════════
+         VIEW 1 — GRELHA (default)
+         Escondida quando um artigo está aberto
+    ══════════════════════════════════════ -->
+    <div id="view-grid">
 
-    <!-- NAV -->
-    <header class="blog-header">
-        <nav aria-label="Navegação Principal">
-            <a class="logo btn" href="../index.html" aria-label="Voltar ao início">
-                <img src="../src/logo/logo_def1.svg" alt="Hiit-Gym">
-            </a>
-            <details class="mobile-nav">
-                <summary class="hamburger btn" aria-label="Abrir menu">
-                    <span></span><span></span><span></span>
-                </summary>
-            </details>
-            <div class="nav-content glass">
-                <div class="menu">
-                    <a class="link-btn" href="../index.html#sobre">sobre</a>
-                    <a class="link-btn" href="../index.html#modalidades">modalidades</a>
-                    <a class="link-btn" href="../index.html#planos">planos</a>
-                    <a class="link-btn" href="../index.html#equipa">equipa</a>
-                    <a class="link-btn" href="../index.html#contactos">contactos</a>
-                    <a class="link-btn active-page" href="blog.html" aria-current="page">blog</a>
+        <!-- NAV -->
+        <header class="blog-header">
+            <nav aria-label="Navegação Principal">
+                <a class="logo btn" href="../index.html" aria-label="Voltar ao início">
+                    <img src="../src/logo/logo_def1.svg" alt="Hiit-Gym">
+                </a>
+                <details class="mobile-nav">
+                    <summary class="hamburger btn" aria-label="Abrir menu">
+                        <span></span><span></span><span></span>
+                    </summary>
+                </details>
+                <div class="nav-content glass">
+                    <div class="menu">
+                        <a class="link-btn" href="../index.html#sobre">sobre</a>
+                        <a class="link-btn" href="../index.html#modalidades">modalidades</a>
+                        <a class="link-btn" href="../index.html#planos">planos</a>
+                        <a class="link-btn" href="../index.html#equipa">equipa</a>
+                        <a class="link-btn" href="../index.html#contactos">contactos</a>
+                        <a class="link-btn active-page" href="blog.html" aria-current="page">blog</a>
+                    </div>
+                    <span></span>
+                    <div class="login-sign_up" id="nav-auth">
+                        <a class="link-btn hidden" id="nav-login"  href="../index.html">login</a>
+                        <a class="link-btn hidden" id="nav-signup" href="../index.html">signup</a>
+                        <a class="nav-user-avatar" href="../user/user.html" id="nav-avatar" aria-label="O meu perfil">
+                            <div class="coach-avatar" id="nav-avatar-img"></div>
+                        </a>
+                    </div>
                 </div>
-                <span></span>
-                <div class="login-sign_up" id="nav-auth">
-                    <a class="link-btn" id="nav-login"  href="../index.html" aria-label="Login">login</a>
-                    <a class="link-btn" id="nav-signup" href="../index.html" aria-label="Criar conta">signup</a>
-                    <a class="nav-user-avatar hidden" href="../user/user.html" id="nav-avatar" aria-label="O meu perfil">
-                        <div class="coach-avatar" id="nav-avatar-img"></div>
-                    </a>
+            </nav>
+        </header>
+
+        <!-- HERO -->
+        <section class="blog-hero">
+            <div class="blog-hero-content">
+                <span class="blog-eyebrow">HIIT-Gym · Blog</span>
+                <h1>Novidades, Dicas<br><span>e Inspiração</span></h1>
+                <p>Treino, nutrição, saúde e as últimas notícias da academia.</p>
+            </div>
+        </section>
+
+        <!-- ARTIGO EM DESTAQUE (JS preenche) -->
+        <section class="blog-featured" id="blog-featured"></section>
+
+        <!-- FILTROS DE CATEGORIA -->
+        <section class="blog-filters-section">
+            <div class="blog-filters" role="group" aria-label="Filtrar por categoria">
+                <button class="filter-btn active" data-cat="todos">Todos</button>
+                <button class="filter-btn" data-cat="treino">Treino</button>
+                <button class="filter-btn" data-cat="nutricao">Nutrição</button>
+                <button class="filter-btn" data-cat="saude">Saúde</button>
+                <button class="filter-btn" data-cat="novidade">Novidades</button>
+            </div>
+        </section>
+
+        <!-- GRELHA DE ARTIGOS (JS preenche) -->
+        <section class="blog-grid" id="blog-grid" aria-label="Artigos do blog"></section>
+
+        <!-- NEWSLETTER -->
+        <section class="blog-newsletter glass">
+            <div class="newsletter-content">
+                <h3><i class="fa-solid fa-envelope"></i> Recebe os nossos artigos</h3>
+                <p>Subscreve a newsletter e recebe semanalmente dicas de treino, nutrição e as novidades da HIIT-Gym.</p>
+                <form class="newsletter-form" id="form-newsletter" novalidate>
+                    <input type="email" placeholder="O teu email" required autocomplete="email">
+                    <button type="submit" class="btn glass">Subscrever</button>
+                </form>
+                <p class="newsletter-nota">Sem spam. Podes cancelar quando quiseres.</p>
+            </div>
+        </section>
+
+        <!-- FOOTER -->
+        <footer class="blog-footer">
+            <div class="footer-bar">
+                <span>© 2025 HIIT-Gym · Todos os direitos reservados.</span>
+                <div>
+                    <a href="../index.html">Início</a>
+                    <span>·</span>
+                    <a href="../user/user.html">Perfil</a>
+                    <span>·</span>
+                    <a href="../index.html#contactos">Contactos</a>
                 </div>
             </div>
-        </nav>
-    </header>
+        </footer>
 
-    <!-- HERO DO BLOG -->
-    <section class="blog-hero">
-        <div class="blog-hero-content">
-            <span class="blog-eyebrow">HIIT-Gym · Blog</span>
-            <h1>Novidades, Dicas<br><span>e Inspiração</span></h1>
-            <p>Treino, nutrição, saúde e as últimas notícias da academia.</p>
-        </div>
-    </section>
+    </div><!-- /view-grid -->
 
-    <!-- ARTIGO EM DESTAQUE -->
-    <section class="blog-featured">
-        <article class="featured-card glass">
-            <div class="featured-img" style="background-image:url('../src/modalidades/musculacao.jpg')">
-                <span class="article-category cat-treino-label">Treino</span>
-            </div>
-            <div class="featured-body">
-                <div class="article-meta">
-                    <time datetime="2026-02-28">28 Fev 2026</time>
-                    <span>· 8 min leitura</span>
+
+    <!-- ══════════════════════════════════════
+         VIEW 2 — LEITOR DE ARTIGO (hidden)
+         Activada pelo JS ao clicar "Ler mais"
+    ══════════════════════════════════════ -->
+    <div id="view-article" class="hidden">
+
+        <!-- NAV (duplicado para funcionar nas 2 views) -->
+        <header class="blog-header">
+            <nav aria-label="Navegação Principal">
+                <a class="logo btn" href="../index.html" aria-label="Voltar ao início">
+                    <img src="../src/logo/logo_def1.svg" alt="Hiit-Gym">
+                </a>
+                <div class="nav-content glass">
+                    <div class="menu">
+                        <a class="link-btn" href="../index.html#sobre">sobre</a>
+                        <a class="link-btn" href="../index.html#modalidades">modalidades</a>
+                        <a class="link-btn" href="../index.html#planos">planos</a>
+                        <a class="link-btn" href="../index.html#equipa">equipa</a>
+                        <a class="link-btn" href="../index.html#contactos">contactos</a>
+                        <a class="link-btn active-page" href="blog.html">blog</a>
+                    </div>
+                    <span></span>
+                    <div class="login-sign_up">
+                        <a class="nav-user-avatar" href="../user/user.html" aria-label="Perfil">
+                            <div class="coach-avatar" id="nav-avatar-img-2"></div>
+                        </a>
+                    </div>
                 </div>
-                <h2>Os 5 Erros Mais Comuns no Treino de Musculação (e Como Corrigi-los)</h2>
-                <p>Seja iniciante ou experiente, é fácil cair em armadilhas que limitam o teu progresso. Os nossos Personal Trainers partilham os erros mais frequentes que vêem em academia e como os resolver definitivamente.</p>
-                <a href="#" class="btn glass">Ler artigo completo <i class="fa-solid fa-arrow-right"></i></a>
-            </div>
-        </article>
-    </section>
+            </nav>
+        </header>
 
-    <!-- FILTROS DE CATEGORIA (labels apontam para os radios no início do body) -->
-    <section class="blog-filters-section">
-        <div class="blog-filters" role="group" aria-label="Filtrar por categoria">
-            <label for="filter-todos"    class="filter-btn">Todos</label>
-            <label for="filter-treino"   class="filter-btn">Treino</label>
-            <label for="filter-nutricao" class="filter-btn">Nutrição</label>
-            <label for="filter-saude"    class="filter-btn">Saúde</label>
-            <label for="filter-novidade" class="filter-btn">Novidades</label>
+        <!-- LAYOUT: artigo + sidebar -->
+        <div class="blog-reader-layout">
+
+            <!-- ARTIGO PRINCIPAL (JS preenche) -->
+            <article id="article-main" class="article-full"></article>
+
+            <!-- SIDEBAR — outros artigos (JS preenche) -->
+            <aside id="article-sidebar" class="article-sidebar">
+                <h4 class="sidebar-titulo">Outros Artigos</h4>
+                <div id="sidebar-lista"></div>
+            </aside>
+
         </div>
-    </section>
 
-    <!-- GRID DE ARTIGOS -->
-    <!-- Cada artigo tem classes: article-card + cat-[categoria] -->
-    <section class="blog-grid" aria-label="Artigos do blog">
+        <!-- FOOTER -->
+        <footer class="blog-footer">
+            <div class="footer-bar">
+                <span>© 2025 HIIT-Gym · Todos os direitos reservados.</span>
+                <div>
+                    <a href="../index.html">Início</a>
+                    <span>·</span>
+                    <a href="../user/user.html">Perfil</a>
+                </div>
+            </div>
+        </footer>
 
-        <article class="article-card cat-treino">
-            <div class="article-img" style="background-image:url('../src/modalidades/cardio.jpg')">
-                <span class="article-category cat-treino-label">Treino</span>
-            </div>
-            <div class="article-body">
-                <div class="article-meta"><time datetime="2026-02-20">20 Fev 2026</time><span>· 5 min</span></div>
-                <h3>HIIT vs Steady-State Cardio: Qual é o Melhor Para Perder Gordura?</h3>
-                <p>Comparação detalhada entre treino intervalado de alta intensidade e cardio tradicional, com evidência científica.</p>
-                <a href="#" class="link-btn article-read-more">Ler mais →</a>
-            </div>
-        </article>
+    </div><!-- /view-article -->
 
-        <article class="article-card cat-nutricao">
-            <div class="article-img" style="background-image:url('../src/modalidades/yoga_pilates.jpg')">
-                <span class="article-category cat-nutricao-label">Nutrição</span>
-            </div>
-            <div class="article-body">
-                <div class="article-meta"><time datetime="2026-02-15">15 Fev 2026</time><span>· 6 min</span></div>
-                <h3>O Que Comer Antes e Depois do Treino Para Maximizar Resultados</h3>
-                <p>A nutricionista da HIIT-Gym explica as janelas anabólicas, proteínas e hidratos para cada tipo de treino.</p>
-                <a href="#" class="link-btn article-read-more">Ler mais →</a>
-            </div>
-        </article>
-
-        <article class="article-card cat-saude">
-            <div class="article-img" style="background-image:url('../src/modalidades/natacao.jpg')">
-                <span class="article-category cat-saude-label">Saúde</span>
-            </div>
-            <div class="article-body">
-                <div class="article-meta"><time datetime="2026-02-10">10 Fev 2026</time><span>· 4 min</span></div>
-                <h3>Os Benefícios da Natação Para a Coluna e Articulações</h3>
-                <p>A natação é um dos exercícios com menos impacto no corpo. Descobre porque é recomendada por fisioterapeutas.</p>
-                <a href="#" class="link-btn article-read-more">Ler mais →</a>
-            </div>
-        </article>
-
-        <article class="article-card cat-novidade">
-            <div class="article-img" style="background-image:url('../src/modalidades/lutas.jpg')">
-                <span class="article-category cat-novidade-label">Novidade</span>
-            </div>
-            <div class="article-body">
-                <div class="article-meta"><time datetime="2026-02-05">5 Fev 2026</time><span>· 3 min</span></div>
-                <h3>Nova Área de Lutas Inaugurada na HIIT-Gym Montijo!</h3>
-                <p>A academia cresceu! Temos nova área dedicada às artes marciais com equipamento de ponta e novos instrutores.</p>
-                <a href="#" class="link-btn article-read-more">Ler mais →</a>
-            </div>
-        </article>
-
-        <article class="article-card cat-treino">
-            <div class="article-img" style="background-image:url('../src/modalidades/zumba_danca.jpg')">
-                <span class="article-category cat-treino-label">Treino</span>
-            </div>
-            <div class="article-body">
-                <div class="article-meta"><time datetime="2026-01-28">28 Jan 2026</time><span>· 7 min</span></div>
-                <h3>Zumba: Muito Mais Que Dançar — os Benefícios Cardíacos Comprovados</h3>
-                <p>Uma aula de Zumba pode queimar entre 400-600 calorias. A ciência explica porque este treino é tão eficaz.</p>
-                <a href="#" class="link-btn article-read-more">Ler mais →</a>
-            </div>
-        </article>
-
-        <article class="article-card cat-nutricao">
-            <div class="article-img" style="background-image:url('../src/modalidades/musculacao.jpg')">
-                <span class="article-category cat-nutricao-label">Nutrição</span>
-            </div>
-            <div class="article-body">
-                <div class="article-meta"><time datetime="2026-01-20">20 Jan 2026</time><span>· 5 min</span></div>
-                <h3>Suplementação Inteligente: O Que Realmente Funciona em 2026</h3>
-                <p>Com tantos suplementos no mercado, a nossa nutricionista desmistifica o que tem evidência científica real.</p>
-                <a href="#" class="link-btn article-read-more">Ler mais →</a>
-            </div>
-        </article>
-
-        <article class="article-card cat-saude">
-            <div class="article-img" style="background-image:url('../src/modalidades/yoga_pilates.jpg')">
-                <span class="article-category cat-saude-label">Saúde</span>
-            </div>
-            <div class="article-body">
-                <div class="article-meta"><time datetime="2026-01-15">15 Jan 2026</time><span>· 6 min</span></div>
-                <h3>Yoga e Meditação: Como 15 Minutos Por Dia Transformam o Teu Desempenho</h3>
-                <p>O treino mental é tão importante como o físico. Descobre as técnicas de respiração e mindfulness que os nossos atletas usam.</p>
-                <a href="#" class="link-btn article-read-more">Ler mais →</a>
-            </div>
-        </article>
-
-        <article class="article-card cat-novidade">
-            <div class="article-img" style="background-image:url('../src/modalidades/cardio.jpg')">
-                <span class="article-category cat-novidade-label">Novidade</span>
-            </div>
-            <div class="article-body">
-                <div class="article-meta"><time datetime="2026-01-08">8 Jan 2026</time><span>· 2 min</span></div>
-                <h3>App HIIT-Gym Disponível! Instala Agora no Teu Telefone</h3>
-                <p>Já podes instalar o site da HIIT-Gym como uma app no teu smartphone. Acede ao teu perfil, treinos e blog em qualquer lugar.</p>
-                <a href="#" class="link-btn article-read-more">Ler mais →</a>
-            </div>
-        </article>
-
-    </section><!-- /blog-grid -->
-
-    <!-- NEWSLETTER -->
-    <section class="blog-newsletter glass">
-        <div class="newsletter-content">
-            <h3><i class="fa-solid fa-envelope"></i> Recebe os nossos artigos</h3>
-            <p>Subscreve a newsletter e recebe semanalmente dicas de treino, nutrição e as novidades da HIIT-Gym.</p>
-            <form class="newsletter-form" id="form-newsletter" novalidate>
-                <input type="email" placeholder="O teu email" required autocomplete="email">
-                <button type="submit" class="btn glass">Subscrever</button>
-            </form>
-            <p class="newsletter-nota">Sem spam. Podes cancelar quando quiseres.</p>
-        </div>
-    </section>
-
-    <!-- FOOTER mini -->
-    <footer class="blog-footer">
-        <div class="footer-bar" style="max-width:1440px;margin-inline:auto;padding-inline:1rem;">
-            <span>© 2025 HIIT-Gym · Todos os direitos reservados.</span>
-            <div>
-                <a href="../index.html">Início</a>
-                <span>·</span>
-                <a href="../user/user.html">Perfil</a>
-                <span>·</span>
-                <a href="../index.html#contactos">Contactos</a>
-            </div>
-        </div>
-    </footer>
 
     <!-- SVG Glass Filter -->
     <svg width="0" height="0" style="position:absolute;pointer-events:none">
         <defs>
             <filter id="glass-filter" x="-20%" y="-20%" width="140%" height="140%" color-interpolation-filters="sRGB">
                 <feTurbulence type="fractalNoise" baseFrequency="0.010 0.018" numOctaves="3" seed="2" result="noise"/>
-                <feDisplacementMap in="SourceGraphic" in2="noise" scale="35" xChannelSelector="R" yChannelSelector="G" result="disabled"/>
+                <feDisplacementMap in="SourceGraphic" in2="noise" scale="35" xChannelSelector="R" yChannelSelector="G" result="displaced"/>
                 <feColorMatrix type="saturate" values="1.2" in="displaced" result="saturated"/>
                 <feComposite in="saturated" in2="SourceGraphic" operator="in"/>
             </filter>
         </defs>
     </svg>
 
-    <!-- JS mínimo: só actualiza o nav se houver user autenticado -->
-    <script>
-      (function() {
-        try {
-          const user = JSON.parse(localStorage.getItem('hiitgym_user'));
-          if (user) {
-            document.getElementById('nav-login')?.classList.add('hidden');
-            document.getElementById('nav-signup')?.classList.add('hidden');
-            const avatarEl = document.getElementById('nav-avatar');
-            const avatarImg = document.getElementById('nav-avatar-img');
-            avatarEl?.classList.remove('hidden');
-            if (avatarImg) {
-              if (user.avatar) {
-                avatarImg.style.backgroundImage = `url('${user.avatar}')`;
-              } else {
-                avatarImg.textContent = ((user.firstName?.[0]||'')+(user.lastName?.[0]||'')).toUpperCase();
-              }
-            }
-          }
-        } catch(e) {}
-
-        // Newsletter: feedback visual sem backend
-        document.getElementById('form-newsletter')?.addEventListener('submit', e => {
-          e.preventDefault();
-          e.target.innerHTML = '<p style="color:var(--clr-4);letter-spacing:.08em;text-transform:uppercase;font-size:.82rem;">✓ Subscrito com sucesso!</p>';
-        });
-      })();
-    </script>
+    <!-- data.js (CMS) carregado ANTES de blog.js -->
+    <script src="../data.js"></script>
+    <script src="blog.js"></script>
 </body>
 </html>

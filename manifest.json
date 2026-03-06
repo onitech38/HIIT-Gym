@@ -1,9 +1,9 @@
 {
   "name": "HIIT-Gym Montijo",
   "short_name": "HIIT-Gym",
-  "description": "A academia desportiva completa de Montijo. Treina mais, vive melhor.",
-  "start_url": "/",
-  "scope": "/",
+  "description": "O teu ginásio HIIT em Montijo. Treino, perfil e modalidades no bolso.",
+  "start_url": "./index.html",
+  "scope": "./",
   "display": "standalone",
   "orientation": "portrait-primary",
   "background_color": "#120D0F",
@@ -11,25 +11,32 @@
   "lang": "pt-PT",
   "icons": [
     {
-      "src": "src/logo/favicon.svg",
-      "sizes": "any",
-      "type": "image/svg+xml",
+      "src": "src/logo/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "src/logo/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
       "purpose": "any maskable"
     }
   ],
-  "categories": ["health", "fitness", "sports"],
   "shortcuts": [
-    {
-      "name": "O meu Perfil",
-      "short_name": "Perfil",
-      "url": "/user/user.html",
-      "icons": [{ "src": "src/logo/favicon.svg", "sizes": "any" }]
-    },
     {
       "name": "Blog",
       "short_name": "Blog",
-      "url": "/blog/blog.html",
-      "icons": [{ "src": "src/logo/favicon.svg", "sizes": "any" }]
+      "description": "Abre o blog HIIT-Gym",
+      "url": "./blog/blog.html",
+      "icons": [{ "src": "src/logo/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "O Meu Perfil",
+      "short_name": "Perfil",
+      "description": "Abre a área de membro",
+      "url": "./user/user.html",
+      "icons": [{ "src": "src/logo/icon-192.png", "sizes": "192x192" }]
     }
   ]
 }

@@ -1,47 +1,37 @@
 /* ============================================
    HIIT-GYM — USER.JS
-   
-   O que este ficheiro faz:
-   1. Verifica se o user está autenticado
-      (se não estiver, manda para o início)
-   2. Preenche a página com os dados do user
-      (nome, stats, treinos, modalidades)
-   3. Trata de:
-      - Upload de foto de perfil
-      - Guardar alterações ao perfil
-      - Adicionar treino manual
-      - Inscrever / pedir desactivação de modalidades
-      - Logout
-   ============================================ */
 
-// ── DADOS E CONFIGURAÇÕES ────────────────────
+   1. Verifica autenticação
+   2. Preenche a página com dados do user
+   3. Upload de avatar, edição de perfil
+   4. Treinos: adicionar, sincronizar
+   5. Modalidades: inscrever / desactivar
+   6. QR Code de acesso
+   7. Logout / eliminar conta
+   ============================================ */
 
 const AUTH_KEY = 'hiitgym_user';
 
-// Informações de cada modalidade (ícones, títulos, horários)
 const MODALIDADES = {
-  musculacao:   { titulo: 'Musculação',              icon: 'fa-dumbbell',    dias: 'Todos os dias',       horas: '06h00 – 22h00' },
-  cardio:       { titulo: 'Cardio',                  icon: 'fa-heart-pulse', dias: 'Todos os dias',       horas: '07h00 – 21h00' },
-  yoga_pilates: { titulo: 'Yoga & Pilates',          icon: 'fa-spa',         dias: '2ª, 4ª e 6ª feira',  horas: '17h00 – 19h30' },
-  lutas:        { titulo: 'Lutas e Artes Marciais',  icon: 'fa-shield-halved',dias: '2ª feira a sábado', horas: '19h00 – 20h30' },
-  zumba_danca:  { titulo: 'Zumba e Danças',          icon: 'fa-music',       dias: '3ª e 5ª feira',      horas: '20h00 – 21h30' },
-  natacao:      { titulo: 'Natação',                 icon: 'fa-person-swimming', dias: '2ª, 4ª e 6ª feira', horas: '08h00 – 20h00' },
+  musculacao:   { titulo: 'Musculação',             icon: 'fa-dumbbell',        dias: 'Todos os dias',      horas: '06h00 – 22h00' },
+  cardio:       { titulo: 'Cardio',                 icon: 'fa-heart-pulse',     dias: 'Todos os dias',      horas: '07h00 – 21h00' },
+  yoga_pilates: { titulo: 'Yoga & Pilates',         icon: 'fa-spa',             dias: '2ª, 4ª e 6ª feira',  horas: '17h00 – 19h30' },
+  lutas:        { titulo: 'Lutas e Artes Marciais', icon: 'fa-shield-halved',   dias: '2ª feira a sábado',  horas: '19h00 – 20h30' },
+  zumba_danca:  { titulo: 'Zumba e Danças',         icon: 'fa-music',           dias: '3ª e 5ª feira',      horas: '20h00 – 21h30' },
+  natacao:      { titulo: 'Natação',                icon: 'fa-person-swimming', dias: '2ª, 4ª e 6ª feira',  horas: '08h00 – 20h00' },
 };
 
 // ── HELPERS ──────────────────────────────────
-
 const getUser     = () => { try { return JSON.parse(localStorage.getItem(AUTH_KEY)); } catch { return null; } };
-const saveUser    = (u) => localStorage.setItem(AUTH_KEY, JSON.stringify(u));
-const getIniciais = (u) => ((u.firstName?.[0] || '') + (u.lastName?.[0] || '')).toUpperCase();
+const saveUser    = u  => localStorage.setItem(AUTH_KEY, JSON.stringify(u));
+const getIniciais = u  => ((u.firstName?.[0]||'') + (u.lastName?.[0]||'')).toUpperCase();
 
-/** Formata data ISO (2026-03-04) em texto (04 Mar 2026) */
 function formatDate(iso) {
   const meses = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
   const d = new Date(iso + 'T12:00:00');
   return `${String(d.getDate()).padStart(2,'0')} ${meses[d.getMonth()]} ${d.getFullYear()}`;
 }
 
-/** Aplica avatar (foto ou iniciais) a um elemento */
 function aplicarAvatar(el, user) {
   if (!el) return;
   if (user.avatar) {
@@ -54,31 +44,20 @@ function aplicarAvatar(el, user) {
 }
 
 // ── PASSO 1: VERIFICAR AUTH ───────────────────
-// Se não há user na "gaveta", manda para o início
-
 const user = getUser();
-if (!user) {
-  window.location.href = '../index.html';
-}
+if (!user) window.location.href = '../index.html';
 
-// ── PASSO 2: PREENCHER NAV (avatar no topo) ───
-
+// ── PASSO 2: NAV ─────────────────────────────
 function preencherNav() {
-  const navLogin  = document.getElementById('nav-login');
-  const navSignup = document.getElementById('nav-signup');
+  document.getElementById('nav-login')?.classList.add('hidden');
+  document.getElementById('nav-signup')?.classList.add('hidden');
   const navAvatar = document.getElementById('nav-avatar');
   const navAvatarImg = document.getElementById('nav-avatar-img');
-
-  if (user) {
-    navLogin?.classList.add('hidden');
-    navSignup?.classList.add('hidden');
-    navAvatar?.classList.remove('hidden');
-    aplicarAvatar(navAvatarImg, user);
-  }
+  navAvatar?.classList.remove('hidden');
+  aplicarAvatar(navAvatarImg, user);
 }
 
-// ── PASSO 3: PREENCHER SIDEBAR ───────────────
-
+// ── PASSO 3: SIDEBAR ─────────────────────────
 function preencherSidebar() {
   document.getElementById('sidebar-nome').textContent  = `${user.firstName} ${user.lastName}`;
   document.getElementById('sidebar-email').textContent = user.email;
@@ -86,66 +65,62 @@ function preencherSidebar() {
 }
 
 // ── PASSO 4: DASHBOARD ───────────────────────
-
 function preencherDashboard() {
   const treinos = user.trainings || [];
-
-  // Nome de boas-vindas
   document.getElementById('dash-nome').textContent = user.firstName;
 
-  // Stats
-  const totalCal  = treinos.reduce((s, t) => s + (t.calories || 0), 0);
-  const totalMin  = treinos.reduce((s, t) => s + (t.duration || 0), 0);
+  const totalCal   = treinos.reduce((s, t) => s + (t.calories || 0), 0);
+  const totalMin   = treinos.reduce((s, t) => s + (t.duration || 0), 0);
   const totalHoras = (totalMin / 60).toFixed(1);
 
-  document.getElementById('stat-calorias').textContent  = totalCal.toLocaleString('pt-PT') + ' kcal';
+  document.getElementById('stat-calorias').textContent  = totalCal.toLocaleString('pt-PT');
   document.getElementById('stat-horas').textContent     = totalHoras + 'h';
   document.getElementById('stat-sessoes').textContent   = treinos.length;
   document.getElementById('stat-modalidades').textContent = (user.enrolledModalities || []).length;
 
   // Últimos 3 treinos
-  const container = document.getElementById('dash-ultimos-treinos');
-  const ultimos = [...treinos].sort((a,b) => b.date.localeCompare(a.date)).slice(0, 3);
+  const listaEl = document.getElementById('dash-ultimos-treinos');
+  const ultimos = treinos.slice(0, 3);
+  listaEl.innerHTML = ultimos.length === 0
+    ? `<p style="font-size:.8rem;color:var(--clr-2);opacity:.6;">Ainda não tens treinos registados.</p>`
+    : ultimos.map(t => {
+        const m = MODALIDADES[t.modality] || { titulo: t.modality, icon: 'fa-dumbbell' };
+        return `
+          <div class="treino-mini-card">
+            <i class="fa-solid ${m.icon} treino-icon"></i>
+            <div class="treino-info">
+              <span class="treino-nome">${m.titulo}</span>
+              <span class="treino-data">${formatDate(t.date)}</span>
+            </div>
+            <span class="treino-dur">${t.duration} min</span>
+            <span class="treino-kcal">${t.calories} kcal</span>
+          </div>`;
+      }).join('');
 
-  container.innerHTML = ultimos.length
-    ? ultimos.map(t => {
-        const m = MODALIDADES[t.modality] || {};
-        return `<div class="treino-mini-card">
-          <i class="fa-solid ${m.icon || 'fa-dumbbell'} treino-icon"></i>
-          <div class="treino-info">
-            <span class="treino-nome">${m.titulo || t.modality}</span>
-            <span class="treino-data">${formatDate(t.date)}</span>
-          </div>
-          <span class="treino-dur">${t.duration} min</span>
-          <span class="treino-kcal">${t.calories} kcal</span>
-        </div>`;
-      }).join('')
-    : '<p style="color:var(--clr-2);opacity:0.5;font-size:0.82rem;">Ainda sem treinos registados.</p>';
-
-  // Modalidades activas
+  // Badges de modalidades
   const badgesEl = document.getElementById('dash-modalidades');
   const enrolled = user.enrolledModalities || [];
-  badgesEl.innerHTML = enrolled.length
-    ? enrolled.map(key => {
-        const m = MODALIDADES[key];
-        return `<span class="modalidade-badge">${m?.titulo || key}</span>`;
-      }).join('')
-    : '<p style="color:var(--clr-2);opacity:0.5;font-size:0.82rem;">Nenhuma modalidade activa.</p>';
+  badgesEl.innerHTML = enrolled.length === 0
+    ? `<p style="font-size:.8rem;color:var(--clr-2);opacity:.6;">Nenhuma modalidade inscrita.</p>`
+    : enrolled.map(k => {
+        const m = MODALIDADES[k];
+        return m ? `<span class="modalidade-badge"><i class="fa-solid ${m.icon}"></i> ${m.titulo}</span>` : '';
+      }).join('');
 }
 
 // ── PASSO 5: TREINOS ─────────────────────────
-
 function preencherTreinos() {
-  const container = document.getElementById('treinos-lista');
-  const treinos = [...(user.trainings || [])].sort((a,b) => b.date.localeCompare(a.date));
+  const lista = document.getElementById('treinos-lista');
+  if (!lista) return;
+  const treinos = user.trainings || [];
 
-  if (!treinos.length) {
-    container.innerHTML = '<p style="color:var(--clr-2);opacity:0.5;font-size:0.82rem;padding:1rem 0;">Ainda sem treinos registados.</p>';
+  if (treinos.length === 0) {
+    lista.innerHTML = `<p style="font-size:.8rem;color:var(--clr-2);opacity:.6;padding:1rem 0;">Ainda não tens treinos registados.</p>`;
     return;
   }
 
-  container.innerHTML = treinos.map(t => {
-    const m = MODALIDADES[t.modality] || {};
+  lista.innerHTML = treinos.map(t => {
+    const m = MODALIDADES[t.modality] || { titulo: t.modality, icon: 'fa-dumbbell' };
     const sourceBadge = t.source === 'smartwatch'
       ? `<span class="source-badge smartwatch"><i class="fa-solid fa-watch"></i> smartwatch</span>`
       : `<span class="source-badge manual"><i class="fa-solid fa-pencil"></i> manual</span>`;
@@ -153,9 +128,9 @@ function preencherTreinos() {
     return `
       <details class="treino-item glass">
         <summary>
-          <i class="fa-solid ${m.icon || 'fa-dumbbell'} treino-icon" style="color:var(--clr-4)"></i>
+          <i class="fa-solid ${m.icon} treino-icon" style="color:var(--clr-4)"></i>
           <div class="treino-info">
-            <span class="treino-nome">${m.titulo || t.modality}</span>
+            <span class="treino-nome">${m.titulo}</span>
             <span class="treino-data">${formatDate(t.date)}</span>
           </div>
           <span class="treino-dur">${t.duration} min</span>
@@ -174,9 +149,9 @@ function preencherTreinos() {
 }
 
 // ── PASSO 6: MODALIDADES ─────────────────────
-
 function preencherModalidades() {
   const grid     = document.getElementById('modalidades-grid');
+  if (!grid) return;
   const enrolled = user.enrolledModalities || [];
 
   grid.innerHTML = Object.entries(MODALIDADES).map(([key, m]) => {
@@ -184,41 +159,30 @@ function preencherModalidades() {
     const status   = inscrito
       ? `<span class="mod-status inscrito">Inscrito</span>`
       : `<span class="mod-status disponivel">Disponível</span>`;
-
     const acoes = inscrito
-      ? `<button class="btn-desactiv" data-key="${key}">
-           <i class="fa-solid fa-ban"></i> Pedir Desactivação
-         </button>`
-      : `<button class="btn-inscr" data-key="${key}">
-           <i class="fa-solid fa-plus"></i> Inscrever-me
-         </button>`;
+      ? `<button class="btn-desactiv" data-key="${key}"><i class="fa-solid fa-ban"></i> Pedir Desactivação</button>`
+      : `<button class="btn-inscr" data-key="${key}"><i class="fa-solid fa-plus"></i> Inscrever-me</button>`;
 
     return `
       <div class="modalidade-card">
         <div class="mod-header">
-          <span class="mod-titulo">
-            <i class="fa-solid ${m.icon}"></i> ${m.titulo}
-          </span>
+          <span class="mod-titulo"><i class="fa-solid ${m.icon}"></i> ${m.titulo}</span>
           ${status}
         </div>
         <div class="mod-body">
           <span class="mod-horario"><i class="fa-solid fa-calendar"></i> ${m.dias}</span>
           <span class="mod-horario"><i class="fa-solid fa-clock"></i> ${m.horas}</span>
         </div>
-        <div class="mod-actions">
-          ${acoes}
-        </div>
+        <div class="mod-actions">${acoes}</div>
       </div>`;
   }).join('');
 
-  // Eventos nos botões de inscrição / desactivação
   grid.querySelectorAll('.btn-inscr').forEach(btn => {
     btn.addEventListener('click', () => {
-      const key = btn.dataset.key;
-      user.enrolledModalities = [...(user.enrolledModalities || []), key];
+      user.enrolledModalities = [...(user.enrolledModalities || []), btn.dataset.key];
       saveUser(user);
       preencherModalidades();
-      preencherDashboard(); // Actualiza os badges no dashboard
+      preencherDashboard();
     });
   });
 
@@ -236,8 +200,7 @@ function preencherModalidades() {
   });
 }
 
-// ── PASSO 7: FORMULÁRIO DE PERFIL ────────────
-
+// ── PASSO 7: PERFIL ───────────────────────────
 function preencherFormPerfil() {
   const f = document.getElementById('form-perfil');
   if (!f) return;
@@ -257,7 +220,6 @@ function preencherFormPerfil() {
     const erro    = document.getElementById('perfil-error');
     const sucesso = document.getElementById('perfil-success');
 
-    // Validação de nova password (se preenchida)
     if (f.newPassword.value && f.newPassword.value.length < 6) {
       erro.textContent = 'A nova password deve ter pelo menos 6 caracteres.';
       erro.classList.remove('hidden');
@@ -265,7 +227,6 @@ function preencherFormPerfil() {
       return;
     }
 
-    // Guarda as alterações
     user.firstName = f.firstName.value.trim();
     user.lastName  = f.lastName.value.trim();
     user.email     = f.email.value.trim().toLowerCase();
@@ -285,30 +246,18 @@ function preencherFormPerfil() {
   });
 }
 
-// ── PASSO 8: UPLOAD DE AVATAR ────────────────
-// Usa a API FileReader do browser para ler a foto
-// e guardá-la como base64 no localStorage.
-// Não precisa de servidor!
-
+// ── PASSO 8: AVATAR UPLOAD ───────────────────
 function bindAvatarUpload(inputId) {
   const input = document.getElementById(inputId);
   if (!input) return;
-
   input.addEventListener('change', e => {
     const file = e.target.files[0];
     if (!file) return;
-
-    // Limita o tamanho a 2MB para não encher o localStorage
-    if (file.size > 2 * 1024 * 1024) {
-      alert('A foto é demasiado grande. Máximo: 2MB.');
-      return;
-    }
-
+    if (file.size > 2 * 1024 * 1024) { alert('A foto é demasiado grande. Máximo: 2MB.'); return; }
     const reader = new FileReader();
     reader.onload = ev => {
-      user.avatar = ev.target.result; // base64
+      user.avatar = ev.target.result;
       saveUser(user);
-      // Actualiza todos os locais onde o avatar aparece
       aplicarAvatar(document.getElementById('sidebar-avatar'), user);
       aplicarAvatar(document.getElementById('perfil-avatar'), user);
       aplicarAvatar(document.getElementById('nav-avatar-img'), user);
@@ -318,12 +267,9 @@ function bindAvatarUpload(inputId) {
 }
 
 // ── PASSO 9: ADICIONAR TREINO MANUAL ─────────
-
 function bindAddTreino() {
   const form = document.getElementById('form-add-treino');
   if (!form) return;
-
-  // Define a data de hoje como valor por defeito
   form.date.value = new Date().toISOString().split('T')[0];
 
   form.addEventListener('submit', e => {
@@ -337,31 +283,23 @@ function bindAddTreino() {
       source:   'manual',
       notes:    form.notes.value.trim()
     };
-
     user.trainings = [novoTreino, ...(user.trainings || [])];
     saveUser(user);
-
-    // Actualiza a lista e o dashboard
     preencherTreinos();
     preencherDashboard();
-
-    // Fecha o <details> e reseta o form
     form.closest('details').removeAttribute('open');
     form.reset();
     form.date.value = new Date().toISOString().split('T')[0];
   });
 }
 
-// ── PASSO 10: SINCRONIZAR (simula smartwatch) ─
-
+// ── PASSO 10: SINCRONIZAR ────────────────────
 document.getElementById('btn-sync')?.addEventListener('click', () => {
   const btn = document.getElementById('btn-sync');
   btn.disabled = true;
   btn.innerHTML = '<i class="fa-solid fa-rotate fa-spin"></i> A sincronizar...';
 
-  // Simula um delay de sincronização
   setTimeout(() => {
-    // Adiciona um treino simulado "agora"
     const random = ['musculacao','cardio','natacao'][Math.floor(Math.random()*3)];
     const novoTreino = {
       id:       't' + Date.now(),
@@ -381,14 +319,96 @@ document.getElementById('btn-sync')?.addEventListener('click', () => {
 
     preencherTreinos();
     preencherDashboard();
-
     btn.disabled = false;
     btn.innerHTML = '<i class="fa-solid fa-rotate"></i> Sincronizar';
   }, 1800);
 });
 
-// ── LOGOUT ───────────────────────────────────
+// ── PASSO 11: QR CODE ────────────────────────
+//
+// O número de membro é DETERMINÍSTICO:
+// o mesmo email gera sempre o mesmo número.
+// Assim o QR mantém-se consistente entre sessões.
+//
 
+function gerarNumeroMembro(email) {
+  let hash = 0;
+  for (const c of email) {
+    hash = ((hash << 5) - hash) + c.charCodeAt(0);
+    hash |= 0; // converte para inteiro de 32 bits
+  }
+  const ano = new Date().getFullYear();
+  const num = String(Math.abs(hash) % 100000).padStart(5, '0');
+  return `HG${ano}-${num}`; // ex: HG2026-42857
+}
+
+function preencherQR() {
+  const memberNum = gerarNumeroMembro(user.email);
+  const primeiroNome = (user.firstName || '').toUpperCase();
+  const ultimoNome   = (user.lastName  || '').toUpperCase();
+
+  // Dados codificados no QR
+  const qrData = `HIITGYM|${memberNum}|${primeiroNome}|${ultimoNome}`;
+  const qrUrl  = `https://api.qrserver.com/v1/create-qr-code/?size=200x200`
+               + `&data=${encodeURIComponent(qrData)}`
+               + `&bgcolor=120D0F&color=fba002&format=svg&margin=10`;
+
+  // Preenche o card (tab QR)
+  const qrImg     = document.getElementById('qr-img');
+  const qrLoading = document.getElementById('qr-loading');
+
+  document.getElementById('qr-member-number').textContent = memberNum;
+  document.getElementById('qr-first-name').textContent    = primeiroNome;
+  document.getElementById('qr-last-name').textContent     = ultimoNome;
+
+  if (qrImg) {
+    qrImg.src = qrUrl;
+    qrImg.onload = () => {
+      qrImg.classList.remove('hidden');
+      qrLoading?.classList.add('hidden');
+    };
+    qrImg.onerror = () => {
+      if (qrLoading) {
+        qrLoading.innerHTML = '<i class="fa-solid fa-wifi-exclamation"></i> Sem ligação para gerar QR';
+      }
+    };
+  }
+
+  // Preenche o overlay
+  const overlayImg    = document.getElementById('qr-overlay-img');
+  const overlayMember = document.getElementById('qr-overlay-member');
+  const overlayNome   = document.getElementById('qr-overlay-nome');
+
+  if (overlayImg)    overlayImg.src = qrUrl;
+  if (overlayMember) overlayMember.textContent = memberNum;
+  if (overlayNome)   overlayNome.textContent = `${primeiroNome} ${ultimoNome}`;
+}
+
+// Abrir overlay ao clicar no card QR
+document.getElementById('qr-card-btn')?.addEventListener('click', () => {
+  document.getElementById('qr-overlay')?.classList.remove('hidden');
+  document.body.style.overflow = 'hidden';
+});
+
+document.getElementById('qr-card-btn')?.addEventListener('keydown', e => {
+  if (e.key === 'Enter' || e.key === ' ') {
+    e.preventDefault();
+    document.getElementById('qr-overlay')?.classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+  }
+});
+
+function fecharQrOverlay() {
+  document.getElementById('qr-overlay')?.classList.add('hidden');
+  document.body.style.overflow = '';
+}
+
+document.getElementById('qr-overlay-fechar')?.addEventListener('click', fecharQrOverlay);
+document.getElementById('qr-overlay-backdrop')?.addEventListener('click', fecharQrOverlay);
+document.addEventListener('keydown', e => { if (e.key === 'Escape') fecharQrOverlay(); });
+
+
+// ── LOGOUT ────────────────────────────────────
 document.getElementById('btn-logout')?.addEventListener('click', () => {
   if (confirm('Tens a certeza que queres sair?')) {
     localStorage.removeItem(AUTH_KEY);
@@ -396,8 +416,7 @@ document.getElementById('btn-logout')?.addEventListener('click', () => {
   }
 });
 
-// ── ELIMINAR CONTA ───────────────────────────
-
+// ── ELIMINAR CONTA ────────────────────────────
 document.getElementById('btn-delete-account')?.addEventListener('click', () => {
   if (confirm('⚠️ Tens a certeza? Esta acção é IRREVERSÍVEL. Todos os teus dados serão eliminados.')) {
     localStorage.removeItem(AUTH_KEY);
@@ -405,8 +424,7 @@ document.getElementById('btn-delete-account')?.addEventListener('click', () => {
   }
 });
 
-// ── REMOVER FOTO ─────────────────────────────
-
+// ── REMOVER FOTO ──────────────────────────────
 document.getElementById('btn-remove-avatar')?.addEventListener('click', () => {
   user.avatar = null;
   saveUser(user);
@@ -415,14 +433,15 @@ document.getElementById('btn-remove-avatar')?.addEventListener('click', () => {
   aplicarAvatar(document.getElementById('nav-avatar-img'), user);
 });
 
-// ── INICIALIZAÇÃO — corre tudo ───────────────
 
+// ── INIT ──────────────────────────────────────
 preencherNav();
 preencherSidebar();
 preencherDashboard();
 preencherTreinos();
 preencherModalidades();
 preencherFormPerfil();
+preencherQR();
 bindAvatarUpload('avatar-upload');
 bindAvatarUpload('avatar-upload-perfil');
 bindAddTreino();

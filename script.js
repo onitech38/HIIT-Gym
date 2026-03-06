@@ -403,7 +403,10 @@ const coaches = {
 };
 
 const modalidadesData = {
+  // ── Para remover uma modalidade do site: active: false ──
+  // O layout reage automaticamente ao número de fatias activas.
   musculacao: {
+    active:    true,
     titulo:    'Musculação',
     dias:      'Todos os dias',
     horas:     '06h00 – 22h00',
@@ -411,6 +414,7 @@ const modalidadesData = {
     coaches:   ['carlos', 'ana', 'rafael'],
   },
   cardio: {
+    active:    true,
     titulo:    'Cardio',
     dias:      'Todos os dias',
     horas:     '07h00 – 21h00',
@@ -418,6 +422,7 @@ const modalidadesData = {
     coaches:   ['maria', 'joao'],
   },
   yoga_pilates: {
+    active:    true,
     titulo:    'Yoga & Pilates',
     dias:      '2ª, 4ª e 6ª feira',
     horas:     '17h00 – 19h30',
@@ -425,6 +430,7 @@ const modalidadesData = {
     coaches:   ['sofia', 'pedro', 'claudia', 'tiago', 'ines'],
   },
   lutas: {
+    active:    true,
     titulo:    'Lutas e Artes Marciais',
     dias:      '2ª feira a sábado',
     horas:     '19h00 – 20h30',
@@ -432,6 +438,7 @@ const modalidadesData = {
     coaches:   ['fernando', 'patricia', 'ricardo'],
   },
   zumba_danca: {
+    active:    true,
     titulo:    'Zumba e Danças',
     dias:      '3ª e 5ª feira',
     horas:     '20h00 – 21h30',
@@ -439,6 +446,7 @@ const modalidadesData = {
     coaches:   ['maria', 'joao'],
   },
   natacao: {
+    active:    true,
     titulo:    'Natação',
     dias:      '2ª, 4ª e 6ª feira',
     horas:     '08h00 – 20h00',
@@ -583,3 +591,76 @@ document.getElementById('equipa-next')
 // ============================================
 estado1();
 
+
+// ============================================
+// PWA — Botão de instalação
+// ============================================
+let deferredPrompt = null;
+
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  deferredPrompt = e;
+
+  const btn      = document.getElementById('pwa-install-btn');
+  const fallback = document.getElementById('app-fallback');
+
+  if (btn) {
+    btn.classList.remove('hidden');
+    btn.addEventListener('click', async () => {
+      if (!deferredPrompt) return;
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      if (outcome === 'accepted') {
+        btn.textContent = '✓ App instalada!';
+        btn.disabled = true;
+      }
+      deferredPrompt = null;
+    });
+  }
+  if (fallback) fallback.classList.add('hidden');
+});
+
+window.addEventListener('appinstalled', () => {
+  const btn = document.getElementById('pwa-install-btn');
+  if (btn) { btn.textContent = '✓ App instalada!'; btn.disabled = true; }
+  deferredPrompt = null;
+});
+
+// Se PWA não disponível (iOS/Safari), mostra instruções
+window.addEventListener('load', () => {
+  const isIos    = /iphone|ipad|ipod/i.test(navigator.userAgent);
+  const isInApp  = window.matchMedia('(display-mode: standalone)').matches;
+  const fallback = document.getElementById('app-fallback');
+  const btn      = document.getElementById('pwa-install-btn');
+
+  if (isInApp) {
+    // Já está instalada — esconde toda a secção de instalação
+    btn?.classList.add('hidden');
+    return;
+  }
+
+  if (isIos && !deferredPrompt && fallback) {
+    fallback.classList.remove('hidden');
+  }
+});
+
+
+// ============================================
+// BOTÃO "Área de Membro"
+// Se não está autenticado → abre form de signup
+// ============================================
+document.getElementById('btn-membro')?.addEventListener('click', e => {
+  if (!getUser()) {
+    e.preventDefault();
+    // Abre o welcome/signup
+    const modeSignup = document.getElementById('mode-signup');
+    if (modeSignup) {
+      modeSignup.click();
+      mostrarWelcome();
+    } else {
+      // Fallback: vai para o inicio com param
+      window.location.href = 'index.html?auth=login';
+    }
+  }
+  // Se autenticado, o href normal navega para user/user.html
+});
