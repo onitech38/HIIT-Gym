@@ -32,21 +32,122 @@
     <link rel="stylesheet" href="style.css?v=1.0.0">
 </head>
 <body id="home">
-    <aside class="welcome hidden">
-        <img src="" alt="">
-        <div class="welcome-intro hidden">
-            <img src="src/logo/logo_def1.svg" alt="Hiit-Gym">
-            <div>
-                <h3>Get ready to HIIT your body!</h3>
-                <h1 class="h1-big">HIIT THE GYM!</h1>
-                <button>free visit now</button>
-                <div>
-                    <a class="link-btn" href="">login</a>
-                    <a class="link-btn" href="">signup</a>
-                </div>
+     <aside class="welcome" id="welcome" role="dialog" aria-modal="true" aria-label="Login ou Criar Conta">
+
+        <!-- TRUQUE CSS: estes dois inputs estão ANTES do .welcome-panel -->
+        <!-- São "irmãos" do .welcome-panel, o que permite o selector ~ funcionar -->
+        <input type="radio" name="auth-mode" id="mode-login" checked hidden>
+        <input type="radio" name="auth-mode" id="mode-signup" hidden>
+
+        <!-- Fundo escuro — clicar fecha o modal (via JS) -->
+        <div class="welcome-backdrop" id="welcome-backdrop" aria-hidden="true"></div>
+
+        <!-- Painel do modal -->
+        <div class="welcome-panel glass">
+
+            <!-- Cabeçalho: logo + botão fechar -->
+            <div class="welcome-header">
+                <a href="index.html">
+                    <img src="src/logo/logo_def1.svg" alt="Hiit-Gym" class="welcome-logo">
+                </a>
+                <button class="btn icon glass" id="welcome-skip" aria-label="Fechar e continuar sem conta">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
             </div>
-        </div>
-    </aside>
+
+            <!-- Título -->
+            <div class="welcome-hero">
+                <h2>Get ready to <span>HIIT</span> your body</h2>
+            </div>
+
+            <!-- Tabs: Login / Criar Conta (CSS-only toggle) -->
+            <div class="auth-tabs" role="tablist">
+                <label for="mode-login"  class="auth-tab" role="tab">Login</label>
+                <label for="mode-signup" class="auth-tab" role="tab">Criar Conta</label>
+            </div>
+
+            <!-- FORMULÁRIO DE LOGIN -->
+            <!-- Visível por defeito (CSS: .login-form { display: grid; }) -->
+            <form class="auth-form login-form" id="form-login" novalidate>
+                <div class="campo">
+                    <label for="l-email">Email</label>
+                    <input id="l-email" type="email" name="email"
+                           placeholder="email@exemplo.com" required autocomplete="email">
+                </div>
+                <div class="campo">
+                    <label for="l-pass">Password</label>
+                    <input id="l-pass" type="password" name="password"
+                           placeholder="A tua password" required autocomplete="current-password">
+                </div>
+                <p class="form-error hidden" id="login-error" role="alert">
+                    Email ou password incorretos.
+                </p>
+                <button type="submit" class="btn glass">
+                    Entrar <i class="fa-solid fa-arrow-right"></i>
+                </button>
+            </form>
+
+            <!-- FORMULÁRIO DE CRIAR CONTA -->
+            <!-- Oculto por defeito (CSS: .signup-form { display: none; }) -->
+            <!-- Mostra quando #mode-signup está checked (CSS) -->
+            <form class="auth-form signup-form" id="form-signup" novalidate>
+                <div class="campos-row">
+                    <div class="campo">
+                        <label for="s-fname">Primeiro Nome</label>
+                        <input id="s-fname" type="text" name="firstName"
+                               placeholder="João" required autocomplete="given-name">
+                    </div>
+                    <div class="campo">
+                        <label for="s-lname">Último Nome</label>
+                        <input id="s-lname" type="text" name="lastName"
+                               placeholder="Silva" required autocomplete="family-name">
+                    </div>
+                </div>
+                <div class="campo">
+                    <label for="s-email">Email</label>
+                    <input id="s-email" type="email" name="email"
+                           placeholder="email@exemplo.com" required autocomplete="email">
+                </div>
+                <div class="campo">
+                    <label for="s-tel">Contacto</label>
+                    <input id="s-tel" type="tel" name="phone"
+                           placeholder="+351 912 345 678" required autocomplete="tel">
+                </div>
+                <div class="campos-row">
+                    <div class="campo">
+                        <label for="s-age">Idade</label>
+                        <input id="s-age" type="number" name="age"
+                               placeholder="25" min="14" max="99" required>
+                    </div>
+                    <div class="campo">
+                        <label for="s-weight">
+                            Peso <span class="opt">kg (opcional)</span>
+                        </label>
+                        <input id="s-weight" type="number" name="weight"
+                               placeholder="70" min="30" max="300">
+                    </div>
+                </div>
+                <div class="campo">
+                    <label for="s-address">
+                        Morada <span class="opt">(opcional)</span>
+                    </label>
+                    <input id="s-address" type="text" name="address"
+                           placeholder="Rua Exemplo, 123, Montijo" autocomplete="street-address">
+                </div>
+                <div class="campo">
+                    <label for="s-pass">Password</label>
+                    <input id="s-pass" type="password" name="password"
+                           placeholder="Mínimo 6 caracteres" minlength="6"
+                           required autocomplete="new-password">
+                </div>
+                <p class="form-error hidden" id="signup-error" role="alert"></p>
+                <button type="submit" class="btn glass">
+                    Criar Conta <i class="fa-solid fa-arrow-right"></i>
+                </button>
+            </form>
+
+        </div><!-- /welcome-panel -->
+    </aside><!-- /welcome -->
 
     <aside class="q_a">
         <a class="btn to_top icon-small glass" href="#home"><i class="fa-solid fa-arrow-up-from-bracket"></i></a>
@@ -71,17 +172,25 @@
             </details>            
 
             <div class="nav-content glass" aria-label="Conteúdo da navegação">
-                <div class="menu" aria-label="Paginas do site">
+                <div class="menu" aria-label="Páginas do site">
                     <a class="link-btn" href="#sobre">sobre</a>
                     <a class="link-btn" href="#modalidades">modalidades</a>
                     <a class="link-btn" href="#planos">planos</a>
                     <a class="link-btn" href="#equipa">equipa</a>
                     <a class="link-btn" href="#contactos">contactos</a>
+                    <a class="link-btn" href="blog/blog.html">blog</a>
                 </div>
                 <span></span>
-                <div class="login-sign_up" aria-label="Area de Login e Registo">
-                    <a class="link-btn" href="">login</a>
-                    <a class="link-btn" href="">signup</a>
+                <!-- Área de auth: mostra login/signup OU avatar consoante o estado -->
+                <div class="login-sign_up" id="nav-auth" aria-label="Área de Login e Registo">
+                    <!-- Visível quando NÃO está autenticado (JS esconde ao fazer login) -->
+                    <a class="link-btn" id="nav-login"  href="#" aria-label="Login">login</a>
+                    <a class="link-btn" id="nav-signup" href="#" aria-label="Criar conta">signup</a>
+                    <!-- Visível quando ESTÁ autenticado (JS mostra após login) -->
+                    <a class="nav-user-avatar hidden" href="user/user.html"
+                       id="nav-avatar" aria-label="O meu perfil">
+                        <div class="coach-avatar" id="nav-avatar-img"></div>
+                    </a>
                 </div>
             </div>
         </nav>
@@ -155,6 +264,59 @@
                 </div>
             </div>            
         </section> <!-- ok -->
+
+        <section class="app-promo golden-border" id="app">
+            <div class="app-promo-content">
+                <span class="app-eyebrow">
+                    <i class="fa-solid fa-mobile-screen-button"></i> hiit-gym app
+                </span>
+                <h2>O teu ginásio <span>no bolso</span></h2>
+                <p>Regista treinos, consulta o teu perfil e as modalidades — mesmo sem internet. Instala a app directamente do browser, sem lojas.</p>
+
+                <div class="app-promo-actions">
+                    <!-- Botão principal — JS liga o evento de instalação PWA -->
+                    <button class="btn glass" id="pwa-install-btn" aria-label="Instalar app no telemóvel">
+                        <i class="fa-solid fa-download"></i>
+                        Instalar no telemóvel
+                    </button>
+                    <!-- Link para a área do utilizador -->
+                    <a class="btn glass" href="user/user.html" aria-label="Ir para o meu perfil">
+                        <i class="fa-regular fa-circle-user"></i>
+                        Área de membro
+                    </a>
+                </div>
+
+                <ul class="app-promo-features">
+                    <li><i class="fa-solid fa-check"></i> Funciona offline</li>
+                    <li><i class="fa-solid fa-check"></i> Sem instalação de loja</li>
+                    <li><i class="fa-solid fa-check"></i> Registo de treinos</li>
+                    <li><i class="fa-solid fa-check"></i> Perfil e modalidades</li>
+                </ul>
+
+                <!-- Instrução de fallback (aparece quando PWA não está disponível) -->
+                <p class="app-fallback hidden" id="app-fallback">
+                    <i class="fa-solid fa-circle-info"></i>
+                    No iOS: toca em <strong>Partilhar</strong> → <strong>"Adicionar ao Ecrã Inicial"</strong>.
+                    No Android/Chrome: toca no menu ⋮ → <strong>"Instalar app"</strong>.
+                </p>
+            </div>
+
+            <!-- Decoração visual direita -->
+            <div class="app-promo-visual" aria-hidden="true">
+                <div class="app-phone-mock">
+                    <div class="app-phone-screen">
+                        <div class="app-screen-logo">
+                            <img src="src/logo/logo_def1.svg" alt="HIIT Gym">
+                        </div>
+                        <div class="app-screen-stats">
+                            <div class="app-stat"><span>12</span><small>treinos</small></div>
+                            <div class="app-stat"><span>4.8k</span><small>kcal</small></div>
+                            <div class="app-stat"><span>8h</span><small>total</small></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
 
         <section class="modalidades golden-border" id="modalidades">
             <h2>As nossas Modalidades</h2>
@@ -330,7 +492,7 @@
             </div>
         </section>
 
-        <section class="equipa glass" id="equipa">
+        <section class="equipa golden-border" id="equipa">
             <h3>A nossa Equipa</h3>
             <p>Conhece os profissionais que te vão acompanhar.</p>
             <div class="equipa-carousel">
