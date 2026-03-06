@@ -878,7 +878,6 @@ main {
         height: 360px;
         border-radius: 28px;
         border: 2px solid rgba(251, 160, 2, 0.35);
-        background: rgba(18, 13, 15, 0.85);
         padding: 0.75rem;
         position: relative;
         box-shadow:
@@ -902,8 +901,8 @@ main {
         & .app-phone-screen {
           width: 100%;
           height: 100%;
-          border-radius: 20px;
-          background: rgba(18, 13, 15, 0.9);
+          border-radius: 20px;          
+          background: url(/src/screen-app.jpg) no-repeat center / contain;
           border: 1px solid rgba(251, 160, 2, 0.1);
           display: flex;
           flex-direction: column;
@@ -911,46 +910,6 @@ main {
           justify-content: center;
           gap: 1.5rem;
           padding: 1.5rem 1rem;
-
-          & .app-screen-logo {
-            width: 60px;
-            height: 60px;
-            padding: 0.5rem;
-            border-radius: 14px;
-            background: rgba(251, 160, 2, 0.08);
-            border: 1px solid rgba(251, 160, 2, 0.2);
-
-            & img { width: 100%; height: 100%; object-fit: contain; }
-          }
-
-          & .app-screen-stats {
-            display: flex;
-            gap: 1rem;
-            justify-content: center;
-
-            & .app-stat {
-              display: flex;
-              flex-direction: column;
-              align-items: center;
-              gap: 0.15rem;
-
-              & span {
-                font-family: var(--fnt-sign);
-                font-size: 1.1rem;
-                font-weight: 700;
-                color: var(--clr-4);
-                line-height: 1;
-              }
-
-              & small {
-                font-size: 0.55rem;
-                color: var(--clr-2);
-                opacity: 0.6;
-                text-transform: uppercase;
-                letter-spacing: 0.08em;
-              }
-            }
-          }
         }
       }
     }
