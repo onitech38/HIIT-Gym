@@ -64,7 +64,8 @@
     --icon-padding: .5rem 1rem;
     --icon-font-size-small: 1.5rem;
     --icon-size-logo: 3rem;
-    --icon-logo-hamb-size: 2.5rem;
+    --icon-logo-hamb-size: 2.5rem;    
+    --size-user-avatar: 1.625rem;
 
     --font-weight: 800;
     --margin-block-element: 2rem;
@@ -565,36 +566,7 @@ body {
   margin: 0;
 }
 
-/* Avatar no nav após login */
-.nav-user-avatar {
-  display: inline-flex;
-  align-items: center;
-  text-decoration: none;
-  border: none;
-  background: transparent;
-  cursor: pointer;
 
-  & .coach-avatar {
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    border: 2px solid var(--clr-4);
-    background-size: cover;
-    background-position: center;
-    background-color: var(--clr-3);
-    display: grid;
-    place-items: center;
-    font-size: 0.75rem;
-    font-weight: 700;
-    color: var(--clr-4);
-    transition: transform var(--tempo) ease, border-color var(--tempo) ease;
-  }
-
-  &:hover .coach-avatar {
-    transform: scale(1.1);
-    border-color: var(--clr-1);
-  }
-}
 
 header {
   position: relative; height: var(--container-height);
@@ -615,10 +587,45 @@ header {
     .mobile-nav { display: none; }
 
     .nav-content {
-      max-width: 670px; padding: 0.5rem 1rem;
+      max-width: 1200px; padding: 0.5rem 1rem;
       display: inline-flex; box-shadow: var(--bx-sdw); justify-content: space-around;
-      .menu { display: inline-flex; }
+      .menu { display: inline-flex; align-items: center; }
       span { border-left: var(--border-size) var(--clr-4); border-right: var(--border-size) var(--clr-4); }
+
+      .login-sign_up { 
+        margin-inline: .5rem; display: flex;
+
+        /* Avatar no nav após login */
+        .nav-user-avatar {
+          display: inline-flex;
+          align-items: center;
+          text-decoration: none;
+          border: none;
+          background: transparent;
+          cursor: pointer;
+
+          & .coach-avatar {
+            width: var(--size-user-avatar);
+            height: var(--size-user-avatar);
+            border-radius: 50%;
+            border: 2px solid var(--clr-4);
+            background-size: cover;
+            background-position: center;
+            background-color: var(--clr-3);
+            display: grid;
+            place-items: center;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--clr-4);
+            transition: transform var(--tempo) ease, border-color var(--tempo) ease;
+          }
+
+          &:hover .coach-avatar {
+            transform: scale(1.1);
+            border-color: var(--clr-1);
+          }
+        }
+      }
     }
 
     @media (max-width: 700px) {
@@ -745,6 +752,219 @@ main {
       }
     }
   }/* ok */
+
+  .app-promo {
+    min-height: 50svh;
+    width: 100%;
+    max-width: var(--container-max);
+    padding: 3rem 2rem;
+    margin-inline: auto;
+
+    /* Layout: texto à esquerda, mockup à direita */
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 3rem;
+
+    /* ── Conteúdo (texto + botões) ─────────────── */
+    & .app-promo-content {
+      flex: 1;
+      min-width: 280px;
+      max-width: 560px;
+      display: grid;
+      gap: 1.25rem;
+      text-align: start;
+
+      & * { text-align: start; }
+
+      /* Eyebrow */
+      & .app-eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.72rem;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--clr-4);
+
+        & i { font-size: 0.9rem; }
+      }
+
+      /* Título */
+      & h2 {
+        font-size: clamp(1.75rem, 4vw, 3rem);
+        color: var(--clr-1);
+        text-align: start;
+        letter-spacing: -0.01em;
+        line-height: 1.15;
+        margin: 0;
+
+        & span { color: var(--clr-4); font-style: italic; }
+      }
+
+      /* Descrição */
+      & > p {
+        font-size: 0.92rem;
+        color: var(--clr-2);
+        opacity: 0.8;
+        line-height: 1.7;
+        max-width: 440px;
+        margin: 0;
+      }
+
+      /* Botões de acção — herdam .btn .glass */
+      & .app-promo-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+        margin-top: 0.25rem;
+
+        & .btn {
+          display: inline-flex;
+          align-items: center;
+          gap: 0.5rem;
+
+          & i { font-size: 1rem; }
+        }
+      }
+
+      /* Lista de features */
+      & .app-promo-features {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem 1.5rem;
+        margin-top: 0.25rem;
+
+        & li {
+          font-size: 0.78rem;
+          color: var(--clr-2);
+          opacity: 0.75;
+          display: flex;
+          align-items: center;
+          gap: 0.4rem;
+          text-transform: none;
+          font-weight: 400;
+          letter-spacing: 0.02em;
+
+          & i { color: var(--clr-4); font-size: 0.65rem; }
+        }
+      }
+
+      /* Fallback de instalação manual */
+      & .app-fallback {
+        font-size: 0.78rem;
+        color: var(--clr-2);
+        opacity: 0.6;
+        line-height: 1.6;
+        margin: 0;
+        padding: 0.75rem 1rem;
+        border-left: 2px solid rgba(251, 160, 2, 0.3);
+
+        & i    { color: var(--clr-4); margin-right: 0.35rem; }
+        & strong { color: var(--clr-1); }
+      }
+    }
+
+    /* ── Decoração: mockup de telemóvel ─────────── */
+    & .app-promo-visual {
+      flex-shrink: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+
+      & .app-phone-mock {
+        width: 200px;
+        height: 360px;
+        border-radius: 28px;
+        border: 2px solid rgba(251, 160, 2, 0.35);
+        background: rgba(18, 13, 15, 0.85);
+        padding: 0.75rem;
+        position: relative;
+        box-shadow:
+          inset 0 0 0 1px rgba(255,255,255,0.04),
+          0 24px 60px rgba(0,0,0,0.5),
+          0 0 0 1px rgba(18,13,15,0.8);
+
+        /* Notch */
+        &::before {
+          content: '';
+          position: absolute;
+          top: 10px;
+          left: 50%;
+          transform: translateX(-50%);
+          width: 50px;
+          height: 6px;
+          background: rgba(251, 160, 2, 0.2);
+          border-radius: 100px;
+        }
+
+        & .app-phone-screen {
+          width: 100%;
+          height: 100%;
+          border-radius: 20px;
+          background: rgba(18, 13, 15, 0.9);
+          border: 1px solid rgba(251, 160, 2, 0.1);
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          gap: 1.5rem;
+          padding: 1.5rem 1rem;
+
+          & .app-screen-logo {
+            width: 60px;
+            height: 60px;
+            padding: 0.5rem;
+            border-radius: 14px;
+            background: rgba(251, 160, 2, 0.08);
+            border: 1px solid rgba(251, 160, 2, 0.2);
+
+            & img { width: 100%; height: 100%; object-fit: contain; }
+          }
+
+          & .app-screen-stats {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+
+            & .app-stat {
+              display: flex;
+              flex-direction: column;
+              align-items: center;
+              gap: 0.15rem;
+
+              & span {
+                font-family: var(--fnt-sign);
+                font-size: 1.1rem;
+                font-weight: 700;
+                color: var(--clr-4);
+                line-height: 1;
+              }
+
+              & small {
+                font-size: 0.55rem;
+                color: var(--clr-2);
+                opacity: 0.6;
+                text-transform: uppercase;
+                letter-spacing: 0.08em;
+              }
+            }
+          }
+        }
+      }
+    }
+
+    /* ── Responsividade ─────────────────────────── */
+    @media (max-width: 700px) {
+      min-height: auto;
+      padding: 2.5rem 1.25rem;
+      flex-direction: column;
+      align-items: flex-start;
+
+      & .app-promo-visual { display: none; }
+    }
+  }
 
   .modalidades {
     height: minmax(var(--container-height), auto);
@@ -1264,226 +1484,7 @@ main {
    .hidden, tipografia
    ============================================ */
 
-main .app-promo {
-  min-height: 50svh;
-  width: 100%;
-  max-width: var(--container-max);
-  padding: 3rem 2rem;
-  margin-inline: auto;
 
-  /* Layout: texto à esquerda, mockup à direita */
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 3rem;
-
-  /* Fundo com gradiente subtil */
-  background: linear-gradient(
-    135deg,
-    rgba(251, 160, 2, 0.04) 0%,
-    rgba(18, 13, 15, 0.0) 60%
-  );
-  border: 1.5px solid rgba(251, 160, 2, 0.12);
-
-  /* ── Conteúdo (texto + botões) ─────────────── */
-  & .app-promo-content {
-    flex: 1;
-    min-width: 280px;
-    max-width: 560px;
-    display: grid;
-    gap: 1.25rem;
-    text-align: start;
-
-    & * { text-align: start; }
-
-    /* Eyebrow */
-    & .app-eyebrow {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      font-size: 0.72rem;
-      letter-spacing: 0.2em;
-      text-transform: uppercase;
-      color: var(--clr-4);
-
-      & i { font-size: 0.9rem; }
-    }
-
-    /* Título */
-    & h2 {
-      font-size: clamp(1.75rem, 4vw, 3rem);
-      color: var(--clr-1);
-      text-align: start;
-      letter-spacing: -0.01em;
-      line-height: 1.15;
-      margin: 0;
-
-      & span { color: var(--clr-4); font-style: italic; }
-    }
-
-    /* Descrição */
-    & > p {
-      font-size: 0.92rem;
-      color: var(--clr-2);
-      opacity: 0.8;
-      line-height: 1.7;
-      max-width: 440px;
-      margin: 0;
-    }
-
-    /* Botões de acção — herdam .btn .glass */
-    & .app-promo-actions {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.75rem;
-      margin-top: 0.25rem;
-
-      & .btn {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
-
-        & i { font-size: 1rem; }
-      }
-    }
-
-    /* Lista de features */
-    & .app-promo-features {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.5rem 1.5rem;
-      margin-top: 0.25rem;
-
-      & li {
-        font-size: 0.78rem;
-        color: var(--clr-2);
-        opacity: 0.75;
-        display: flex;
-        align-items: center;
-        gap: 0.4rem;
-        text-transform: none;
-        font-weight: 400;
-        letter-spacing: 0.02em;
-
-        & i { color: var(--clr-4); font-size: 0.65rem; }
-      }
-    }
-
-    /* Fallback de instalação manual */
-    & .app-fallback {
-      font-size: 0.78rem;
-      color: var(--clr-2);
-      opacity: 0.6;
-      line-height: 1.6;
-      margin: 0;
-      padding: 0.75rem 1rem;
-      border-left: 2px solid rgba(251, 160, 2, 0.3);
-
-      & i    { color: var(--clr-4); margin-right: 0.35rem; }
-      & strong { color: var(--clr-1); }
-    }
-  }
-
-  /* ── Decoração: mockup de telemóvel ─────────── */
-  & .app-promo-visual {
-    flex-shrink: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-
-    & .app-phone-mock {
-      width: 200px;
-      height: 360px;
-      border-radius: 28px;
-      border: 2px solid rgba(251, 160, 2, 0.35);
-      background: rgba(18, 13, 15, 0.85);
-      padding: 0.75rem;
-      position: relative;
-      box-shadow:
-        inset 0 0 0 1px rgba(255,255,255,0.04),
-        0 24px 60px rgba(0,0,0,0.5),
-        0 0 0 1px rgba(18,13,15,0.8);
-
-      /* Notch */
-      &::before {
-        content: '';
-        position: absolute;
-        top: 10px;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 50px;
-        height: 6px;
-        background: rgba(251, 160, 2, 0.2);
-        border-radius: 100px;
-      }
-
-      & .app-phone-screen {
-        width: 100%;
-        height: 100%;
-        border-radius: 20px;
-        background: rgba(18, 13, 15, 0.9);
-        border: 1px solid rgba(251, 160, 2, 0.1);
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        gap: 1.5rem;
-        padding: 1.5rem 1rem;
-
-        & .app-screen-logo {
-          width: 60px;
-          height: 60px;
-          padding: 0.5rem;
-          border-radius: 14px;
-          background: rgba(251, 160, 2, 0.08);
-          border: 1px solid rgba(251, 160, 2, 0.2);
-
-          & img { width: 100%; height: 100%; object-fit: contain; }
-        }
-
-        & .app-screen-stats {
-          display: flex;
-          gap: 1rem;
-          justify-content: center;
-
-          & .app-stat {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 0.15rem;
-
-            & span {
-              font-family: var(--fnt-sign);
-              font-size: 1.1rem;
-              font-weight: 700;
-              color: var(--clr-4);
-              line-height: 1;
-            }
-
-            & small {
-              font-size: 0.55rem;
-              color: var(--clr-2);
-              opacity: 0.6;
-              text-transform: uppercase;
-              letter-spacing: 0.08em;
-            }
-          }
-        }
-      }
-    }
-  }
-
-  /* ── Responsividade ─────────────────────────── */
-  @media (max-width: 700px) {
-    min-height: auto;
-    padding: 2.5rem 1.25rem;
-    flex-direction: column;
-    align-items: flex-start;
-
-    & .app-promo-visual { display: none; }
-  }
-}
 
 
 

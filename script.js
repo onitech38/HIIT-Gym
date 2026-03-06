@@ -249,6 +249,8 @@ window.addEventListener('load', () => {
   }
 });
 
+
+
 // ============================================
 // MAP
 // ============================================
@@ -344,15 +346,15 @@ const coaches = {
 
   tiago: { 
     nome: 'Tiago Ribeiro',    
-    avatar: 'src/coaches/tiago/tiago.jpg',      
-    card: 'src/coaches/tiago/tiago_card.jpg',     
+    avatar: 'src/coaches/tiago/tiago.png',      
+    card: 'src/coaches/tiago/tiago_card.png',     
      modalidades: ['yoga_pilates'] 
   },
 
   ines: { 
     nome: 'Inês Martins',     
-    avatar: 'src/coaches/ines/ines.jpg',       
-    card: 'src/coaches/ines/ines_card.jpg',       
+    avatar: 'src/coaches/ines/ines.png',       
+    card: 'src/coaches/ines/ines_card.png',       
     modalidades: ['yoga_pilates'] 
   },
 
@@ -580,3 +582,4 @@ document.getElementById('equipa-next')
 // INIT
 // ============================================
 estado1();
+
