@@ -1,55 +1,42 @@
 /* ============================================
    USER.CSS
-   Depende de style.css: variáveis, .btn, .glass,
-   .hidden, .golden-border, tipografia
-   Depende de auth.css: .campo, .campos-row, .opt,
-   .form-error
+   Depende de style.css e auth.css
 
-   BUGS CORRIGIDOS:
-   1. style.css → section { animation: reveal;
-      opacity:0 } — scroll-driven animation que
-      nunca dispara em páginas sem scroll longo.
-      Fix: body#user-page section { animation:none }
-   2. style.css → header { height: 100svh }
-      aplica-se a todos os headers.
-      Fix: header.user-header { height: auto }
-      com !important para ganhar especificidade.
-
-   TRUQUE CSS — tabs sem JS:
-   5 <input type="radio" class="tab-radio"> no
-   topo do <body>, antes de .user-wrapper.
-   São irmãos de .user-wrapper via ~.
+   TUDO nested dentro de body#user-page.
+   Os selectores de tab com ~ ficam também
+   dentro do nesting — funcionam porque os
+   radio inputs e .user-wrapper são irmãos
+   directos no DOM (filhos de body).
    ============================================ */
 
-/* ── RESET DE BUGS DO STYLE.CSS ─────────────── */
-
-/* BUG 1: cancela a scroll-driven animation que
-   mantém as secções em opacity:0 */
+/* ── RESETS DE BUGS DO STYLE.CSS ─────────────
+   1. scroll-driven animation mantém sections em
+      opacity:0 → cancelamos aqui
+   2. header global tem height:100svh → corrigimos
+──────────────────────────────────────────── */
 body#user-page section {
   animation: none !important;
   opacity: 1 !important;
   transform: none !important;
 }
 
-/* BUG 2: o header global tem height:100svh;
-   aqui forçamos auto para não cobrir a página */
 body#user-page header.user-header {
   height: auto !important;
 }
 
-/* ── RADIO INPUTS (tabs — invisíveis) ───────── */
+/* ── RADIO INPUTS (tabs — invisíveis) ─────── */
 .tab-radio { display: none !important; }
 
-/* ── LAYOUT DA PÁGINA ───────────────────────── */
+
+/* ══════════════════════════════════════════
+   LAYOUT body#user-page
+══════════════════════════════════════════ */
 body#user-page {
   min-height: 100svh;
   display: flex;
   flex-direction: column;
 
-  /* ── Header ─────────────────────────────────
-     Herda nav, hamburger, breakpoints de style.css.
-     Só sobrescrevemos o que muda.
-  ── */
+  /* ── HEADER ──────────────────────────────── */
   & header.user-header {
     height: auto;
     position: sticky;
@@ -58,11 +45,10 @@ body#user-page {
     background: var(--clr-3);
     border-bottom: 1.5px solid rgba(251, 160, 2, 0.15);
 
-    /* Nav mais compacto vs hero */
     & nav { padding: 0.75rem 1rem; }
   }
 
-  /* ── Wrapper: sidebar + conteúdo ─────────── */
+  /* ── WRAPPER ─────────────────────────────── */
   & .user-wrapper {
     flex: 1;
     display: grid;
@@ -74,9 +60,7 @@ body#user-page {
     gap: 2rem;
     align-items: start;
 
-    /* ── Sidebar ─────────────────────────────
-       .glass herdado de style.css
-    ── */
+    /* ── SIDEBAR ──────────────────────────── */
     & .user-sidebar {
       position: sticky;
       top: 80px;
@@ -110,10 +94,8 @@ body#user-page {
 
         & .avatar-upload-btn {
           position: absolute;
-          bottom: 0;
-          right: 0;
-          width: 28px;
-          height: 28px;
+          bottom: 0; right: 0;
+          width: 28px; height: 28px;
           border-radius: 50%;
           background: var(--clr-4);
           color: var(--clr-3);
@@ -130,12 +112,7 @@ body#user-page {
       & .user-sidebar-name {
         text-align: center;
 
-        & h3 {
-          color: var(--clr-1);
-          font-size: 1rem;
-          letter-spacing: 0.05em;
-          margin: 0;
-        }
+        & h3 { color: var(--clr-1); font-size: 1rem; letter-spacing: 0.05em; margin: 0; }
 
         & .sidebar-email {
           font-size: 0.72rem;
@@ -183,7 +160,6 @@ body#user-page {
         }
       }
 
-      /* Logout — herda .btn .glass de style.css */
       & .user-logout-btn {
         font-size: 0.78rem;
         letter-spacing: 0.08em;
@@ -191,79 +167,130 @@ body#user-page {
         border-color: rgba(185, 207, 212, 0.15);
         opacity: 0.6;
 
-        &:hover {
-          color: #ff6b6b;
-          border-color: #ff6b6b;
-          opacity: 1;
-        }
+        &:hover { color: #ff6b6b; border-color: #ff6b6b; opacity: 1; }
       }
     }
 
-    /* ── Conteúdo principal ───────────────── */
+    /* ── MAIN ─────────────────────────────── */
     & .user-main {
       min-height: 60vh;
 
-      /* Todas as tabs escondidas por defeito */
       & .tab-content { display: none; }
+    }
+  }
+
+  /* ── TABS ACTIVAS (CSS-only via ~) ─────────
+     Os radios estão no body antes de
+     .user-wrapper → são irmãos via ~.
+     O selector compilado fica:
+     body#user-page #tab-X:checked ~ .user-wrapper ...
+  ── */
+
+  & #tab-dashboard:checked   ~ .user-wrapper .user-sidebar label[for="tab-dashboard"],
+  & #tab-treinos:checked     ~ .user-wrapper .user-sidebar label[for="tab-treinos"],
+  & #tab-modalidades:checked ~ .user-wrapper .user-sidebar label[for="tab-modalidades"],
+  & #tab-perfil:checked      ~ .user-wrapper .user-sidebar label[for="tab-perfil"],
+  & #tab-qr:checked          ~ .user-wrapper .user-sidebar label[for="tab-qr"] {
+    background: rgba(251, 160, 2, 0.12);
+    color: var(--clr-4);
+    opacity: 1;
+    border-left: 2px solid var(--clr-4);
+  }
+
+  & #tab-dashboard:checked   ~ .user-wrapper .user-main #content-dashboard,
+  & #tab-treinos:checked     ~ .user-wrapper .user-main #content-treinos,
+  & #tab-modalidades:checked ~ .user-wrapper .user-main #content-modalidades,
+  & #tab-perfil:checked      ~ .user-wrapper .user-main #content-perfil,
+  & #tab-qr:checked          ~ .user-wrapper .user-main #content-qr {
+    display: block;
+    animation: tabReveal 0.3s ease;
+  }
+
+  /* ── QR OVERLAY ─────────────────────────── */
+  & .qr-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    & .qr-overlay-backdrop {
+      position: absolute;
+      inset: 0;
+      background: rgba(18, 13, 15, 0.85);
+      backdrop-filter: blur(8px);
+      cursor: pointer;
+    }
+
+    & .qr-overlay-card {
+      position: relative;
+      z-index: 201;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.5rem;
+      padding: 2.5rem 2rem;
+      max-width: 340px;
+      width: 90vw;
+      animation: pop-in 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+
+      & .qr-overlay-fechar {
+        position: absolute;
+        top: 0.75rem;
+        right: 0.75rem;
+        font-size: 1rem;
+        padding: 0.5rem;
+      }
+
+      & img {
+        width: 200px;
+        height: 200px;
+        border-radius: 8px;
+        background: #fff;
+        padding: 8px;
+      }
+
+      & .qr-overlay-info {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.4rem;
+      }
+
+      & .qr-overlay-nome {
+        font-family: var(--fnt-sign);
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: var(--clr-1);
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+      }
     }
   }
 }
 
-/* ── TABS ACTIVAS (CSS-only) ─────────────────
-   Os radio inputs estão no <body> ANTES de
-   .user-wrapper → são irmãos via ~
-── */
-
-/* Tab activa: colore a label */
-#tab-dashboard:checked   ~ .user-wrapper .user-sidebar label[for="tab-dashboard"],
-#tab-treinos:checked     ~ .user-wrapper .user-sidebar label[for="tab-treinos"],
-#tab-modalidades:checked ~ .user-wrapper .user-sidebar label[for="tab-modalidades"],
-#tab-perfil:checked      ~ .user-wrapper .user-sidebar label[for="tab-perfil"] {
-  background: rgba(251, 160, 2, 0.12);
-  color: var(--clr-4);
-  opacity: 1;
-  border-left: 2px solid var(--clr-4);
-}
-
-/* Mostra o conteúdo da tab activa */
-#tab-dashboard:checked   ~ .user-wrapper .user-main #content-dashboard,
-#tab-treinos:checked     ~ .user-wrapper .user-main #content-treinos,
-#tab-modalidades:checked ~ .user-wrapper .user-main #content-modalidades,
-#tab-perfil:checked      ~ .user-wrapper .user-main #content-perfil {
-  display: block;
-  animation: tabReveal 0.3s ease;
-}
-
+/* ── ANIMAÇÕES ───────────────────────────────── */
 @keyframes tabReveal {
   from { opacity: 0; transform: translateY(8px); }
   to   { opacity: 1; transform: translateY(0); }
 }
 
-/* ── CABEÇALHO DE CADA TAB ───────────────────── */
+
+/* ══════════════════════════════════════════════
+   COMPONENTES (fora do nesting — reutilizáveis)
+══════════════════════════════════════════════ */
+
+/* Cabeçalho de tab */
 .tab-header {
   margin-bottom: 2rem;
   height: 100px;
 
-  & h2 {
-    font-size: clamp(1.25rem, 2.5vw, 2rem);
-    color: var(--clr-1);
-    text-align: start;
-    letter-spacing: 0.08em;
-    margin-bottom: 0.3rem;
-  }
-
-  & p {
-    font-size: 0.82rem;
-    color: var(--clr-2);
-    opacity: 0.7;
-    text-align: start;
-    margin: 0;
-  }
+  & h2 { font-size: clamp(1.25rem, 2.5vw, 2rem); color: var(--clr-1); text-align: start; letter-spacing: 0.08em; margin-bottom: 0.3rem; }
+  & p  { font-size: 0.82rem; color: var(--clr-2); opacity: 0.7; text-align: start; margin: 0; }
 }
 
-/* ── DASHBOARD: STATS ────────────────────────
-   .golden-border herdado de style.css
-── */
+/* Stats */
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -276,67 +303,26 @@ body#user-page {
     gap: 1rem;
     padding: 1.25rem;
 
-    & .stat-icon {
-      font-size: 1.5rem;
-      color: var(--clr-4);
-      width: 2rem;
-      text-align: center;
-      flex-shrink: 0;
-    }
+    & .stat-icon { font-size: 1.5rem; color: var(--clr-4); width: 2rem; text-align: center; flex-shrink: 0; }
 
     & div {
-      display: flex;
-      flex-direction: column;
-      gap: 0.1rem;
+      display: flex; flex-direction: column; gap: 0.1rem;
 
-      & .stat-value {
-        font-family: var(--fnt-sign);
-        font-size: 1.4rem;
-        font-weight: 700;
-        color: var(--clr-4);
-        line-height: 1;
-      }
-
-      & .stat-label {
-        font-size: 0.68rem;
-        color: var(--clr-2);
-        opacity: 0.7;
-        text-transform: uppercase;
-        letter-spacing: 0.08em;
-      }
+      & .stat-value { font-family: var(--fnt-sign); font-size: 1.4rem; font-weight: 700; color: var(--clr-4); line-height: 1; }
+      & .stat-label { font-size: 0.68rem; color: var(--clr-2); opacity: 0.7; text-transform: uppercase; letter-spacing: 0.08em; }
     }
   }
 }
 
-/* ── BLOCOS DE SECÇÃO ────────────────────────── */
+/* Blocos */
 .section-block {
   margin-bottom: 2rem;
 
-  & .block-title {
-    font-size: 0.78rem;
-    font-weight: 500;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: var(--clr-4);
-    margin-bottom: 1rem;
-    padding-bottom: 0.5rem;
-    border-bottom: 1px solid rgba(251, 160, 2, 0.15);
-    text-align: start;
-  }
-
-  & .ver-todos-link {
-    display: inline-block;
-    margin-top: 0.75rem;
-    font-size: 0.75rem;
-    cursor: pointer;
-    color: var(--clr-4) !important;
-    opacity: 0.8;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-  }
+  & .block-title { font-size: 0.78rem; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; color: var(--clr-4); margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid rgba(251,160,2,0.15); text-align: start; }
+  & .ver-todos-link { display: inline-block; margin-top: 0.75rem; font-size: 0.75rem; cursor: pointer; color: var(--clr-4) !important; opacity: 0.8; letter-spacing: 0.04em; text-transform: uppercase; }
 }
 
-/* Lista mini de treinos */
+/* Mini-lista de treinos */
 .treinos-mini-list {
   display: flex;
   flex-direction: column;
@@ -349,44 +335,23 @@ body#user-page {
     gap: 0.75rem;
     padding: 0.75rem 1rem;
     border-radius: calc(var(--border-radius) / 2);
-    background: rgba(18, 13, 15, 0.5);
-    border: 1px solid rgba(251, 160, 2, 0.08);
+    background: rgba(18,13,15,0.5);
+    border: 1px solid rgba(251,160,2,0.08);
     transition: background-color var(--tempo) ease;
 
-    &:hover { background-color: rgba(251, 160, 2, 0.06); }
+    &:hover { background-color: rgba(251,160,2,0.06); }
 
-    & .treino-icon {
-      font-size: 1rem;
-      color: var(--clr-4);
-      width: 1.2rem;
-      text-align: center;
+    & .treino-icon  { font-size: 1rem; color: var(--clr-4); width: 1.2rem; text-align: center; }
+    & .treino-info  { display: flex; flex-direction: column; gap: 0.1rem;
+      & .treino-nome { font-size: 0.82rem; color: var(--clr-1); text-transform: uppercase; letter-spacing: 0.04em; }
+      & .treino-data { font-size: 0.68rem; color: var(--clr-2); opacity: 0.6; }
     }
-
-    & .treino-info {
-      display: flex;
-      flex-direction: column;
-      gap: 0.1rem;
-
-      & .treino-nome {
-        font-size: 0.82rem;
-        color: var(--clr-1);
-        letter-spacing: 0.04em;
-        text-transform: uppercase;
-      }
-
-      & .treino-data {
-        font-size: 0.68rem;
-        color: var(--clr-2);
-        opacity: 0.6;
-      }
-    }
-
     & .treino-dur  { font-size: 0.75rem; color: var(--clr-2); white-space: nowrap; }
     & .treino-kcal { font-size: 0.75rem; color: var(--clr-4); white-space: nowrap; }
   }
 }
 
-/* Badges de modalidades inscritas */
+/* Badges de modalidades */
 .modalidades-badges {
   display: flex;
   flex-wrap: wrap;
@@ -401,11 +366,11 @@ body#user-page {
     letter-spacing: 0.08em;
     text-transform: uppercase;
     color: var(--clr-4);
-    background: rgba(251, 160, 2, 0.08);
+    background: rgba(251,160,2,0.08);
   }
 }
 
-/* ── TAB TREINOS ─────────────────────────────── */
+/* Sync bar */
 .sync-bar {
   display: flex;
   align-items: center;
@@ -421,30 +386,14 @@ body#user-page {
   & .btn-small { margin-left: auto; }
 }
 
-/* <details> para adicionar treino manual */
+/* Add treino details */
 .add-treino-details {
   margin-bottom: 1.5rem;
-  border: 1px dashed rgba(251, 160, 2, 0.2);
+  border: 1px dashed rgba(251,160,2,0.2);
 
-  & .add-treino-summary {
-    list-style: none;
-    padding: 0.75rem 1rem;
-    cursor: pointer;
-    font-size: 0.82rem;
-    letter-spacing: 0.08em;
-
-    &::-webkit-details-marker { display: none; }
-  }
-
-  &[open] .add-treino-summary {
-    border-bottom: 1px solid rgba(251, 160, 2, 0.1);
-  }
-
-  & .add-treino-form {
-    display: grid;
-    gap: 1rem;
-    padding: 1.25rem;
-  }
+  & .add-treino-summary { list-style: none; padding: 0.75rem 1rem; cursor: pointer; font-size: 0.82rem; letter-spacing: 0.08em; &::-webkit-details-marker { display: none; } }
+  &[open] .add-treino-summary { border-bottom: 1px solid rgba(251,160,2,0.1); }
+  & .add-treino-form { display: grid; gap: 1rem; padding: 1.25rem; }
 }
 
 /* Lista de treinos */
@@ -454,10 +403,10 @@ body#user-page {
   gap: 0.5rem;
 
   & .treino-item {
-    border: 1px solid rgba(251, 160, 2, 0.1);
+    border: 1px solid rgba(251,160,2,0.1);
     transition: border-color var(--tempo) ease;
 
-    &:hover { border-color: rgba(251, 160, 2, 0.25); }
+    &:hover { border-color: rgba(251,160,2,0.25); }
 
     & summary {
       list-style: none;
@@ -467,14 +416,10 @@ body#user-page {
       grid-template-columns: auto 1fr auto auto auto;
       align-items: center;
       gap: 0.75rem;
-
       &::-webkit-details-marker { display: none; }
     }
 
-    &[open] summary {
-      border-bottom: 1px solid rgba(251, 160, 2, 0.1);
-      background: rgba(251, 160, 2, 0.04);
-    }
+    &[open] summary { border-bottom: 1px solid rgba(251,160,2,0.1); background: rgba(251,160,2,0.04); }
 
     & .treino-details-body {
       padding: 0.75rem 1.1rem;
@@ -488,7 +433,7 @@ body#user-page {
   }
 }
 
-/* Badge de fonte */
+/* Source badge */
 .source-badge {
   display: inline-flex;
   align-items: center;
@@ -499,20 +444,11 @@ body#user-page {
   text-transform: uppercase;
   letter-spacing: 0.06em;
 
-  &.smartwatch {
-    background: rgba(185, 207, 212, 0.1);
-    color: var(--clr-2);
-    border: 1px solid rgba(185, 207, 212, 0.2);
-  }
-
-  &.manual {
-    background: rgba(251, 160, 2, 0.08);
-    color: var(--clr-4);
-    border: 1px solid rgba(251, 160, 2, 0.2);
-  }
+  &.smartwatch { background: rgba(185,207,212,0.1); color: var(--clr-2); border: 1px solid rgba(185,207,212,0.2); }
+  &.manual     { background: rgba(251,160,2,0.08);  color: var(--clr-4); border: 1px solid rgba(251,160,2,0.2); }
 }
 
-/* ── TAB MODALIDADES ─────────────────────────── */
+/* Grid de modalidades */
 .modalidades-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -520,30 +456,20 @@ body#user-page {
   margin-bottom: 1.5rem;
 
   & .modalidade-card {
-    border: 1.5px solid rgba(251, 160, 2, 0.1);
+    border: 1.5px solid rgba(251,160,2,0.1);
+    border-radius: var(--border-radius);
     transition: border-color var(--tempo) ease, transform var(--tempo) ease;
 
-    &:hover {
-      border-color: rgba(251, 160, 2, 0.3);
-      transform: translateY(-2px);
-    }
+    &:hover { border-color: rgba(251,160,2,0.3); transform: translateY(-2px); }
 
     & .mod-header {
       padding: 1rem;
-      background: rgba(18, 13, 15, 0.6);
+      background: rgba(18,13,15,0.6);
       display: flex;
       justify-content: space-between;
       align-items: center;
 
-      & .mod-titulo {
-        font-family: var(--fnt-sign);
-        font-size: 0.85rem;
-        font-weight: 600;
-        letter-spacing: 0.1em;
-        text-transform: uppercase;
-        color: var(--clr-1);
-      }
-
+      & .mod-titulo { font-family: var(--fnt-sign); font-size: 0.85rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--clr-1); }
       & .mod-status {
         font-size: 0.65rem;
         padding: 0.2rem 0.6rem;
@@ -563,92 +489,55 @@ body#user-page {
       gap: 0.4rem;
 
       & .mod-horario {
-        font-size: 0.72rem;
-        color: var(--clr-2);
-        opacity: 0.7;
-        display: flex;
-        align-items: center;
-        gap: 0.4rem;
-
+        font-size: 0.72rem; color: var(--clr-2); opacity: 0.7;
+        display: flex; align-items: center; gap: 0.4rem;
         & i { color: var(--clr-4); font-size: 0.65rem; }
       }
     }
 
     & .mod-actions {
       padding: 0.75rem 1rem;
-      border-top: 1px solid rgba(251, 160, 2, 0.08);
+      border-top: 1px solid rgba(251,160,2,0.08);
       display: flex;
       gap: 0.5rem;
 
-      & .btn-inscr,
-      & .btn-desactiv {
-        flex: 1;
-        padding: 0.5rem;
-        font-size: 0.7rem;
-        letter-spacing: 0.08em;
-        text-transform: uppercase;
-        cursor: pointer;
-        border: 1px solid;
-        background: transparent;
+      & .btn-inscr, & .btn-desactiv {
+        flex: 1; padding: 0.5rem;
+        font-size: 0.7rem; letter-spacing: 0.08em; text-transform: uppercase;
+        cursor: pointer; border: 1px solid; background: transparent;
         font-family: var(--fnt-body);
         border-radius: calc(var(--border-radius) / 2);
         transition: background-color var(--tempo) ease;
       }
-
-      & .btn-inscr {
-        border-color: var(--clr-4);
-        color: var(--clr-4);
-        &:hover { background-color: rgba(251,160,2,0.12); }
-      }
-
-      & .btn-desactiv {
-        border-color: rgba(255,107,107,0.4);
-        color: #ff6b6b;
-        &:hover { background-color: rgba(255,107,107,0.08); }
-      }
+      & .btn-inscr    { border-color: var(--clr-4); color: var(--clr-4); &:hover { background-color: rgba(251,160,2,0.12); } }
+      & .btn-desactiv { border-color: rgba(255,107,107,0.4); color: #ff6b6b; &:hover { background-color: rgba(255,107,107,0.08); } }
     }
   }
 }
 
 .modalidades-nota {
-  font-size: 0.75rem;
-  color: var(--clr-2);
-  opacity: 0.6;
-  text-align: start;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-
+  font-size: 0.75rem; color: var(--clr-2); opacity: 0.6;
+  text-align: start; display: flex; align-items: center; gap: 0.5rem;
   & i { color: var(--clr-4); }
 }
 
-/* ── TAB PERFIL ──────────────────────────────── */
+/* Perfil */
 .perfil-avatar-area {
   display: flex;
   align-items: center;
   gap: 1.5rem;
   margin-bottom: 2rem;
   padding: 1.25rem;
-  background: rgba(18, 13, 15, 0.4);
-  border: 1px solid rgba(251, 160, 2, 0.1);
+  background: rgba(18,13,15,0.4);
+  border: 1px solid rgba(251,160,2,0.1);
+  border-radius: var(--border-radius);
 
   & .perfil-avatar-actions {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-
-    /* Herda .btn .glass de style.css */
-    & label, & button {
-      font-size: 0.75rem;
-      display: flex;
-      align-items: center;
-      gap: 0.4rem;
-      cursor: pointer;
-    }
+    display: flex; flex-direction: column; gap: 0.5rem;
+    & label, & button { font-size: 0.75rem; display: flex; align-items: center; gap: 0.4rem; cursor: pointer; }
   }
 }
 
-/* Formulário de edição */
 .perfil-form {
   display: grid;
   gap: 1rem;
@@ -656,75 +545,141 @@ body#user-page {
 
   & .campo-separator {
     padding-block: 0.5rem;
-    border-top: 1px solid rgba(251, 160, 2, 0.1);
-
-    & span {
-      font-size: 0.72rem;
-      color: var(--clr-2);
-      opacity: 0.6;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-    }
+    border-top: 1px solid rgba(251,160,2,0.1);
+    & span { font-size: 0.72rem; color: var(--clr-2); opacity: 0.6; text-transform: uppercase; letter-spacing: 0.08em; }
   }
 }
 
-/* Mensagem de sucesso */
 .form-success {
-  font-size: 0.75rem;
-  color: #64c878;
+  font-size: 0.75rem; color: #64c878;
   padding: 0.5rem 0.75rem;
-  background: rgba(100, 200, 120, 0.08);
+  background: rgba(100,200,120,0.08);
   border-left: 2px solid #64c878;
   border-radius: 4px;
   margin: 0;
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
+  display: flex; align-items: center; gap: 0.4rem;
 }
 
-/* Zona perigosa — .glass herdado de style.css */
 .zona-perigo {
   margin-top: 3rem;
-  border: 1px solid rgba(255, 107, 107, 0.2);
+  border: 1px solid rgba(255,107,107,0.2);
 
-  & h5 {
-    font-size: 0.82rem;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: #ff6b6b;
-    margin-bottom: 0.3rem;
-    text-align: start;
+  & h5 { font-size: 0.82rem; letter-spacing: 0.1em; text-transform: uppercase; color: #ff6b6b; margin-bottom: 0.3rem; text-align: start; & i { margin-right: 0.5rem; } }
+  & p  { font-size: 0.75rem; color: var(--clr-2); opacity: 0.6; text-align: start; margin-bottom: 1rem; }
+  & .danger-btn { font-size: 0.75rem; border-color: rgba(255,107,107,0.4) !important; color: #ff6b6b !important; &:hover { background-color: rgba(255,107,107,0.1) !important; } }
+}
 
-    & i { margin-right: 0.5rem; }
+/* ── CARD QR ────────────────────────────────── */
+.qr-card {
+  max-width: 380px;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  cursor: pointer;
+  transition: transform var(--tempo) ease, box-shadow var(--tempo) ease;
+
+  &:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--bx-sdw);
   }
 
-  & p {
-    font-size: 0.75rem;
-    color: var(--clr-2);
-    opacity: 0.6;
-    text-align: start;
-    margin-bottom: 1rem;
-  }
+  & .qr-img-area {
+    width: 160px;
+    height: 160px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 8px;
+    display: grid;
+    place-items: center;
+    border: 1px solid rgba(251,160,2,0.15);
+    overflow: hidden;
 
-  & .danger-btn {
-    font-size: 0.75rem;
-    border-color: rgba(255,107,107,0.4) !important;
-    color: #ff6b6b !important;
-
-    &:hover {
-      background-color: rgba(255,107,107,0.1) !important;
+    & .qr-img-el {
+      width: 160px;
+      height: 160px;
+      object-fit: contain;
+      background: #fff;
+      padding: 6px;
     }
+
+    & .qr-loading {
+      font-size: 0.72rem;
+      color: var(--clr-2);
+      opacity: 0.6;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+
+      & i { font-size: 1.2rem; color: var(--clr-4); }
+    }
+  }
+
+  & .qr-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.35rem;
+  }
+
+  & .qr-tap-hint {
+    font-size: 0.65rem;
+    color: var(--clr-2);
+    opacity: 0.4;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin: 0;
   }
 }
 
-/* ── RESPONSIVIDADE ──────────────────────────── */
+.qr-member-number {
+  font-family: var(--fnt-sign);
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--clr-4);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.qr-name {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+
+  & .qr-fname, & .qr-lname {
+    font-family: var(--fnt-sign);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    line-height: 1.3;
+  }
+
+  & .qr-fname { font-size: 1.1rem; color: var(--clr-1); }
+  & .qr-lname { font-size: 0.9rem; color: var(--clr-2); }
+}
+
+.qr-validity {
+  font-size: 0.62rem;
+  color: var(--clr-2);
+  opacity: 0.5;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+/* ── RESPONSIVIDADE ─────────────────────────── */
 @media (max-width: 900px) {
   body#user-page .user-wrapper {
     grid-template-columns: 220px 1fr;
     padding: 1rem;
     gap: 1rem;
   }
-
   .stats-grid { grid-template-columns: 1fr 1fr; }
 }
 
@@ -739,13 +694,8 @@ body#user-page {
       justify-content: center;
       padding: 1rem;
 
-      & .user-avatar-area  { order: 0; }
-
-      & .user-sidebar-name {
-        order: 1;
-        flex-basis: 100%;
-        text-align: center;
-      }
+      & .user-avatar-area { order: 0; }
+      & .user-sidebar-name { order: 1; flex-basis: 100%; text-align: center; }
 
       & .user-tabs-nav {
         order: 2;
@@ -758,7 +708,6 @@ body#user-page {
         & .user-tab-btn {
           padding: 0.5rem;
           justify-content: center;
-
           & span { display: none; }
           & i    { font-size: 1.1rem; width: auto; }
         }
@@ -767,6 +716,5 @@ body#user-page {
       & .user-logout-btn { order: 3; flex-basis: 100%; }
     }
   }
-
   .campos-row { grid-template-columns: 1fr; }
 }
