@@ -1,33 +1,21 @@
 /* ============================================
-   BLOG.CSS
-   Depende de style.css: variáveis, .btn, .glass,
-   .hidden, .link-btn, .golden-border, tipografia
-
-   TUDO está nested dentro de body#blog-page.
+   BLOG.CSS — Depende de style.css e auth.css
+   TUDO nested dentro de body#blog-page.
    ============================================ */
 
-/* ── RESETS DE BUGS DO STYLE.CSS ─────────────
-   style.css aplica scroll-driven animation a
-   todas as sections → opacity:0 até entrar no
-   viewport. Nas páginas de blog e user isto
-   quebra o layout → cancelamos aqui.
-──────────────────────────────────────────── */
 body#blog-page {
   min-height: 100svh;
   display: flex;
   flex-direction: column;
 
-  /* Cancela a scroll-driven animation do style.css */
+  /* ── RESETS DO STYLE.CSS ─────────────────── */
   & section {
     animation: none !important;
     opacity: 1 !important;
     transform: none !important;
   }
 
-  /* ── VIEW GRID & VIEW ARTICLE ──────────────
-     Cada view ocupa toda a largura.
-     .hidden (de style.css) oculta a view inactiva.
-  ── */
+  /* ── VIEWS (grid / article) ──────────────── */
   & #view-grid,
   & #view-article {
     display: flex;
@@ -35,17 +23,14 @@ body#blog-page {
     flex: 1;
   }
 
-  /* ── HEADER ─────────────────────────────────
-     nav herda tudo de style.css.
-     Só sobrescrevemos height e posição.
-  ── */
+  /* ── HEADER ──────────────────────────────── */
   & header.blog-header {
     height: auto !important;
     position: sticky;
     top: 0;
     z-index: 50;
     background: var(--clr-3);
-    border-bottom: 1.5px solid rgba(251, 160, 2, 0.15);
+    border-bottom: 1.5px solid var(--glass-surface);
 
     & nav {
       padding: 0.75rem 1rem;
@@ -113,7 +98,9 @@ body#blog-page {
       min-height: 380px;
       overflow: hidden;
 
-      @media (max-width: 700px) { grid-template-columns: 1fr; }
+      @media (max-width: 700px) {
+        grid-template-columns: 1fr;
+      }
     }
 
     & .featured-img {
@@ -160,6 +147,36 @@ body#blog-page {
       display: flex;
       flex-wrap: wrap;
       gap: 0.5rem;
+
+      & .filter-btn {
+        padding: 0.45rem 1.1rem;
+        border-radius: 100px;
+        font-size: 0.75rem;
+        font-weight: 500;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--clr-2);
+        border: 1.5px solid rgba(185,207,212,0.15);
+        background: transparent;
+        cursor: pointer;
+        opacity: 0.6;
+        font-family: var(--fnt-body);
+        transition: opacity var(--tempo) ease, border-color var(--tempo) ease,
+                    color var(--tempo) ease, background-color var(--tempo) ease;
+
+        &:hover {
+          opacity: 0.9;
+          border-color: rgba(251,160,2,0.3);
+          color: var(--clr-1);
+        }
+
+        &.active {
+          background: var(--clr-4);
+          color: var(--clr-3);
+          border-color: var(--clr-4);
+          opacity: 1;
+        }
+      }
     }
   }
 
@@ -206,6 +223,17 @@ body#blog-page {
         flex-direction: column;
         gap: 0.65rem;
 
+        & .article-meta {
+          display: flex;
+          align-items: center;
+          gap: 0.3rem;
+          font-size: 0.68rem;
+          color: var(--clr-2);
+          opacity: 0.55;
+          letter-spacing: 0.04em;
+          text-transform: uppercase;
+        }
+
         & h3 {
           font-size: clamp(0.9rem, 1.5vw, 1.05rem);
           color: var(--clr-1);
@@ -243,6 +271,25 @@ body#blog-page {
     }
   }
 
+  /* ── BADGES DE CATEGORIA ────────────────── */
+  & .article-category {
+    position: absolute;
+    top: 0.75rem;
+    left: 0.75rem;
+    padding: 0.2rem 0.65rem;
+    border-radius: 100px;
+    font-size: 0.62rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    z-index: 2;
+
+    &.cat-treino-label   { background: rgba(251,160,2,0.9);   color: #120D0F; }
+    &.cat-nutricao-label { background: rgba(100,200,120,0.9); color: #120D0F; }
+    &.cat-saude-label    { background: rgba(100,150,220,0.9); color: #fff; }
+    &.cat-novidade-label { background: rgba(200,100,200,0.9); color: #fff; }
+  }
+
   /* ── NEWSLETTER ─────────────────────────── */
   & .blog-newsletter {
     max-width: 680px;
@@ -278,9 +325,9 @@ body#blog-page {
         flex: 1;
         min-width: 200px;
         padding: 0.65rem 1rem;
-        background: rgba(18,13,15,0.6);
+        background: var(--clr-transp);
         border: 1.5px solid rgba(185,207,212,0.1);
-        border-bottom-color: rgba(251,160,2,0.35);
+        border-bottom-color: var(--clr-4); /*rgba(251,160,2,0.35)*/
         border-radius: 0.25rem 0.5rem 0.25rem 0.75rem;
         color: var(--clr-1);
         font-family: var(--fnt-body);
@@ -376,6 +423,18 @@ body#blog-page {
     & .article-header {
       margin-bottom: 2rem;
 
+      & .article-meta {
+        display: flex;
+        align-items: center;
+        gap: 0.3rem;
+        font-size: 0.68rem;
+        color: var(--clr-2);
+        opacity: 0.55;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        margin-block: 0.5rem;
+      }
+
       & h1 {
         font-size: clamp(1.5rem, 3vw, 2.5rem);
         color: var(--clr-1);
@@ -425,7 +484,6 @@ body#blog-page {
       }
 
       & ol li { list-style: decimal; }
-
       & strong { color: var(--clr-1); }
       & em { color: var(--clr-4); font-style: italic; }
     }
@@ -461,7 +519,7 @@ body#blog-page {
       padding: 0.5rem;
       border-radius: calc(var(--border-radius) / 2);
       border: 1px solid rgba(251,160,2,0.08);
-      background: rgba(18,13,15,0.4);
+      background: var(--clr-transp);
       cursor: pointer;
       text-align: start;
       font-family: var(--fnt-body);
@@ -469,7 +527,7 @@ body#blog-page {
       width: 100%;
 
       &:hover {
-        border-color: rgba(251,160,2,0.25);
+        border-color: var(--glass-surface);
         background-color: rgba(251,160,2,0.05);
       }
 
@@ -510,70 +568,4 @@ body#blog-page {
       }
     }
   }
-}
-
-/* ── FILTRO ACTIVO ───────────────────────────
-   Fora do nesting pois .filter-btn é um
-   componente genérico de estilo.
-── */
-.filter-btn {
-  padding: 0.45rem 1.1rem;
-  border-radius: 100px;
-  font-size: 0.75rem;
-  font-weight: 500;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--clr-2);
-  border: 1.5px solid rgba(185,207,212,0.15);
-  background: transparent;
-  cursor: pointer;
-  opacity: 0.6;
-  font-family: var(--fnt-body);
-  transition: opacity var(--tempo) ease,
-              border-color var(--tempo) ease,
-              color var(--tempo) ease,
-              background-color var(--tempo) ease;
-
-  &:hover {
-    opacity: 0.9;
-    border-color: rgba(251,160,2,0.3);
-    color: var(--clr-1);
-  }
-
-  &.active {
-    background: var(--clr-4);
-    color: var(--clr-3);
-    border-color: var(--clr-4);
-    opacity: 1;
-  }
-}
-
-/* ── BADGES DE CATEGORIA ────────────────────── */
-.article-meta {
-  display: flex;
-  align-items: center;
-  gap: 0.3rem;
-  font-size: 0.68rem;
-  color: var(--clr-2);
-  opacity: 0.55;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-}
-
-.article-category {
-  position: absolute;
-  top: 0.75rem;
-  left: 0.75rem;
-  padding: 0.2rem 0.65rem;
-  border-radius: 100px;
-  font-size: 0.62rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  z-index: 2;
-
-  &.cat-treino-label   { background: rgba(251,160,2,0.9);   color: #120D0F; }
-  &.cat-nutricao-label { background: rgba(100,200,120,0.9); color: #120D0F; }
-  &.cat-saude-label    { background: rgba(100,150,220,0.9); color: #fff; }
-  &.cat-novidade-label { background: rgba(200,100,200,0.9); color: #fff; }
 }

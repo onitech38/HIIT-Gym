@@ -33,7 +33,14 @@
     --glass-surface: rgba(251, 160, 2, 0.15);
     --glass-iridescent-opacity: 1.8;
 
-    /*social*/
+    /* form */
+    --clr-aviso: #ff6b6b;
+    --clr-aviso-brdr: color-mix(in srgb, var(--clr-aviso) 35%, var(--clr-transp) 65%) !important;
+    --clr-aviso-bg: color-mix(in srgb, var(--clr-aviso) 25%, var(--clr-transp) 85%) !important;
+    --clr-sucesso: #64c878;
+    --clr-sucesso-bg: color-mix(in srgb, var(--clr-sucesso) 25%, var(--clr-transp) 85%);
+
+    /* social */
     --clr-social_wa:#25D366;
     --clr-social_wa_shdw:0 0 20px 5px color-mix(in hsl shorter hue, var(--clr-social_wa) 30%, transparent 90%);
 
@@ -46,7 +53,7 @@
     --clr-social_tt:#2590d3;
     --clr-social_tt_shdw:0 0 20px 5px color-mix(in hsl shorter hue, var(--clr-social_tt) 30%, transparent 90%);
 
-    /*light/dark mode*/
+    /* light/dark mode */
     color-scheme: light dark;
     --light-bg: var(--clr-2);
     --dark-bg: var(--clr-1);
@@ -376,8 +383,8 @@ body {
     overflow-y: auto;
     padding: 2rem;
     border-radius: 0.25rem 1.5rem 0.25rem 2rem;
-    border: 1.5px solid rgba(251, 160, 2, 0.25);
-    background: rgba(18, 13, 15, 0.92);
+    border: 1.5px solid var(--glass-surface);
+    background: var(--clr-transp);
     transform: translateY(20px) scale(0.97);
     transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
     scrollbar-width: thin;
@@ -513,7 +520,7 @@ body {
     padding: 0.6rem 0.85rem;
     background: rgba(18, 13, 15, 0.6);
     border: 1.5px solid rgba(185, 207, 212, 0.12);
-    border-bottom-color: rgba(251, 160, 2, 0.4);
+    border-bottom-color: var(--clr-smooth-line);
     border-radius: 0.25rem 0.5rem 0.25rem 0.75rem;
     color: var(--clr-1);
     font-family: var(--fnt-body);
@@ -558,10 +565,10 @@ body {
 /* Mensagem de erro inline */
 .form-error {
   font-size: 0.75rem;
-  color: #ff6b6b;
+  color: var(--clr-aviso);
   padding: 0.5rem 0.75rem;
   background: rgba(255, 107, 107, 0.08);
-  border-left: 2px solid #ff6b6b;
+  border-left: 2px solid var(--clr-aviso);
   border-radius: 4px;
   margin: 0;
 }
@@ -903,7 +910,7 @@ main {
           height: 100%;
           border-radius: 20px;          
           background: url(/src/screen-app.jpg) no-repeat center / contain;
-          border: 1px solid rgba(251, 160, 2, 0.1);
+          border: 1px solid var(--glass-surface);
           display: flex;
           flex-direction: column;
           align-items: center;
@@ -1235,7 +1242,7 @@ main {
 
         &::after {
           content: ""; position: absolute; inset: 0;
-          background: linear-gradient(to bottom, transparent 40%, rgba(18,13,15,0.92) 100%);
+          background: linear-gradient(to bottom, transparent 40%, var(--clr-transp) 100%);
           z-index: 1; pointer-events: none;
         }
 
@@ -1327,7 +1334,7 @@ main {
   
           &:focus {
             border-color: var(--clr-4);
-            box-shadow: 0 0 0 2px rgba(251, 160, 2, 0.15);
+            box-shadow: 0 0 0 2px var(--glass-surface);
           }
   
           &::placeholder {
