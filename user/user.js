@@ -143,6 +143,7 @@ function preencherTreinos() {
           <span>🔥 Calorias: ${t.calories} kcal</span>
           <span>📡 Fonte: ${t.source === 'smartwatch' ? 'Smartwatch (sincronizado)' : 'Inserido manualmente'}</span>
           ${t.notes ? `<span class="notes">💬 "${t.notes}"</span>` : ''}
+          ${t.bpm   ? `<span class="treino-bpm"><i class="fa-solid fa-heart-pulse"></i> Ritmo cardíaco: <strong>${t.bpm} bpm</strong></span>` : ''}
         </div>
       </details>`;
   }).join('');
@@ -280,6 +281,7 @@ function bindAddTreino() {
       modality: form.modality.value,
       duration: parseInt(form.duration.value),
       calories: parseInt(form.calories.value),
+      bpm:      form.bpm?.value ? parseInt(form.bpm.value) : null,
       source:   'manual',
       notes:    form.notes.value.trim()
     };
@@ -307,6 +309,7 @@ document.getElementById('btn-sync')?.addEventListener('click', () => {
       modality: random,
       duration: 30 + Math.floor(Math.random() * 45),
       calories: 200 + Math.floor(Math.random() * 300),
+      bpm:      120 + Math.floor(Math.random() * 60),
       source:   'smartwatch',
       notes:    ''
     };
