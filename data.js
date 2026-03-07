@@ -17,7 +17,7 @@
 // ── COACHES ──────────────────────────────────
 const coaches = {
   carlos:   { nome: 'Carlos Silva',     avatar: 'src/coaches/carlos/carlos.jpg',     card: 'src/coaches/carlos/carlos_card.jpg',     modalidades: ['musculacao'] },
-  ana:      { nome: 'Ana Costa',        avatar: 'src/coaches/ana/Ana.jpg',           card: 'src/coaches/ana/ana_card.jpg',           modalidades: ['musculacao'] },
+  ana:      { nome: 'Ana Costa',        avatar: 'src/coaches/ana/ana.jpg',           card: 'src/coaches/ana/ana_card.jpg',           modalidades: ['musculacao'] },
   rafael:   { nome: 'Rafael Mendes',    avatar: 'src/coaches/rafael/rafael.jpg',     card: 'src/coaches/rafael/rafael_card.jpg',     modalidades: ['musculacao'] },
   maria:    { nome: 'Maria Oliveira',   avatar: 'src/coaches/maria/maria.png',       card: 'src/coaches/maria/maria_card.png',       modalidades: ['cardio', 'zumba_danca'] },
   joao:     { nome: 'João Pereira',     avatar: 'src/coaches/joao/joao.png',         card: 'src/coaches/joao/joao_card.png',         modalidades: ['cardio', 'zumba_danca'] },
