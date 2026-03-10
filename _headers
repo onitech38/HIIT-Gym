@@ -1,0 +1,12 @@
+/sw.js
+  Cache-Control: no-store, no-cache, must-revalidate
+  Service-Worker-Allowed: /
+
+/supabase.js
+  Cache-Control: no-store
+
+/script.js
+  Cache-Control: no-store
+
+/data.js
+  Cache-Control: no-store
