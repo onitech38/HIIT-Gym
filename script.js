@@ -218,12 +218,21 @@ window.addEventListener('load', async () => {
 
   const user = await getUser();
   if (!user) setTimeout(mostrarWelcome, 1000);
+
+  // Reage a mudanças de sessão: confirmação de email, logout noutra aba, refresh de token
+  supabase.auth.onAuthStateChange(async (event, session) => {
+    if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
+      await actualizarNav();
+      // Se estava na homepage com welcome aberto, fecha-o
+      if (session?.user) fecharWelcome();
+    }
+    if (event === 'SIGNED_OUT') {
+      await actualizarNav();
+    }
+  });
 });
 
-// Reage a mudanças de sessão (logout noutra aba, etc.)
-supabase.auth.onAuthStateChange(async (event) => {
-  await actualizarNav();
-});
+
 
 
 // ============================================
