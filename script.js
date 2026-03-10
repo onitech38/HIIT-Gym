@@ -382,7 +382,7 @@ function estado3(key) {
     d.coaches.map(k => `<li>${coaches[k].nome}</li>`).join('');
 
   // Link de inscrição com a modalidade pré-selecionada
-  document.getElementById('painel-inscrever').href = `inscricao/inscricao.html?modalidade=${key}`;
+  document.getElementById('painel-inscrever').href = `inscricao/inscricao.html?modal=${key}`;
 
   escolhas.classList.add('hidden');
   painel.classList.remove('hidden');
