@@ -1,7 +1,6 @@
 /* ============================================
    DATA.JS — CMS da HIIT-Gym
    ============================================
-   Edita APENAS este ficheiro para gerir conteúdo.
    Carregado antes de script.js e blog.js.
 
    ▸ MODALIDADES

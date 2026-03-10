@@ -25,6 +25,8 @@
     --clr-2: #B9CFD4;
     --clr-3: #120D0F;
     --clr-4: #fba002;
+    --clr-4-light: hsl(from var(--clr-4) h s l / .5);
+
     --clr-transp: #120d0f31;
     --clr-smooth-line: 1px solid color-mix(in hsl shorter hue, var(--clr-4) 30%, var(--clr-transp) 90%);
     --blur: blur(1.5px);
@@ -54,7 +56,6 @@
     --clr-social_tt_shdw:0 0 20px 5px color-mix(in hsl shorter hue, var(--clr-social_tt) 30%, transparent 90%);
 
     /* light/dark mode */
-    color-scheme: light dark;
     --light-bg: var(--clr-2);
     --dark-bg: var(--clr-1);
 
@@ -67,9 +68,9 @@
     --section-anim-full: 35%;
 
     --icon-size: 2rem ;
-    --icon-font-size: 2.5rem;
+    --icon-font-size: 1.5rem;
     --icon-padding: .5rem 1rem;
-    --icon-font-size-small: 1.5rem;
+    --icon-font-size-small: 1rem;
     --icon-size-logo: 3rem;
     --icon-logo-hamb-size: 2.5rem;    
     --size-user-avatar: 1.625rem;
@@ -88,8 +89,14 @@
   }
 }
 
+root {
+ --clr-sgn:  hsl(344, 98%, 39%);
+ --clr-secnd: black ;
+}
+
 @layer global {
   html {
+    color-scheme: light dark;
     -webkit-text-size-adjust: 100%;
     -ms-text-size-adjust: 100%;
     * { scroll-margin-top: 1rem; scroll-behavior: smooth; }
@@ -326,6 +333,18 @@ body {
     display: grid;
     justify-items: end;
     color: var(--clr-4); gap: var(--gap-items);  
+  }
+}
+
+@layer media {
+  @media ( prefered-color-scheme: light) {
+    :root {
+      --clr-4: red;
+      --clr-2: blue ;
+      --clr-3: lime ;
+      --clr-1: oldlace ;
+      --bg_pattrn: url(./src/logo/logo_light2.svg);
+    }
   }
 }
 
