@@ -20,24 +20,10 @@
     <link rel="stylesheet" href="../auth.css">
     <link rel="stylesheet" href="blog.css">
 
-    <!-- AUTH GUARD — redirige se não estiver autenticado -->
-    <script>
-      (function() {
-        try {
-          const user = JSON.parse(localStorage.getItem('hiitgym_user'));
-          if (!user) {
-            // Guarda destino para voltar após login
-            sessionStorage.setItem('hiitgym_redirect', 'blog/blog.html');
-            window.location.replace('../index.html');
-          }
-        } catch(e) {
-          window.location.replace('../index.html');
-        }
-      })();
-    </script>
+    <style>body.loading{visibility:hidden}</style>
 </head>
 
-<body id="blog-page">
+<body class="loading" id="blog-page">
 
     <!-- ══════════════════════════════════════
          VIEW 1 — GRELHA (default)
@@ -205,6 +191,9 @@
         </defs>
     </svg>
 
+    <!-- Supabase SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+    <script src="../supabase.js"></script>
     <!-- data.js (CMS) carregado ANTES de blog.js -->
     <script src="../data.js"></script>
     <script src="blog.js"></script>
