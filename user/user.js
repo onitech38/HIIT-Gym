@@ -1,16 +1,14 @@
 /* ============================================
-   HIIT-GYM — USER.JS
+   HIIT-GYM — USER.JS  (Supabase)
 
-   1. Verifica autenticação
-   2. Preenche a página com dados do user
-   3. Upload de avatar, edição de perfil
-   4. Treinos: adicionar, sincronizar
-   5. Modalidades: inscrever / desactivar
+   1. Verifica autenticação via Supabase
+   2. Preenche a página com dados do perfil
+   3. Upload de avatar (Supabase Storage)
+   4. Treinos: adicionar, sincronizar (Supabase)
+   5. Modalidades: inscrever / desactivar (Supabase)
    6. QR Code de acesso
    7. Logout / eliminar conta
    ============================================ */
-
-const AUTH_KEY = 'hiitgym_user';
 
 const MODALIDADES = {
   musculacao:   { titulo: 'Musculação',             icon: 'fa-dumbbell',        dias: 'Todos os dias',      horas: '06h00 – 22h00' },
@@ -22,65 +20,141 @@ const MODALIDADES = {
 };
 
 // ── HELPERS ──────────────────────────────────
-const getUser     = () => { try { return JSON.parse(localStorage.getItem(AUTH_KEY)); } catch { return null; } };
-const saveUser    = u  => localStorage.setItem(AUTH_KEY, JSON.stringify(u));
-const getIniciais = u  => ((u.firstName?.[0]||'') + (u.lastName?.[0]||'')).toUpperCase();
+
+const getIniciais = p => ((p.first_name?.[0] || '') + (p.last_name?.[0] || '')).toUpperCase();
 
 function formatDate(iso) {
   const meses = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
-  const d = new Date(iso + 'T12:00:00');
+  const d = new Date(iso + (iso.includes('T') ? '' : 'T12:00:00'));
   return `${String(d.getDate()).padStart(2,'0')} ${meses[d.getMonth()]} ${d.getFullYear()}`;
 }
 
-function aplicarAvatar(el, user) {
+function aplicarAvatar(el, profile) {
   if (!el) return;
-  if (user.avatar) {
-    el.style.backgroundImage = `url('${user.avatar}')`;
+  if (profile.avatar_url) {
+    el.style.backgroundImage = `url('${profile.avatar_url}')`;
     el.textContent = '';
   } else {
     el.style.backgroundImage = '';
-    el.textContent = getIniciais(user);
+    el.textContent = getIniciais(profile);
   }
 }
 
-// ── PASSO 1: VERIFICAR AUTH ───────────────────
-const user = getUser();
-if (!user) window.location.href = '../index.html';
+// Estado global — preenchido após auth check
+let currentUser   = null;  // Supabase auth user
+let currentProfile = null; // public.profiles row
+let currentTrainings   = [];
+let currentEnrollments = [];
 
-// ── PASSO 2: NAV ─────────────────────────────
+
+// ============================================
+// INIT — verificar auth e carregar tudo
+// ============================================
+async function init() {
+  // 1. Verificar sessão
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) {
+    window.location.href = '../index.html';
+    return;
+  }
+  currentUser = user;
+
+  // 2. Carregar perfil
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('*')
+    .eq('id', user.id)
+    .single();
+
+  // Se o perfil ainda não existir (trigger atrasado), cria um básico
+  if (!profile) {
+    const meta = user.user_metadata || {};
+    const { data: novo } = await supabase.from('profiles').insert({
+      id:         user.id,
+      first_name: meta.firstName || 'Utilizador',
+      last_name:  meta.lastName  || '',
+      phone:      meta.phone     || null,
+      age:        meta.age       || null,
+      weight:     meta.weight    || null,
+      address:    meta.address   || null,
+    }).select().single();
+    currentProfile = novo || { id: user.id, first_name: 'Utilizador', last_name: '', email: user.email };
+  } else {
+    currentProfile = profile;
+  }
+  currentProfile.email = user.email; // email vem do auth, não do profile
+
+  // 3. Carregar treinos
+  const { data: treinos } = await supabase
+    .from('trainings')
+    .select('*')
+    .eq('user_id', user.id)
+    .order('date', { ascending: false });
+  currentTrainings = treinos || [];
+
+  // 4. Carregar inscrições
+  const { data: enrollments } = await supabase
+    .from('enrollments')
+    .select('*')
+    .eq('user_id', user.id);
+  currentEnrollments = enrollments || [];
+
+  // 5. Mostrar o body (estava hidden no HTML para evitar flash)
+  document.body.classList.remove('loading');
+
+  // 6. Preencher UI
+  preencherNav();
+  preencherSidebar();
+  preencherDashboard();
+  preencherTreinos();
+  preencherModalidades();
+  preencherFormPerfil();
+  preencherQR();
+  bindAvatarUpload('avatar-upload');
+  bindAvatarUpload('avatar-upload-perfil');
+  bindAddTreino();
+}
+
+
+// ── NAV ──────────────────────────────────────
 function preencherNav() {
   document.getElementById('nav-login')?.classList.add('hidden');
   document.getElementById('nav-signup')?.classList.add('hidden');
-  const navAvatar = document.getElementById('nav-avatar');
+  const navAvatar    = document.getElementById('nav-avatar');
   const navAvatarImg = document.getElementById('nav-avatar-img');
   navAvatar?.classList.remove('hidden');
-  aplicarAvatar(navAvatarImg, user);
+  aplicarAvatar(navAvatarImg, currentProfile);
 }
 
-// ── PASSO 3: SIDEBAR ─────────────────────────
+
+// ── SIDEBAR ───────────────────────────────────
 function preencherSidebar() {
-  document.getElementById('sidebar-nome').textContent  = `${user.firstName} ${user.lastName}`;
-  document.getElementById('sidebar-email').textContent = user.email;
-  aplicarAvatar(document.getElementById('sidebar-avatar'), user);
+  const p = currentProfile;
+  document.getElementById('sidebar-nome').textContent  = `${p.first_name} ${p.last_name}`;
+  document.getElementById('sidebar-email').textContent = p.email;
+  aplicarAvatar(document.getElementById('sidebar-avatar'), p);
 }
 
-// ── PASSO 4: DASHBOARD ───────────────────────
+
+// ── DASHBOARD ─────────────────────────────────
 function preencherDashboard() {
-  const treinos = user.trainings || [];
-  document.getElementById('dash-nome').textContent = user.firstName;
+  const p       = currentProfile;
+  const treinos = currentTrainings;
+
+  document.getElementById('dash-nome').textContent = p.first_name;
 
   const totalCal   = treinos.reduce((s, t) => s + (t.calories || 0), 0);
   const totalMin   = treinos.reduce((s, t) => s + (t.duration || 0), 0);
   const totalHoras = (totalMin / 60).toFixed(1);
 
-  document.getElementById('stat-calorias').textContent  = totalCal.toLocaleString('pt-PT');
-  document.getElementById('stat-horas').textContent     = totalHoras + 'h';
-  document.getElementById('stat-sessoes').textContent   = treinos.length;
-  document.getElementById('stat-modalidades').textContent = (user.enrolledModalities || []).length;
+  document.getElementById('stat-calorias').textContent    = totalCal.toLocaleString('pt-PT');
+  document.getElementById('stat-horas').textContent       = totalHoras + 'h';
+  document.getElementById('stat-sessoes').textContent     = treinos.length;
+  document.getElementById('stat-modalidades').textContent = currentEnrollments.filter(e => e.status === 'active').length;
 
   // Últimos 3 treinos
   const listaEl = document.getElementById('dash-ultimos-treinos');
-  const ultimos = treinos.slice(0, 3);
+  const ultimos  = treinos.slice(0, 3);
   listaEl.innerHTML = ultimos.length === 0
     ? `<p style="font-size:.8rem;color:var(--clr-2);opacity:.6;">Ainda não tens treinos registados.</p>`
     : ultimos.map(t => {
@@ -98,8 +172,8 @@ function preencherDashboard() {
       }).join('');
 
   // Badges de modalidades
-  const badgesEl = document.getElementById('dash-modalidades');
-  const enrolled = user.enrolledModalities || [];
+  const badgesEl  = document.getElementById('dash-modalidades');
+  const enrolled  = currentEnrollments.filter(e => e.status === 'active').map(e => e.modality_key);
   badgesEl.innerHTML = enrolled.length === 0
     ? `<p style="font-size:.8rem;color:var(--clr-2);opacity:.6;">Nenhuma modalidade inscrita.</p>`
     : enrolled.map(k => {
@@ -108,11 +182,12 @@ function preencherDashboard() {
       }).join('');
 }
 
-// ── PASSO 5: TREINOS ─────────────────────────
+
+// ── TREINOS ───────────────────────────────────
 function preencherTreinos() {
   const lista = document.getElementById('treinos-lista');
   if (!lista) return;
-  const treinos = user.trainings || [];
+  const treinos = currentTrainings;
 
   if (treinos.length === 0) {
     lista.innerHTML = `<p style="font-size:.8rem;color:var(--clr-2);opacity:.6;padding:1rem 0;">Ainda não tens treinos registados.</p>`;
@@ -124,7 +199,6 @@ function preencherTreinos() {
     const sourceBadge = t.source === 'smartwatch'
       ? `<span class="source-badge smartwatch"><i class="fa-solid fa-watch"></i> smartwatch</span>`
       : `<span class="source-badge manual"><i class="fa-solid fa-pencil"></i> manual</span>`;
-
     return `
       <details class="treino-item glass">
         <summary>
@@ -149,15 +223,16 @@ function preencherTreinos() {
   }).join('');
 }
 
-// ── PASSO 6: MODALIDADES ─────────────────────
+
+// ── MODALIDADES ───────────────────────────────
 function preencherModalidades() {
-  const grid     = document.getElementById('modalidades-grid');
+  const grid = document.getElementById('modalidades-grid');
   if (!grid) return;
-  const enrolled = user.enrolledModalities || [];
+  const activeKeys = currentEnrollments.filter(e => e.status === 'active').map(e => e.modality_key);
 
   grid.innerHTML = Object.entries(MODALIDADES).map(([key, m]) => {
-    const inscrito = enrolled.includes(key);
-    const status   = inscrito
+    const inscrito = activeKeys.includes(key);
+    const status = inscrito
       ? `<span class="mod-status inscrito">Inscrito</span>`
       : `<span class="mod-status disponivel">Disponível</span>`;
     const acoes = inscrito
@@ -178,21 +253,38 @@ function preencherModalidades() {
       </div>`;
   }).join('');
 
+  // Inscrever
   grid.querySelectorAll('.btn-inscr').forEach(btn => {
-    btn.addEventListener('click', () => {
-      user.enrolledModalities = [...(user.enrolledModalities || []), btn.dataset.key];
-      saveUser(user);
-      preencherModalidades();
-      preencherDashboard();
+    btn.addEventListener('click', async () => {
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
+      const { data, error } = await supabase.from('enrollments').insert({
+        user_id:      currentUser.id,
+        modality_key: btn.dataset.key,
+        status:       'active',
+      }).select().single();
+      if (!error && data) {
+        currentEnrollments.push(data);
+        preencherModalidades();
+        preencherDashboard();
+      } else {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fa-solid fa-plus"></i> Inscrever-me';
+        alert('Erro ao inscrever. Tenta novamente.');
+      }
     });
   });
 
+  // Desactivar
   grid.querySelectorAll('.btn-desactiv').forEach(btn => {
-    btn.addEventListener('click', () => {
+    btn.addEventListener('click', async () => {
       const key = btn.dataset.key;
-      if (confirm(`Confirmas que queres pedir a desactivação de "${MODALIDADES[key].titulo}"?`)) {
-        user.enrolledModalities = (user.enrolledModalities || []).filter(k => k !== key);
-        saveUser(user);
+      if (!confirm(`Confirmas que queres pedir a desactivação de "${MODALIDADES[key].titulo}"?`)) return;
+      btn.disabled = true;
+      const enrollment = currentEnrollments.find(e => e.modality_key === key && e.status === 'active');
+      if (enrollment) {
+        await supabase.from('enrollments').update({ status: 'cancelled' }).eq('id', enrollment.id);
+        enrollment.status = 'cancelled';
         preencherModalidades();
         preencherDashboard();
         alert('Pedido de desactivação registado. A equipa irá processá-lo em 24-48h.');
@@ -201,250 +293,277 @@ function preencherModalidades() {
   });
 }
 
-// ── PASSO 7: PERFIL ───────────────────────────
+
+// ── PERFIL ────────────────────────────────────
 function preencherFormPerfil() {
   const f = document.getElementById('form-perfil');
   if (!f) return;
+  const p = currentProfile;
 
-  f.firstName.value = user.firstName || '';
-  f.lastName.value  = user.lastName  || '';
-  f.email.value     = user.email     || '';
-  f.phone.value     = user.phone     || '';
-  f.age.value       = user.age       || '';
-  f.weight.value    = user.weight    || '';
-  f.address.value   = user.address   || '';
+  f.firstName.value = p.first_name || '';
+  f.lastName.value  = p.last_name  || '';
+  f.email.value     = p.email      || '';
+  f.phone.value     = p.phone      || '';
+  f.age.value       = p.age        || '';
+  f.weight.value    = p.weight     || '';
+  f.address.value   = p.address    || '';
 
-  aplicarAvatar(document.getElementById('perfil-avatar'), user);
+  aplicarAvatar(document.getElementById('perfil-avatar'), p);
 
-  f.addEventListener('submit', e => {
+  f.addEventListener('submit', async e => {
     e.preventDefault();
+    const btn     = f.querySelector('button[type="submit"]');
     const erro    = document.getElementById('perfil-error');
     const sucesso = document.getElementById('perfil-success');
 
-    if (f.newPassword.value && f.newPassword.value.length < 6) {
+    if (f.newPassword?.value && f.newPassword.value.length < 6) {
       erro.textContent = 'A nova password deve ter pelo menos 6 caracteres.';
       erro.classList.remove('hidden');
       sucesso.classList.add('hidden');
       return;
     }
 
-    user.firstName = f.firstName.value.trim();
-    user.lastName  = f.lastName.value.trim();
-    user.email     = f.email.value.trim().toLowerCase();
-    user.phone     = f.phone.value.trim();
-    user.age       = parseInt(f.age.value) || user.age;
-    user.weight    = f.weight.value  ? parseFloat(f.weight.value) : null;
-    user.address   = f.address.value ? f.address.value.trim() : null;
-    if (f.newPassword.value) user.password = f.newPassword.value;
+    btn.disabled = true;
 
-    saveUser(user);
-    preencherSidebar();
-    preencherNav();
+    // Atualiza perfil no Supabase
+    const updates = {
+      first_name: f.firstName.value.trim(),
+      last_name:  f.lastName.value.trim(),
+      phone:      f.phone.value.trim() || null,
+      age:        parseInt(f.age.value) || null,
+      weight:     f.weight.value ? parseFloat(f.weight.value) : null,
+      address:    f.address.value.trim() || null,
+    };
 
-    erro.classList.add('hidden');
-    sucesso.classList.remove('hidden');
-    setTimeout(() => sucesso.classList.add('hidden'), 3000);
+    const { error: erroPerfil } = await supabase
+      .from('profiles')
+      .update(updates)
+      .eq('id', currentUser.id);
+
+    // Atualiza password se preenchida
+    if (f.newPassword?.value) {
+      await supabase.auth.updateUser({ password: f.newPassword.value });
+    }
+
+    btn.disabled = false;
+
+    if (erroPerfil) {
+      erro.textContent = 'Erro ao guardar. Tenta novamente.';
+      erro.classList.remove('hidden');
+      sucesso.classList.add('hidden');
+    } else {
+      Object.assign(currentProfile, updates);
+      preencherSidebar();
+      preencherNav();
+      erro.classList.add('hidden');
+      sucesso.classList.remove('hidden');
+      setTimeout(() => sucesso.classList.add('hidden'), 3000);
+    }
   });
 }
 
-// ── PASSO 8: AVATAR UPLOAD ───────────────────
+
+// ── AVATAR UPLOAD ─────────────────────────────
 function bindAvatarUpload(inputId) {
   const input = document.getElementById(inputId);
   if (!input) return;
-  input.addEventListener('change', e => {
+  input.addEventListener('change', async e => {
     const file = e.target.files[0];
     if (!file) return;
     if (file.size > 2 * 1024 * 1024) { alert('A foto é demasiado grande. Máximo: 2MB.'); return; }
-    const reader = new FileReader();
-    reader.onload = ev => {
-      user.avatar = ev.target.result;
-      saveUser(user);
-      aplicarAvatar(document.getElementById('sidebar-avatar'), user);
-      aplicarAvatar(document.getElementById('perfil-avatar'), user);
-      aplicarAvatar(document.getElementById('nav-avatar-img'), user);
-    };
-    reader.readAsDataURL(file);
+
+    const ext      = file.name.split('.').pop();
+    const filePath = `avatars/${currentUser.id}.${ext}`;
+
+    // Upload para Supabase Storage (bucket "avatars")
+    const { error: uploadError } = await supabase.storage
+      .from('avatars')
+      .upload(filePath, file, { upsert: true });
+
+    if (uploadError) {
+      // Fallback: guarda como base64 no perfil se o bucket não existir
+      const reader = new FileReader();
+      reader.onload = async ev => {
+        const url = ev.target.result;
+        await supabase.from('profiles').update({ avatar_url: url }).eq('id', currentUser.id);
+        currentProfile.avatar_url = url;
+        aplicarAvatar(document.getElementById('sidebar-avatar'), currentProfile);
+        aplicarAvatar(document.getElementById('perfil-avatar'), currentProfile);
+        aplicarAvatar(document.getElementById('nav-avatar-img'), currentProfile);
+      };
+      reader.readAsDataURL(file);
+      return;
+    }
+
+    const { data: { publicUrl } } = supabase.storage.from('avatars').getPublicUrl(filePath);
+    await supabase.from('profiles').update({ avatar_url: publicUrl }).eq('id', currentUser.id);
+    currentProfile.avatar_url = publicUrl;
+
+    aplicarAvatar(document.getElementById('sidebar-avatar'), currentProfile);
+    aplicarAvatar(document.getElementById('perfil-avatar'), currentProfile);
+    aplicarAvatar(document.getElementById('nav-avatar-img'), currentProfile);
   });
 }
 
-// ── PASSO 9: ADICIONAR TREINO MANUAL ─────────
+
+// ── ADICIONAR TREINO MANUAL ───────────────────
 function bindAddTreino() {
   const form = document.getElementById('form-add-treino');
   if (!form) return;
   form.date.value = new Date().toISOString().split('T')[0];
 
-  form.addEventListener('submit', e => {
+  form.addEventListener('submit', async e => {
     e.preventDefault();
+    const btn = form.querySelector('button[type="submit"]');
+    btn.disabled = true;
+
     const novoTreino = {
-      id:       't' + Date.now(),
+      user_id:  currentUser.id,
       date:     form.date.value,
       modality: form.modality.value,
       duration: parseInt(form.duration.value),
       calories: parseInt(form.calories.value),
-      bpm:      form.bpm?.value ? parseInt(form.bpm.value) : null,
       source:   'manual',
-      notes:    form.notes.value.trim()
+      notes:    form.notes?.value.trim() || '',
     };
-    user.trainings = [novoTreino, ...(user.trainings || [])];
-    saveUser(user);
-    preencherTreinos();
-    preencherDashboard();
-    form.closest('details').removeAttribute('open');
-    form.reset();
-    form.date.value = new Date().toISOString().split('T')[0];
+
+    const { data, error } = await supabase
+      .from('trainings')
+      .insert(novoTreino)
+      .select()
+      .single();
+
+    btn.disabled = false;
+
+    if (!error && data) {
+      currentTrainings.unshift(data);
+      preencherTreinos();
+      preencherDashboard();
+      form.closest('details')?.removeAttribute('open');
+      form.reset();
+      form.date.value = new Date().toISOString().split('T')[0];
+    } else {
+      alert('Erro ao guardar treino. Tenta novamente.');
+    }
   });
 }
 
-// ── PASSO 10: SINCRONIZAR ────────────────────
-document.getElementById('btn-sync')?.addEventListener('click', () => {
+
+// ── SINCRONIZAR SMARTWATCH (simulado) ─────────
+document.getElementById('btn-sync')?.addEventListener('click', async () => {
   const btn = document.getElementById('btn-sync');
   btn.disabled = true;
   btn.innerHTML = '<i class="fa-solid fa-rotate fa-spin"></i> A sincronizar...';
 
-  setTimeout(() => {
-    const random = ['musculacao','cardio','natacao'][Math.floor(Math.random()*3)];
-    const novoTreino = {
-      id:       't' + Date.now(),
-      date:     new Date().toISOString().split('T')[0],
-      modality: random,
-      duration: 30 + Math.floor(Math.random() * 45),
-      calories: 200 + Math.floor(Math.random() * 300),
-      bpm:      120 + Math.floor(Math.random() * 60),
-      source:   'smartwatch',
-      notes:    ''
-    };
-    user.trainings = [novoTreino, ...(user.trainings || [])];
-    saveUser(user);
+  await new Promise(r => setTimeout(r, 1800));
 
+  const random = ['musculacao','cardio','natacao'][Math.floor(Math.random() * 3)];
+  const novoTreino = {
+    user_id:  currentUser.id,
+    date:     new Date().toISOString().split('T')[0],
+    modality: random,
+    duration: 30 + Math.floor(Math.random() * 45),
+    calories: 200 + Math.floor(Math.random() * 300),
+    source:   'smartwatch',
+    notes:    '',
+  };
+
+  const { data, error } = await supabase.from('trainings').insert(novoTreino).select().single();
+  if (!error && data) {
+    currentTrainings.unshift(data);
     const agora = new Date();
     document.getElementById('sync-time').textContent =
       `Hoje, ${String(agora.getHours()).padStart(2,'0')}:${String(agora.getMinutes()).padStart(2,'0')}`;
-
     preencherTreinos();
     preencherDashboard();
-    btn.disabled = false;
-    btn.innerHTML = '<i class="fa-solid fa-rotate"></i> Sincronizar';
-  }, 1800);
+  }
+
+  btn.disabled = false;
+  btn.innerHTML = '<i class="fa-solid fa-rotate"></i> Sincronizar';
 });
 
-// ── PASSO 11: QR CODE ────────────────────────
-//
-// O número de membro é DETERMINÍSTICO:
-// o mesmo email gera sempre o mesmo número.
-// Assim o QR mantém-se consistente entre sessões.
-//
 
+// ── QR CODE ───────────────────────────────────
 function gerarNumeroMembro(email) {
   let hash = 0;
-  for (const c of email) {
-    hash = ((hash << 5) - hash) + c.charCodeAt(0);
-    hash |= 0; // converte para inteiro de 32 bits
-  }
-  const ano = new Date().getFullYear();
+  for (const c of email) { hash = ((hash << 5) - hash) + c.charCodeAt(0); hash |= 0; }
   const num = String(Math.abs(hash) % 100000).padStart(5, '0');
-  return `HG${ano}-${num}`; // ex: HG2026-42857
+  return `HG${new Date().getFullYear()}-${num}`;
 }
 
 function preencherQR() {
-  const memberNum = gerarNumeroMembro(user.email);
-  const primeiroNome = (user.firstName || '').toUpperCase();
-  const ultimoNome   = (user.lastName  || '').toUpperCase();
-
-  // Dados codificados no QR
+  const memberNum    = gerarNumeroMembro(currentProfile.email);
+  const primeiroNome = (currentProfile.first_name || '').toUpperCase();
+  const ultimoNome   = (currentProfile.last_name  || '').toUpperCase();
   const qrData = `HIITGYM|${memberNum}|${primeiroNome}|${ultimoNome}`;
   const qrUrl  = `https://api.qrserver.com/v1/create-qr-code/?size=200x200`
-               + `&data=${encodeURIComponent(qrData)}`
-               + `&bgcolor=120D0F&color=fba002&format=svg&margin=10`;
+               + `&data=${encodeURIComponent(qrData)}&bgcolor=120D0F&color=fba002&format=svg&margin=10`;
 
-  // Preenche o card (tab QR)
+  document.getElementById('qr-member-number')?.textContent && (document.getElementById('qr-member-number').textContent = memberNum);
+  document.getElementById('qr-first-name')?.textContent && (document.getElementById('qr-first-name').textContent = primeiroNome);
+  document.getElementById('qr-last-name')?.textContent && (document.getElementById('qr-last-name').textContent = ultimoNome);
+
   const qrImg     = document.getElementById('qr-img');
   const qrLoading = document.getElementById('qr-loading');
-
-  document.getElementById('qr-member-number').textContent = memberNum;
-  document.getElementById('qr-first-name').textContent    = primeiroNome;
-  document.getElementById('qr-last-name').textContent     = ultimoNome;
-
   if (qrImg) {
     qrImg.src = qrUrl;
-    qrImg.onload = () => {
-      qrImg.classList.remove('hidden');
-      qrLoading?.classList.add('hidden');
-    };
-    qrImg.onerror = () => {
-      if (qrLoading) {
-        qrLoading.innerHTML = '<i class="fa-solid fa-wifi-exclamation"></i> Sem ligação para gerar QR';
-      }
-    };
+    qrImg.onload  = () => { qrImg.classList.remove('hidden'); qrLoading?.classList.add('hidden'); };
+    qrImg.onerror = () => { if (qrLoading) qrLoading.innerHTML = '<i class="fa-solid fa-wifi-exclamation"></i> Sem ligação'; };
   }
 
-  // Preenche o overlay
   const overlayImg    = document.getElementById('qr-overlay-img');
   const overlayMember = document.getElementById('qr-overlay-member');
   const overlayNome   = document.getElementById('qr-overlay-nome');
-
   if (overlayImg)    overlayImg.src = qrUrl;
   if (overlayMember) overlayMember.textContent = memberNum;
   if (overlayNome)   overlayNome.textContent = `${primeiroNome} ${ultimoNome}`;
 }
 
-// Abrir overlay ao clicar no card QR
 document.getElementById('qr-card-btn')?.addEventListener('click', () => {
   document.getElementById('qr-overlay')?.classList.remove('hidden');
   document.body.style.overflow = 'hidden';
 });
-
 document.getElementById('qr-card-btn')?.addEventListener('keydown', e => {
-  if (e.key === 'Enter' || e.key === ' ') {
-    e.preventDefault();
-    document.getElementById('qr-overlay')?.classList.remove('hidden');
-    document.body.style.overflow = 'hidden';
-  }
+  if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); document.getElementById('qr-overlay')?.classList.remove('hidden'); document.body.style.overflow = 'hidden'; }
 });
-
 function fecharQrOverlay() {
   document.getElementById('qr-overlay')?.classList.add('hidden');
   document.body.style.overflow = '';
 }
-
 document.getElementById('qr-overlay-fechar')?.addEventListener('click', fecharQrOverlay);
 document.getElementById('qr-overlay-backdrop')?.addEventListener('click', fecharQrOverlay);
 document.addEventListener('keydown', e => { if (e.key === 'Escape') fecharQrOverlay(); });
 
 
+// ── REMOVER FOTO ──────────────────────────────
+document.getElementById('btn-remove-avatar')?.addEventListener('click', async () => {
+  await supabase.from('profiles').update({ avatar_url: null }).eq('id', currentUser.id);
+  currentProfile.avatar_url = null;
+  aplicarAvatar(document.getElementById('sidebar-avatar'), currentProfile);
+  aplicarAvatar(document.getElementById('perfil-avatar'), currentProfile);
+  aplicarAvatar(document.getElementById('nav-avatar-img'), currentProfile);
+});
+
+
 // ── LOGOUT ────────────────────────────────────
-document.getElementById('btn-logout')?.addEventListener('click', () => {
+document.getElementById('btn-logout')?.addEventListener('click', async () => {
   if (confirm('Tens a certeza que queres sair?')) {
-    localStorage.removeItem(AUTH_KEY);
+    await supabase.auth.signOut();
     window.location.href = '../index.html';
   }
 });
+
 
 // ── ELIMINAR CONTA ────────────────────────────
-document.getElementById('btn-delete-account')?.addEventListener('click', () => {
+document.getElementById('btn-delete-account')?.addEventListener('click', async () => {
   if (confirm('⚠️ Tens a certeza? Esta acção é IRREVERSÍVEL. Todos os teus dados serão eliminados.')) {
-    localStorage.removeItem(AUTH_KEY);
+    // Apaga dados do perfil (RLS apaga o resto em cascade)
+    await supabase.from('profiles').delete().eq('id', currentUser.id);
+    await supabase.auth.signOut();
     window.location.href = '../index.html';
   }
 });
 
-// ── REMOVER FOTO ──────────────────────────────
-document.getElementById('btn-remove-avatar')?.addEventListener('click', () => {
-  user.avatar = null;
-  saveUser(user);
-  aplicarAvatar(document.getElementById('sidebar-avatar'), user);
-  aplicarAvatar(document.getElementById('perfil-avatar'), user);
-  aplicarAvatar(document.getElementById('nav-avatar-img'), user);
-});
 
-
-// ── INIT ──────────────────────────────────────
-preencherNav();
-preencherSidebar();
-preencherDashboard();
-preencherTreinos();
-preencherModalidades();
-preencherFormPerfil();
-preencherQR();
-bindAvatarUpload('avatar-upload');
-bindAvatarUpload('avatar-upload-perfil');
-bindAddTreino();
+// ── ARRANQUE ──────────────────────────────────
+init();
