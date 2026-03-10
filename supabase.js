@@ -10,5 +10,6 @@
 const SUPABASE_URL = 'https://kwvvoisnmqghkzllgegx.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_EdQ9IY3_zZhqEXU3YAEwtg_605AvlUJ';
 
-// Cliente global — usado por script.js, user.js, blog.js, etc.
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+// ⚠️  CRÍTICO: window.supabase é a biblioteca CDN.
+// Sobrescrevemos com o cliente para ser acessível em todos os scripts.
+window.supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
