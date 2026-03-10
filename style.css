@@ -1467,19 +1467,6 @@ main {
   }
 }
 
-
-/* ============================================
-   APP-PROMO.CSS — Secção de instalação da PWA
-   Depende de style.css: variáveis, .btn, .glass,
-   .hidden, tipografia
-   ============================================ */
-
-
-
-
-
-
-
 footer {
   width: 100%;     
   position: relative;  margin-inline: auto; 
