@@ -698,7 +698,7 @@ header {
   }
   #map {
     position: absolute; width: 100%; padding-inline: 1rem; margin-inline: auto;
-    max-width: var(--container-mid); bottom: 0px;
+    max-width: var(--container-mid); transform: translateY(200rem); top: calc(var(--container-height) -20px);
     display: grid; justify-items: stretch; z-index: 10; gap: 1rem; place-self: center;
   
     summary {
@@ -1466,19 +1466,6 @@ main {
     }
   }
 }
-
-
-/* ============================================
-   APP-PROMO.CSS — Secção de instalação da PWA
-   Depende de style.css: variáveis, .btn, .glass,
-   .hidden, tipografia
-   ============================================ */
-
-
-
-
-
-
 
 footer {
   width: 100%;     
