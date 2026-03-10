@@ -4,7 +4,7 @@
 // Atualiza CACHE_NAME quando fizeres deploy
 // ============================================
 
-const CACHE_NAME = 'hiit-gym-v1.0.0';
+const CACHE_NAME = 'hiitgym-v2.0';
 
 // Ficheiros críticos que ficam em cache logo no install
 const ASSETS_ESSENCIAIS = [
@@ -125,7 +125,7 @@ self.addEventListener('fetch', event => {
      funcionar mesmo sem internet
    ============================================ */
 
-const CACHE_NAME = 'hiitgym-v1.0';
+const CACHE_NAME = 'hiitgym-v2.0';
 
 // Ficheiros a guardar em cache na instalação
 const STATIC_ASSETS = [
@@ -133,16 +133,31 @@ const STATIC_ASSETS = [
   '/index.html',
   '/style.css',
   '/script.js',
-  '/auth.css',
   '/manifest.json',
   '/user/user.html',
   '/user/user.css',
   '/user/user.js',
   '/blog/blog.html',
   '/blog/blog.css',
+  '/blog/blog.js',
+  '/inscricao/inscricao.html',   // ← novo
+  '/inscricao/inscricao.css',    // ← novo
+  '/inscricao/inscricao.js',     // ← novo
   '/src/logo/logo_def1.svg',
   '/src/logo/favicon.svg'
 ];
+
+
+
+
+
+
+
+
+
+
+
+
 
 // INSTALAR: guarda os ficheiros no cache
 self.addEventListener('install', e => {
