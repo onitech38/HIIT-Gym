@@ -25,6 +25,8 @@
     --clr-2: #B9CFD4;
     --clr-3: #120D0F;
     --clr-4: #fba002;
+    --clr-4-light: hsl(from var(--clr-4) h s l / .5);
+
     --clr-transp: #120d0f31;
     --clr-smooth-line: 1px solid color-mix(in hsl shorter hue, var(--clr-4) 30%, var(--clr-transp) 90%);
     --blur: blur(1.5px);
@@ -54,7 +56,6 @@
     --clr-social_tt_shdw:0 0 20px 5px color-mix(in hsl shorter hue, var(--clr-social_tt) 30%, transparent 90%);
 
     /* light/dark mode */
-    color-scheme: light dark;
     --light-bg: var(--clr-2);
     --dark-bg: var(--clr-1);
 
@@ -67,12 +68,21 @@
     --section-anim-full: 35%;
 
     --icon-size: 2rem ;
-    --icon-font-size: 2.5rem;
+    --icon-font-size: 1.5rem;
     --icon-padding: .5rem 1rem;
-    --icon-font-size-small: 1.5rem;
+    --icon-font-size-small: 1rem;
     --icon-size-logo: 3rem;
     --icon-logo-hamb-size: 2.5rem;    
     --size-user-avatar: 1.625rem;
+
+    --fs-h1: clamp(2rem, 4vw, 5rem);
+    --fs-h1-big: clamp(2.5rem, 5vw, 6rem);
+    --fs-h2: calc(var(--fs-h1) - 0.5rem);
+    --fs-h2-big: var(--fs-h1);
+    --fs-h3: calc(var(--fs-h2) - 0.25rem);
+    --fs-h4: calc(var(--fs-h3) - 0.25rem);
+    --fs-h5: calc(var(--fs-h4) - 0.125rem);
+    --fs-h6: calc(var(--fs-h5) - 0.125rem);
 
     --font-weight: 800;
     --margin-block-element: 2rem;
@@ -85,11 +95,13 @@
     --border-radius: 0.25rem 0.75rem 0.25rem 1.125rem;
     --bx-sdw: inset 0 0 0 1px var(--clr-3), 0 2px 4px var(--clr-3), 0 8px 14px var(--clr-3);
     interpolate-size: allow-keywords;
+
   }
 }
 
 @layer global {
   html {
+    color-scheme: light dark;
     -webkit-text-size-adjust: 100%;
     -ms-text-size-adjust: 100%;
     * { scroll-margin-top: 1rem; scroll-behavior: smooth; }
@@ -102,14 +114,14 @@
   h1, h2, h3, ul, li, .title { font-weight: 500; text-transform: uppercase; }
   body { font-size: clamp(.75rem, .3361vw + .6975rem, 1rem); background: light-dark(var(--light-bg), var(--dark-bg)); }
   h1, h2, h3, h4, h5, h6, .title { line-height: 1.2; text-align: center; letter-spacing: .1em; }
-  h1 { font-size: clamp(2rem, 4vw, 5rem); }
-  .h1-big { font-size: clamp(2.5rem, 5vw, 6rem); font-weight: 600; line-height: 1.04em; text-align: left; letter-spacing: -0.01em; }
-  h2 { margin-block: 20px .35em; font-size: clamp(1.5rem, 3vw, 4rem); }
-  .h2-big { font-size: clamp(2rem, 4vw, 5rem); font-weight: 600; }
-  h3 { font-size: clamp(1.25rem, 2.5vw, 3.5rem); }
-  h4 { font-size: clamp(1rem, 2vw, 3rem); font-weight: 400; }
-  h5 { font-size: clamp(0.875rem, 1.75vw, 2.5rem); font-weight: 300; }
-  h6, .eyebrow-small { font-size: clamp(0.75rem, 1.5vw, 2rem); font-weight: 200; }
+  h1 { font-size: var(--fs-h1); }
+  .h1-big { font-size: var(--fs-h1-big); font-weight: 600; line-height: 1.04em; text-align: left; letter-spacing: -0.01em; }
+  h2 { margin-block: 20px .35em; font-size: var(--fs-h2); }
+  .h2-big { font-size: var(--fs-h2-big); font-weight: 600; }
+  h3 { font-size: var(--fs-h3); }
+  h4 { font-size: var(--fs-h4); font-weight: 400; }
+  h5 { font-size: var(--fs-h5); font-weight: 300; }
+  h6, .eyebrow-small { font-size: var(--fs-h6); font-weight: 200; }
   .title { font-size: clamp(1.5rem, 3vw, 4rem); font-weight: 600; }
   p, .p-small, .p-large { line-height: 1.5; text-align: center; letter-spacing: .1em; }
   p { margin-bottom: .7em; font-size: 1rem; font-weight: 500; text-wrap: balance; }
@@ -326,6 +338,18 @@ body {
     display: grid;
     justify-items: end;
     color: var(--clr-4); gap: var(--gap-items);  
+  }
+}
+
+@layer media {
+  @media ( prefered-color-scheme: light) {
+    :root {
+      --clr-4: red;
+      --clr-2: blue ;
+      --clr-3: lime ;
+      --clr-1: oldlace ;
+      --bg_pattrn: url(./src/logo/logo_light2.svg);
+    }
   }
 }
 
@@ -674,7 +698,7 @@ header {
   }
   #map {
     position: absolute; width: 100%; padding-inline: 1rem; margin-inline: auto;
-    max-width: var(--container-mid); transform: translateY(-2.5rem); top: calc(var(--container-height) - 50px);
+    max-width: var(--container-mid); bottom: 0px;
     display: grid; justify-items: stretch; z-index: 10; gap: 1rem; place-self: center;
   
     summary {

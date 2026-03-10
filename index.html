@@ -650,14 +650,19 @@
         </defs>
     </svg>
 
-  
-    <script src="script.js?v=1.0.0"></script>
+    <!-- 1. SDK Supabase (CDN) -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+    <!-- 2. Cliente partilhado — define window.supabase -->
+    <script src="supabase.js"></script>
+    <!-- 3. Lógica do site -->
+    <script src="script.js?v=2.0.0"></script>
+    <!-- 4. Service Worker -->
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-            navigator.serviceWorker.register('/sw.js')
-                .then(() => console.log('SW: ativo'))
-                .catch(err => console.warn('SW: erro', err));
+                navigator.serviceWorker.register('/sw.js')
+                    .then(() => console.log('SW: ativo'))
+                    .catch(err => console.warn('SW: erro', err));
             });
         }
     </script>
