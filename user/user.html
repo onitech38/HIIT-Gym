@@ -18,6 +18,7 @@
     <link rel="stylesheet" href="../style.css">
     <link rel="stylesheet" href="../auth.css">
     <link rel="stylesheet" href="user.css">
+    <style>body.loading{visibility:hidden}</style>
 </head>
 
 <!-- ============================================
@@ -26,7 +27,7 @@
      ANTES de qualquer outro elemento.
      São irmãos de .user-wrapper via ~.
      ============================================ -->
-<body id="user-page">
+<body class="loading" id="user-page">
 
     <!-- CONTROLOS DAS TABS — invisíveis, mas funcionais -->
     <input type="radio" name="user-tab" id="tab-dashboard"   class="tab-radio" checked>
@@ -370,6 +371,9 @@
         </defs>
     </svg>
 
+    <!-- Supabase SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+    <script src="../supabase.js"></script>
     <script src="user.js"></script>
 </body>
 </html>
