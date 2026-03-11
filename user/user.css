@@ -32,9 +32,9 @@ body#user-page {
     & { header { height: auto;}}
   }
 
-  & header.user-header {
+  /* & header.user-header {
     height: auto !important;
-  }
+  } */
 
   /* ── INPUTS RADIO (tabs — invisíveis) ──── */
   & .tab-radio { display: none !important; }
