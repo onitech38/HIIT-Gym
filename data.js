@@ -15,22 +15,22 @@
 
 // ── COACHES ──────────────────────────────────
 const coaches = {
-  carlos:   { nome: 'Carlos Silva',     avatar: 'src/coaches/carlos/carlos.jpg',     card: 'src/coaches/carlos/carlos_card.jpg',     modalidades: ['musculacao'] },
-  ana:      { nome: 'Ana Costa',        avatar: 'src/coaches/ana/Ana.jpg',           card: 'src/coaches/ana/ana_card.jpg',           modalidades: ['musculacao'] },
-  rafael:   { nome: 'Rafael Mendes',    avatar: 'src/coaches/rafael/rafael.jpg',     card: 'src/coaches/rafael/rafael_card.jpg',     modalidades: ['musculacao'] },
-  maria:    { nome: 'Maria Oliveira',   avatar: 'src/coaches/maria/maria.png',       card: 'src/coaches/maria/maria_card.png',       modalidades: ['cardio', 'zumba_danca'] },
-  joao:     { nome: 'João Pereira',     avatar: 'src/coaches/joao/joao.png',         card: 'src/coaches/joao/joao_card.png',         modalidades: ['cardio', 'zumba_danca'] },
-  sofia:    { nome: 'Sofia Almeida',    avatar: 'src/coaches/sofia/sofia.png',       card: 'src/coaches/sofia/sofia_card.png',       modalidades: ['yoga_pilates'] },
-  pedro:    { nome: 'Pedro Santos',     avatar: 'src/coaches/pedro/pedro.png',       card: 'src/coaches/pedro/pedro_card.png',       modalidades: ['yoga_pilates'] },
-  claudia:  { nome: 'Cláudia Ferreira', avatar: 'src/coaches/claudia/claudia.png',   card: 'src/coaches/claudia/claudia_card.png',   modalidades: ['yoga_pilates'] },
-  tiago:    { nome: 'Tiago Ribeiro',    avatar: 'src/coaches/tiago/tiago.png',       card: 'src/coaches/tiago/tiago_card.png',       modalidades: ['yoga_pilates'] },
-  ines:     { nome: 'Inês Martins',     avatar: 'src/coaches/ines/ines.png',         card: 'src/coaches/ines/ines_card.png',         modalidades: ['yoga_pilates'] },
-  fernando: { nome: 'Fernando Gomes',   avatar: 'src/coaches/fernando/fernando.jpg', card: 'src/coaches/fernando/fernando_card.jpg', modalidades: ['lutas'] },
-  patricia: { nome: 'Patrícia Lima',    avatar: 'src/coaches/patricia/patricia.jpg', card: 'src/coaches/patricia/patricia_card.jpg', modalidades: ['lutas'] },
-  ricardo:  { nome: 'Ricardo Alves',    avatar: 'src/coaches/ricardo/ricardo.jpg',   card: 'src/coaches/ricardo/ricardo_card.jpg',   modalidades: ['lutas'] },
-  andre:    { nome: 'André Sousa',      avatar: 'src/coaches/andre/andre.jpg',       card: 'src/coaches/andre/andre_card.jpg',       modalidades: ['natacao'] },
-  fernanda: { nome: 'Fernanda Rocha',   avatar: 'src/coaches/fernanda/fernanda.jpg', card: 'src/coaches/fernanda/fernanda_card.jpg', modalidades: ['natacao'] },
-  lucas:    { nome: 'Lucas Dias',       avatar: 'src/coaches/lucas/lucas.jpg',       card: 'src/coaches/lucas/lucas_card.jpg',       modalidades: ['natacao'] },
+  carlos:   { nome: 'Carlos Silva',     avatar: 'src/coaches/carlos/carlos.jpg',     card: 'src/coaches/carlos/carlos_card.jpg',     modalidades: ['musculacao'], descricao: 'Personal Trainer certificado com 10 anos em musculação e hipertrofia.' },
+  ana:      { nome: 'Ana Costa',        avatar: 'src/coaches/ana/Ana.jpg',           card: 'src/coaches/ana/ana_card.jpg',           modalidades: ['musculacao'], descricao: 'Especialista em treino feminino, nutrição desportiva e transformação corporal.' },
+  rafael:   { nome: 'Rafael Mendes',    avatar: 'src/coaches/rafael/rafael.jpg',     card: 'src/coaches/rafael/rafael_card.jpg',     modalidades: ['musculacao'], descricao: 'Ex-atleta de powerlifting, focado em progressão de carga e técnica correcta.' },
+  maria:    { nome: 'Maria Oliveira',   avatar: 'src/coaches/maria/maria.png',       card: 'src/coaches/maria/maria_card.png',       modalidades: ['cardio', 'zumba_danca'], descricao: 'Instrutora de Zumba e cardio com formação em dança contemporânea.' },
+  joao:     { nome: 'João Pereira',     avatar: 'src/coaches/joao/joao.png',         card: 'src/coaches/joao/joao_card.png',         modalidades: ['cardio', 'zumba_danca'], descricao: 'Treinador de ciclismo e HIIT, foco em condição cardiovascular e perda de peso.' },
+  sofia:    { nome: 'Sofia Almeida',    avatar: 'src/coaches/sofia/sofia.png',       card: 'src/coaches/sofia/sofia_card.png',       modalidades: ['yoga_pilates'], descricao: 'Instrutora de Yoga certificada pela Yoga Alliance, 8 anos de prática.' },
+  pedro:    { nome: 'Pedro Santos',     avatar: 'src/coaches/pedro/pedro.png',       card: 'src/coaches/pedro/pedro_card.png',       modalidades: ['yoga_pilates'], descricao: 'Professor de Pilates clínico especializado em reabilitação postural.' },
+  claudia:  { nome: 'Cláudia Ferreira', avatar: 'src/coaches/claudia/claudia.png',   card: 'src/coaches/claudia/claudia_card.png',   modalidades: ['yoga_pilates'], descricao: 'Mestre em Yoga Vinyasa e meditação mindfulness.' },
+  tiago:    { nome: 'Tiago Ribeiro',    avatar: 'src/coaches/tiago/tiago.png',       card: 'src/coaches/tiago/tiago_card.png',       modalidades: ['yoga_pilates'], descricao: 'Instrutor de Yoga e Pilates com formação em biomecânica do movimento.' },
+  ines:     { nome: 'Inês Martins',     avatar: 'src/coaches/ines/ines.png',         card: 'src/coaches/ines/ines_card.png',         modalidades: ['yoga_pilates'], descricao: 'Especialista em Yoga terapêutico para gestão de stress e flexibilidade.' },
+  fernando: { nome: 'Fernando Gomes',   avatar: 'src/coaches/fernando/fernando.jpg', card: 'src/coaches/fernando/fernando_card.jpg', modalidades: ['lutas'], descricao: 'Campeão nacional de Muay Thai e treinador de artes marciais mistas.' },
+  patricia: { nome: 'Patrícia Lima',    avatar: 'src/coaches/patricia/patricia.jpg', card: 'src/coaches/patricia/patricia_card.jpg', modalidades: ['lutas'], descricao: 'Faixa preta de Jiu-Jitsu Brasileiro, ex-competidora internacional.' },
+  ricardo:  { nome: 'Ricardo Alves',    avatar: 'src/coaches/ricardo/ricardo.jpg',   card: 'src/coaches/ricardo/ricardo_card.jpg',   modalidades: ['lutas'], descricao: 'Sensei de Karaté com 20 anos de experiência em defesa pessoal.' },
+  andre:    { nome: 'André Sousa',      avatar: 'src/coaches/andre/andre.jpg',       card: 'src/coaches/andre/andre_card.jpg',       modalidades: ['natacao'], descricao: 'Treinador de natação competitiva, ex-seleccionado nacional.' },
+  fernanda: { nome: 'Fernanda Rocha',   avatar: 'src/coaches/fernanda/fernanda.jpg', card: 'src/coaches/fernanda/fernanda_card.jpg', modalidades: ['natacao'], descricao: 'Especialista em natação terapêutica e adaptada para todas as idades.' },
+  lucas:    { nome: 'Lucas Dias',       avatar: 'src/coaches/lucas/lucas.jpg',       card: 'src/coaches/lucas/lucas_card.jpg',       modalidades: ['natacao'], descricao: 'Treinador de natação focado em técnica e melhoria de performance.' },
 };
 
 // ── MODALIDADES ───────────────────────────────

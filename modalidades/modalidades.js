@@ -217,6 +217,7 @@ function renderEquipa() {
         <div class="equipa-card-info">
           <span class="equipa-card-nome">${c.nome}</span>
           <span class="equipa-card-tags">${modTags}</span>
+          <span class="equipa-card-bio">${bio}</span>
         </div>
       </div>`;
   }).join('');
