@@ -1,98 +1,117 @@
 /* ============================================
-   HIIT-GYM — SCRIPT.JS  (Supabase Auth)
+   HIIT-GYM — SCRIPT.JS
 
    ÍNDICE:
-   1. AUTH  — login / signup / logout via Supabase
-   2. NAV   — avatar consoante sessão
-   3. WELCOME — modal com forms
-   4. MAP   — mapa existente
-   5. MODALIDADES — dados + estados
-   6. EQUIPA — carrossel
-   7. PWA   — botão de instalação
+   1. AUTH — funções de login/signup/logout
+   2. NAV  — actualiza o nav consoante o estado
+   3. WELCOME — timer 1s + handlers dos forms
+   4. MAP — funcionalidade do mapa existente
+   5. DADOS DAS MODALIDADES (existente)
+   6. ESTADOS 1/2/3 das modalidades (existente)
+   7. EQUIPA — carrossel (existente)
    ============================================ */
 
 
 // ============================================
-// 1. AUTH — Supabase
+// 1. AUTH — BASE DE DADOS SIMULADA (localStorage)
+//
+// Pensa no localStorage como uma "gaveta" no
+// browser onde guardamos a informação do user.
+// Não precisa de internet nem de servidor!
+//
+// Chave usada: 'hiitgym_user'
+// Valor: um objecto JSON com todos os dados
 // ============================================
 
-/** Devolve o utilizador autenticado (ou null) */
-async function getUser() {
-  const { data: { user } } = await supabase.auth.getUser();
-  return user;
+const AUTH_KEY = 'hiitgym_user';
+
+/** Lê o user da "gaveta" */
+function getUser() {
+  try {
+    return JSON.parse(localStorage.getItem(AUTH_KEY));
+  } catch { return null; }
 }
 
-/** Devolve o perfil completo da tabela public.profiles */
-async function getProfile(userId) {
-  const { data } = await supabase
-    .from('profiles')
-    .select('*')
-    .eq('id', userId)
-    .single();
-  return data;
+/** Guarda o user na "gaveta" */
+function saveUser(user) {
+  localStorage.setItem(AUTH_KEY, JSON.stringify(user));
 }
 
-/** LOGIN */
-async function loginUser(email, password) {
-  const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-  return { user: data?.user ?? null, error };
+/** Remove o user da "gaveta" (logout) */
+function removeUser() {
+  localStorage.removeItem(AUTH_KEY);
 }
 
-/** SIGNUP */
-async function signupUser({ firstName, lastName, email, password, phone, age, weight, address }) {
-  const { data, error } = await supabase.auth.signUp({
-    email,
-    password,
-    options: {
-      data: { firstName, lastName, phone, age, weight, address }
-    }
-  });
-  return { user: data?.user ?? null, error };
-}
+/**
+ * Cria treinos simulados para um novo utilizador.
+ * Simula dados sincronizados de um smartwatch
+ * + alguns inseridos manualmente.
+ */
+function criarTreinosSimulados() {
+  const hoje = new Date();
+  const diaMenos = (n) => {
+    const d = new Date(hoje);
+    d.setDate(d.getDate() - n);
+    return d.toISOString().split('T')[0];
+  };
 
-/** LOGOUT */
-async function logoutUser() {
-  await supabase.auth.signOut();
+  return [
+    { id: 't1', date: diaMenos(1),  duration: 55, modality: 'musculacao',   calories: 420, source: 'smartwatch', notes: '' },
+    { id: 't2', date: diaMenos(3),  duration: 30, modality: 'natacao',      calories: 280, source: 'smartwatch', notes: '' },
+    { id: 't3', date: diaMenos(5),  duration: 60, modality: 'yoga_pilates', calories: 190, source: 'manual',     notes: 'Sessão de relaxamento' },
+    { id: 't4', date: diaMenos(7),  duration: 45, modality: 'cardio',       calories: 350, source: 'smartwatch', notes: '' },
+    { id: 't5', date: diaMenos(10), modality: 'musculacao',   duration: 50, calories: 400, source: 'smartwatch', notes: '' },
+    { id: 't6', date: diaMenos(14), modality: 'lutas',        duration: 90, calories: 520, source: 'smartwatch', notes: 'Treino intenso' },
+    { id: 't7', date: diaMenos(18), modality: 'zumba_danca',  duration: 60, calories: 310, source: 'manual',     notes: '' },
+  ];
 }
 
 
 // ============================================
-// 2. NAV — avatar / links de auth
+// 2. NAV — actualiza login/signup ↔ avatar
+//
+// Depois de entrar, escondemos os links
+// "login" e "signup" e mostramos o avatar
+// do user (com a sua foto ou iniciais).
 // ============================================
 
-async function actualizarNav() {
-  const user    = await getUser();
+function actualizarNav() {
+  const user = getUser();
   const navLogin  = document.getElementById('nav-login');
   const navSignup = document.getElementById('nav-signup');
   const navAvatar = document.getElementById('nav-avatar');
   const navAvatarImg = document.getElementById('nav-avatar-img');
 
-  if (!navLogin) return;
+  if (!navLogin) return; // Nesta página pode não existir (user page)
 
   if (user) {
+    // Está autenticado → esconde login/signup, mostra avatar
     navLogin.classList.add('hidden');
     navSignup.classList.add('hidden');
-    navAvatar?.classList.remove('hidden');
+    navAvatar.classList.remove('hidden');
 
     if (navAvatarImg) {
-      const profile = await getProfile(user.id);
-      if (profile?.avatar_url) {
-        navAvatarImg.style.backgroundImage = `url('${profile.avatar_url}')`;
+      if (user.avatar) {
+        navAvatarImg.style.backgroundImage = `url('${user.avatar}')`;
         navAvatarImg.textContent = '';
       } else {
-        const first = profile?.first_name || user.user_metadata?.firstName || '?';
-        const last  = profile?.last_name  || user.user_metadata?.lastName  || '';
-        navAvatarImg.textContent = (first[0] + (last[0] || '')).toUpperCase();
+        // Sem foto → mostra iniciais (ex: "JS" para João Silva)
+        navAvatarImg.textContent = (user.firstName[0] + user.lastName[0]).toUpperCase();
         navAvatarImg.style.backgroundImage = '';
       }
     }
   } else {
+    // Não autenticado → mostra login/signup
     navLogin.classList.remove('hidden');
     navSignup.classList.remove('hidden');
     navAvatar?.classList.add('hidden');
   }
 }
 
+/**
+ * Quando clicamos em "login" ou "signup" no nav
+ * abre o welcome modal (se não estiver autenticado)
+ */
 function bindNavAuthLinks() {
   const navLogin  = document.getElementById('nav-login');
   const navSignup = document.getElementById('nav-signup');
@@ -101,12 +120,14 @@ function bindNavAuthLinks() {
 
   navLogin?.addEventListener('click', e => {
     e.preventDefault();
+    // Garante que está no tab "Login"
     document.getElementById('mode-login')?.click();
     mostrarWelcome();
   });
 
   navSignup?.addEventListener('click', e => {
     e.preventDefault();
+    // Garante que está no tab "Criar Conta"
     document.getElementById('mode-signup')?.click();
     mostrarWelcome();
   });
@@ -115,123 +136,118 @@ function bindNavAuthLinks() {
 
 // ============================================
 // 3. WELCOME MODAL
+//
+// Aparece 1 segundo após a página carregar,
+// mas SÓ SE o user não estiver autenticado.
+//
+// O toggle entre Login ↔ Signup é feito
+// 100% em CSS (radio buttons ocultos).
+// O JS só trata de: timer, guardar dados, fechar.
 // ============================================
 
 function mostrarWelcome() {
-  document.getElementById('welcome')?.classList.add('visible');
+  const welcome = document.getElementById('welcome');
+  if (welcome) welcome.classList.add('visible');
 }
 
 function fecharWelcome() {
-  document.getElementById('welcome')?.classList.remove('visible');
+  const welcome = document.getElementById('welcome');
+  if (welcome) welcome.classList.remove('visible');
 }
 
-function setFormLoading(btn, loading) {
-  btn.disabled = loading;
-  btn.dataset.original = btn.dataset.original || btn.innerHTML;
-  btn.innerHTML = loading
-    ? '<i class="fa-solid fa-spinner fa-spin"></i> Aguarda...'
-    : btn.dataset.original;
-}
-
-/** Formulário LOGIN */
+/** Formulário de LOGIN */
 function bindLoginForm() {
   const form = document.getElementById('form-login');
   if (!form) return;
 
-  form.addEventListener('submit', async e => {
+  form.addEventListener('submit', e => {
     e.preventDefault();
-    const btn   = form.querySelector('button[type="submit"]');
-    const erro  = document.getElementById('login-error');
     const email = form.email.value.trim().toLowerCase();
     const pass  = form.password.value;
+    const user  = getUser();
+    const erro  = document.getElementById('login-error');
 
-    setFormLoading(btn, true);
-    const { user, error } = await loginUser(email, pass);
-    setFormLoading(btn, false);
-
-    if (user) {
+    // Verifica se o email e password batem certo
+    if (user && user.email.toLowerCase() === email && user.password === pass) {
       erro?.classList.add('hidden');
       fecharWelcome();
-      await actualizarNav();
+      actualizarNav();
     } else {
-      erro.textContent = 'Email ou password incorretos.';
       erro?.classList.remove('hidden');
     }
   });
 }
 
-/** Formulário CRIAR CONTA */
+/** Formulário de CRIAR CONTA */
 function bindSignupForm() {
   const form = document.getElementById('form-signup');
   if (!form) return;
 
-  form.addEventListener('submit', async e => {
+  form.addEventListener('submit', e => {
     e.preventDefault();
-    const btn  = form.querySelector('button[type="submit"]');
     const erro = document.getElementById('signup-error');
 
+    // Validação extra: password com mínimo 6 chars
     if (form.password.value.length < 6) {
       erro.textContent = 'A password deve ter pelo menos 6 caracteres.';
       erro.classList.remove('hidden');
       return;
     }
 
-    setFormLoading(btn, true);
+    // Cria o objecto do user
+    const novoUser = {
+      id:         'usr_' + Date.now(),
+      firstName:  form.firstName.value.trim(),
+      lastName:   form.lastName.value.trim(),
+      email:      form.email.value.trim().toLowerCase(),
+      password:   form.password.value,       // NOTA: em produção usaria hashing!
+      phone:      form.phone.value.trim(),
+      age:        parseInt(form.age.value),
+      weight:     form.weight.value  ? parseFloat(form.weight.value)  : null,
+      address:    form.address.value ? form.address.value.trim()      : null,
+      avatar:     null,
+      // Inscreve-o nas modalidades mais populares por defeito
+      enrolledModalities: ['musculacao'],
+      // Dá-lhe treinos simulados para a dashboard parecer preenchida
+      trainings:  criarTreinosSimulados(),
+      createdAt:  new Date().toISOString()
+    };
 
-    const { user, error } = await signupUser({
-      firstName: form.firstName.value.trim(),
-      lastName:  form.lastName.value.trim(),
-      email:     form.email.value.trim().toLowerCase(),
-      password:  form.password.value,
-      phone:     form.phone.value.trim(),
-      age:       parseInt(form.age.value),
-      weight:    form.weight.value ? parseFloat(form.weight.value) : null,
-      address:   form.address.value.trim() || null,
-    });
+    saveUser(novoUser);
+    erro?.classList.add('hidden');
+    fecharWelcome();
+    actualizarNav();
 
-    setFormLoading(btn, false);
-
-    if (user) {
-      erro?.classList.add('hidden');
-      fecharWelcome();
-      await actualizarNav();
-      setTimeout(() => { window.location.href = 'user/user.html'; }, 300);
-    } else {
-      erro.textContent = error?.message || 'Erro ao criar conta. Tenta novamente.';
-      erro.classList.remove('hidden');
-    }
+    // Redirige para a página de perfil
+    setTimeout(() => {
+      window.location.href = 'user/user.html';
+    }, 300);
   });
 }
 
+/** Fecha ao clicar no backdrop ou no botão ✕ */
 function bindWelcomeClose() {
   document.getElementById('welcome-backdrop')?.addEventListener('click', fecharWelcome);
   document.getElementById('welcome-skip')?.addEventListener('click', fecharWelcome);
-  document.addEventListener('keydown', e => { if (e.key === 'Escape') fecharWelcome(); });
+
+  // ESC também fecha
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') fecharWelcome();
+  });
 }
 
-window.addEventListener('load', async () => {
-  await actualizarNav();
+/** Timer de 1s — mostra o welcome se não estiver autenticado */
+window.addEventListener('load', () => {
+  actualizarNav();
   bindNavAuthLinks();
   bindLoginForm();
   bindSignupForm();
   bindWelcomeClose();
 
-  const user = await getUser();
-  if (!user) setTimeout(mostrarWelcome, 1000);
-
-  // Reage a mudanças de sessão: confirmação de email, logout noutra aba, refresh de token
-  supabase.auth.onAuthStateChange(async (event, session) => {
-    if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
-      await actualizarNav();
-      // Se estava na homepage com welcome aberto, fecha-o
-      if (session?.user) fecharWelcome();
-    }
-    if (event === 'SIGNED_OUT') {
-      await actualizarNav();
-    }
-  });
+  if (!getUser()) {
+    setTimeout(mostrarWelcome, 1000);
+  }
 });
-
 
 
 
@@ -255,82 +271,206 @@ mapSummary.addEventListener('click', (e) => {
     e.preventDefault();
     fecharMapa();
   } else {
-    setTimeout(() => mapDetails.scrollIntoView({ behavior: 'smooth' }), 50);
+    setTimeout(() => {
+      mapDetails.scrollIntoView({ behavior: 'smooth' });
+    }, 50);
   }
 });
 
 document.addEventListener('click', (e) => {
-  if (mapDetails.open && !mapDetails.contains(e.target)) fecharMapa();
+  if (mapDetails.open && !mapDetails.contains(e.target)) {
+    fecharMapa();
+  }
 });
 
 
 // ============================================
-// MODALIDADES — dados
+// FONTE DE VERDADE — edita só aqui
 // ============================================
 const coaches = {
-  carlos:   { nome: 'Carlos Silva',     avatar: 'src/coaches/carlos/carlos.jpg',     card: 'src/coaches/carlos/carlos_card.jpg',     modalidades: ['musculacao'] },
-  ana:      { nome: 'Ana Costa',        avatar: 'src/coaches/ana/Ana.jpg',           card: 'src/coaches/ana/ana_card.jpg',           modalidades: ['musculacao'] },
-  rafael:   { nome: 'Rafael Mendes',    avatar: 'src/coaches/rafael/rafael.jpg',     card: 'src/coaches/rafael/rafael_card.jpg',     modalidades: ['musculacao'] },
-  maria:    { nome: 'Maria Oliveira',   avatar: 'src/coaches/maria/maria.png',       card: 'src/coaches/maria/maria_card.png',       modalidades: ['cardio', 'zumba_danca'] },
-  joao:     { nome: 'João Pereira',     avatar: 'src/coaches/joao/joao.png',         card: 'src/coaches/joao/joao_card.png',         modalidades: ['cardio', 'zumba_danca'] },
-  sofia:    { nome: 'Sofia Almeida',    avatar: 'src/coaches/sofia/sofia.png',       card: 'src/coaches/sofia/sofia_card.png',       modalidades: ['yoga_pilates'] },
-  pedro:    { nome: 'Pedro Santos',     avatar: 'src/coaches/pedro/pedro.png',       card: 'src/coaches/pedro/pedro_card.png',       modalidades: ['yoga_pilates'] },
-  claudia:  { nome: 'Cláudia Ferreira', avatar: 'src/coaches/claudia/claudia.png',   card: 'src/coaches/claudia/claudia_card.png',   modalidades: ['yoga_pilates'] },
-  tiago:    { nome: 'Tiago Ribeiro',    avatar: 'src/coaches/tiago/tiago.png',       card: 'src/coaches/tiago/tiago_card.png',       modalidades: ['yoga_pilates'] },
-  ines:     { nome: 'Inês Martins',     avatar: 'src/coaches/ines/ines.png',         card: 'src/coaches/ines/ines_card.png',         modalidades: ['yoga_pilates'] },
-  fernando: { nome: 'Fernando Gomes',   avatar: 'src/coaches/fernando/fernando.jpg', card: 'src/coaches/fernando/fernando_card.jpg', modalidades: ['lutas'] },
-  patricia: { nome: 'Patrícia Lima',    avatar: 'src/coaches/patricia/patricia.jpg', card: 'src/coaches/patricia/patricia_card.jpg', modalidades: ['lutas'] },
-  ricardo:  { nome: 'Ricardo Alves',    avatar: 'src/coaches/ricardo/ricardo.jpg',   card: 'src/coaches/ricardo/ricardo_card.jpg',   modalidades: ['lutas'] },
-  andre:    { nome: 'André Sousa',      avatar: 'src/coaches/andre/andre.jpg',       card: 'src/coaches/andre/andre_card.jpg',       modalidades: ['natacao'] },
-  fernanda: { nome: 'Fernanda Rocha',   avatar: 'src/coaches/fernanda/fernanda.jpg', card: 'src/coaches/fernanda/fernanda_card.jpg', modalidades: ['natacao'] },
-  lucas:    { nome: 'Lucas Dias',       avatar: 'src/coaches/lucas/lucas.jpg',       card: 'src/coaches/lucas/lucas_card.jpg',       modalidades: ['natacao'] },
+  carlos: { 
+    nome: 'Carlos Silva',     
+    avatar: 'src/coaches/carlos/carlos.jpg',    
+    card: 'src/coaches/carlos/carlos_card.jpg',    
+    modalidades: ['musculacao'] 
+  },
+
+  ana: { 
+    nome: 'Ana Costa',        
+    avatar: 'src/coaches/ana/Ana.jpg',        
+    card: 'src/coaches/ana/ana_card.jpg',        
+    modalidades: ['musculacao'] 
+  },
+
+  rafael: { 
+    nome: 'Rafael Mendes',    
+    avatar: 'src/coaches/rafael/rafael.jpg',     
+    card: 'src/coaches/rafael/rafael_card.jpg',     
+    modalidades: ['musculacao'] 
+  },
+
+  maria: { 
+    nome: 'Maria Oliveira',   
+    avatar: 'src/coaches/maria/maria.png',      
+    card: 'src/coaches/maria/maria_card.png',      
+    modalidades: ['cardio', 'zumba_danca'] 
+  },
+
+  joao: { 
+    nome: 'João Pereira',     
+    avatar: 'src/coaches/joao/joao.png',       
+    card: 'src/coaches/joao/joao_card.png',       
+    modalidades: ['cardio', 'zumba_danca'] 
+  },
+
+  sofia: { 
+    nome: 'Sofia Almeida',    
+    avatar: 'src/coaches/sofia/sofia.png',      
+    card: 'src/coaches/sofia/sofia_card.png',      
+    modalidades: ['yoga_pilates'] 
+  },
+
+  pedro: { 
+    nome: 'Pedro Santos',     
+    avatar: 'src/coaches/pedro/pedro.png',      
+    card: 'src/coaches/pedro/pedro_card.png',      
+    modalidades: ['yoga_pilates'] 
+  },
+
+  claudia: { 
+    nome: 'Cláudia Ferreira', 
+    avatar: 'src/coaches/claudia/claudia.png',    
+    card: 'src/coaches/claudia/claudia_card.png',    
+    modalidades: ['yoga_pilates'] 
+  },
+
+  tiago: { 
+    nome: 'Tiago Ribeiro',    
+    avatar: 'src/coaches/tiago/tiago.png',      
+    card: 'src/coaches/tiago/tiago_card.png',     
+     modalidades: ['yoga_pilates'] 
+  },
+
+  ines: { 
+    nome: 'Inês Martins',     
+    avatar: 'src/coaches/ines/ines.png',       
+    card: 'src/coaches/ines/ines_card.png',       
+    modalidades: ['yoga_pilates'] 
+  },
+
+  fernando: { 
+    nome: 'Fernando Gomes',   
+    avatar: 'src/coaches/fernando/fernando.jpg',   
+    card: 'src/coaches/fernando/fernando_card.jpg',   
+    modalidades: ['lutas'] 
+  },
+
+  patricia: { 
+    nome: 'Patrícia Lima',    
+    avatar: 'src/coaches/patricia/patricia.jpg',   
+    card: 'src/coaches/patricia/patricia_card.jpg',   
+    modalidades: ['lutas'] 
+  },
+
+  ricardo: { 
+    nome: 'Ricardo Alves',    
+    avatar: 'src/coaches/ricardo/ricardo.jpg',    
+    card: 'src/coaches/ricardo/ricardo_card.jpg',    
+    modalidades: ['lutas'] 
+  },
+
+  andre: { 
+    nome: 'André Sousa',      
+    avatar: 'src/coaches/andre/andre.jpg',      
+    card: 'src/coaches/andre/andre_card.jpg',      
+    modalidades: ['natacao'] 
+  },
+
+  fernanda: {
+     nome: 'Fernanda Rocha',   
+    avatar: 'src/coaches/fernanda/fernanda.jpg',   
+    card: 'src/coaches/fernanda/fernanda_card.jpg',   
+    modalidades: ['natacao'] 
+  },
+
+  lucas: { 
+    nome: 'Lucas Dias',       
+    avatar: 'src/coaches/lucas/lucas.jpg',      
+    card: 'src/coaches/lucas/lucas_card.jpg',      
+    modalidades: ['natacao'] 
+  },
+
 };
 
 const modalidadesData = {
+  // ── Para remover uma modalidade do site: active: false ──
+  // O layout reage automaticamente ao número de fatias activas.
   musculacao: {
-    active: true, titulo: 'Musculação', dias: 'Todos os dias', horas: '06h00 – 22h00',
-    descricao: 'Treino de força com pesos e equipamentos, adaptado para desenvolver massa muscular e resistência, com orientação de treinador.',
-    coaches: ['carlos', 'ana', 'rafael'],
+    active:    true,
+    titulo:    'Musculação',
+    dias:      'Todos os dias',
+    horas:     '06h00 – 22h00',
+    descricao: 'Treino de força com pesos e equipamentos, adaptado para desenvolver massa muscular e resistência, com orientação de treinador para garantir a técnica correta e maximizar resultados.',
+    coaches:   ['carlos', 'ana', 'rafael'],
   },
   cardio: {
-    active: true, titulo: 'Cardio', dias: 'Todos os dias', horas: '07h00 – 21h00',
-    descricao: 'Atividades aeróbicas como corrida, CROSS-FIT, ciclismo e spinning, personalizadas em intensidade e duração.',
-    coaches: ['maria', 'joao'],
+    active:    true,
+    titulo:    'Cardio',
+    dias:      'Todos os dias',
+    horas:     '07h00 – 21h00',
+    descricao: 'Atividades aeróbicas como corrida, CROSS-FIT, ciclismo e spinning, personalizadas em intensidade e duração, com suporte de profissionais para monitorar o teu progresso.',
+    coaches:   ['maria', 'joao'],
   },
   yoga_pilates: {
-    active: true, titulo: 'Yoga & Pilates', dias: '2ª, 4ª e 6ª feira', horas: '17h00 – 19h30',
-    descricao: 'Prática que combina posturas físicas, respiração e meditação, adaptada ao teu nível de experiência.',
-    coaches: ['sofia', 'pedro', 'claudia', 'tiago', 'ines'],
+    active:    true,
+    titulo:    'Yoga & Pilates',
+    dias:      '2ª, 4ª e 6ª feira',
+    horas:     '17h00 – 19h30',
+    descricao: 'Prática que combina posturas físicas, respiração e meditação, adaptada ao teu nível de experiência, com instrutores que oferecem acompanhamento individualizado.',
+    coaches:   ['sofia', 'pedro', 'claudia', 'tiago', 'ines'],
   },
   lutas: {
-    active: true, titulo: 'Lutas e Artes Marciais', dias: '2ª feira a sábado', horas: '19h00 – 20h30',
-    descricao: 'Aulas de boxe, jiu-jitsu, muay thai ou karaté, ajustadas ao teu nível e objetivos.',
-    coaches: ['fernando', 'patricia', 'ricardo'],
+    active:    true,
+    titulo:    'Lutas e Artes Marciais',
+    dias:      '2ª feira a sábado',
+    horas:     '19h00 – 20h30',
+    descricao: 'Aulas de boxe, jiu-jitsu, muay thai ou karaté, ajustadas ao teu nível e objetivos, com treinadores que oferecem suporte e feedback constante.',
+    coaches:   ['fernando', 'patricia', 'ricardo'],
   },
   zumba_danca: {
-    active: true, titulo: 'Zumba e Danças', dias: '3ª e 5ª feira', horas: '20h00 – 21h30',
-    descricao: 'Aulas energéticas com ritmos latinos e coreografias divertidas, perfeitas para perder calorias.',
-    coaches: ['maria', 'joao'],
+    active:    true,
+    titulo:    'Zumba e Danças',
+    dias:      '3ª e 5ª feira',
+    horas:     '20h00 – 21h30',
+    descricao: 'Aulas energéticas com ritmos latinos e coreografias divertidas, perfeitas para perder calorias num ambiente descontraído e motivador.',
+    coaches:   ['maria', 'joao'],
   },
   natacao: {
-    active: true, titulo: 'Natação', dias: '2ª, 4ª e 6ª feira', horas: '08h00 – 20h00',
-    descricao: 'Aulas para todos os níveis na nossa piscina semi-olímpica aquecida.',
-    coaches: ['andre', 'fernanda', 'lucas'],
-  },
+    active:    true,
+    titulo:    'Natação',
+    dias:      '2ª, 4ª e 6ª feira',
+    horas:     '08h00 – 20h00',
+    descricao: 'Aulas para todos os níveis na nossa piscina semi-olímpica aquecida. Treinos personalizados para melhorar técnica, resistência e velocidade.',
+    coaches:   ['andre', 'fernanda', 'lucas'],
+  }
 };
 
-
 // ============================================
-// REFERÊNCIAS DOM — modalidades
+// REFERÊNCIAS DOM
 // ============================================
 const imagemEl    = document.getElementById('imagem-principal');
 const descEl      = document.getElementById('descricao-overlay');
 const escolhas    = document.getElementById('escolhas');
 const painel      = document.getElementById('painel');
 const todasFatias = document.querySelectorAll('.fatia');
+
 const todosCoachKeys = Object.keys(coaches).slice(0, 8);
 
-const getIniciais = n => n.split(' ').map(i => i[0]).join('').slice(0, 2).toUpperCase();
+
+// ============================================
+// HELPERS
+// ============================================
+const getIniciais = (n) => n.split(' ').map(i => i[0]).join('').slice(0, 2).toUpperCase();
 
 function renderCoaches(coachKeys) {
   const container = document.getElementById('coaches-row');
@@ -339,8 +479,8 @@ function renderCoaches(coachKeys) {
     return `
       <div class="coach-wrapper">
         <button class="coach-avatar"
-          ${c.avatar ? `style="background-image:url('${c.avatar}')"` : ''}
-          aria-label="${c.nome}">
+                ${c.avatar ? `style="background-image:url('${c.avatar}')"` : ''}
+                aria-label="${c.nome}">
           ${c.avatar ? '' : getIniciais(c.nome)}
         </button>
         <span class="coach-tooltip">${c.nome}</span>
@@ -349,7 +489,10 @@ function renderCoaches(coachKeys) {
 }
 
 function pararVideos() {
-  document.querySelectorAll('.fatia-video').forEach(v => { v.pause(); v.currentTime = 0; });
+  document.querySelectorAll('.fatia-video').forEach(v => {
+    v.pause();
+    v.currentTime = 0;
+  });
 }
 
 function limparFatias() {
@@ -357,12 +500,22 @@ function limparFatias() {
   imagemEl.classList.remove('ativo');
 }
 
+
+// ============================================
+// ESTADO 1 — Idle
+// ============================================
 function estado1() {
-  pararVideos(); limparFatias();
-  descEl.textContent = ''; descEl.classList.remove('visivel');
+  pararVideos();
+  limparFatias();
+  descEl.textContent = '';
+  descEl.classList.remove('visivel');
   renderCoaches(todosCoachKeys);
 }
 
+
+// ============================================
+// ESTADO 3 — Click
+// ============================================
 function estado3(key) {
   const d = modalidadesData[key];
   limparFatias();
@@ -372,7 +525,7 @@ function estado3(key) {
   if (fatiaAlvo) {
     fatiaAlvo.classList.add('selecionada');
     const video = fatiaAlvo.querySelector('.fatia-video');
-    if (video?.src) video.play();
+    if (video && video.src) video.play();
   }
 
   document.getElementById('painel-titulo').textContent = d.titulo;
@@ -381,16 +534,21 @@ function estado3(key) {
   document.getElementById('painel-coaches-lista').innerHTML =
     d.coaches.map(k => `<li>${coaches[k].nome}</li>`).join('');
 
-  // Link de inscrição com a modalidade pré-selecionada
-  document.getElementById('painel-inscrever').href = `inscricao/inscricao.html?modal=${key}`;
-
   escolhas.classList.add('hidden');
   painel.classList.remove('hidden');
   descEl.textContent = d.descricao;
   descEl.classList.add('visivel');
   renderCoaches(d.coaches);
+
+  // Actualiza href do botão inscrever com a modalidade seleccionada
+  const btnInsc = document.getElementById('painel-inscrever');
+  if (btnInsc) btnInsc.href = `modalidades/modalidades.html?modal=${key}#inscricao`;
 }
 
+
+// ============================================
+// FECHAR PAINEL
+// ============================================
 document.getElementById('painel-fechar').addEventListener('click', e => {
   e.preventDefault();
   painel.classList.add('hidden');
@@ -398,6 +556,10 @@ document.getElementById('painel-fechar').addEventListener('click', e => {
   estado1();
 });
 
+
+// ============================================
+// EVENTOS NOS CARDS
+// ============================================
 document.querySelectorAll('.modalidade-item').forEach(item => {
   item.addEventListener('click', () => estado3(item.dataset.modal));
 });
@@ -423,9 +585,14 @@ const scrollPorCard = () => equipaTrack.querySelector('.equipa-card')?.offsetWid
 
 document.getElementById('equipa-prev')
   .addEventListener('click', () => equipaTrack.scrollBy({ left: -scrollPorCard(), behavior: 'smooth' }));
+
 document.getElementById('equipa-next')
   .addEventListener('click', () => equipaTrack.scrollBy({ left: scrollPorCard(), behavior: 'smooth' }));
 
+
+// ============================================
+// INIT
+// ============================================
 estado1();
 
 
@@ -437,6 +604,7 @@ let deferredPrompt = null;
 window.addEventListener('beforeinstallprompt', e => {
   e.preventDefault();
   deferredPrompt = e;
+
   const btn      = document.getElementById('pwa-install-btn');
   const fallback = document.getElementById('app-fallback');
 
@@ -446,11 +614,14 @@ window.addEventListener('beforeinstallprompt', e => {
       if (!deferredPrompt) return;
       deferredPrompt.prompt();
       const { outcome } = await deferredPrompt.userChoice;
-      if (outcome === 'accepted') { btn.textContent = '✓ App instalada!'; btn.disabled = true; }
+      if (outcome === 'accepted') {
+        btn.textContent = '✓ App instalada!';
+        btn.disabled = true;
+      }
       deferredPrompt = null;
     });
   }
-  fallback?.classList.add('hidden');
+  if (fallback) fallback.classList.add('hidden');
 });
 
 window.addEventListener('appinstalled', () => {
@@ -459,25 +630,41 @@ window.addEventListener('appinstalled', () => {
   deferredPrompt = null;
 });
 
+// Se PWA não disponível (iOS/Safari), mostra instruções
 window.addEventListener('load', () => {
-  const isIos   = /iphone|ipad|ipod/i.test(navigator.userAgent);
-  const isInApp = window.matchMedia('(display-mode: standalone)').matches;
+  const isIos    = /iphone|ipad|ipod/i.test(navigator.userAgent);
+  const isInApp  = window.matchMedia('(display-mode: standalone)').matches;
   const fallback = document.getElementById('app-fallback');
-  const btn     = document.getElementById('pwa-install-btn');
+  const btn      = document.getElementById('pwa-install-btn');
 
-  if (isInApp) { btn?.classList.add('hidden'); return; }
-  if (isIos && !deferredPrompt && fallback) fallback.classList.remove('hidden');
+  if (isInApp) {
+    // Já está instalada — esconde toda a secção de instalação
+    btn?.classList.add('hidden');
+    return;
+  }
+
+  if (isIos && !deferredPrompt && fallback) {
+    fallback.classList.remove('hidden');
+  }
 });
 
 
 // ============================================
 // BOTÃO "Área de Membro"
+// Se não está autenticado → abre form de signup
 // ============================================
-document.getElementById('btn-membro')?.addEventListener('click', async e => {
-  const user = await getUser();
-  if (!user) {
+document.getElementById('btn-membro')?.addEventListener('click', e => {
+  if (!getUser()) {
     e.preventDefault();
-    document.getElementById('mode-signup')?.click();
-    mostrarWelcome();
+    // Abre o welcome/signup
+    const modeSignup = document.getElementById('mode-signup');
+    if (modeSignup) {
+      modeSignup.click();
+      mostrarWelcome();
+    } else {
+      // Fallback: vai para o inicio com param
+      window.location.href = 'index.html?auth=login';
+    }
   }
+  // Se autenticado, o href normal navega para user/user.html
 });

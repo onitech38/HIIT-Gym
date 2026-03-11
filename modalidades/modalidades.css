@@ -26,7 +26,6 @@
    o nesting replica a hierarquia exacta do HTML
 ───────────────────────────────────────────── */
 header {
-  position: sticky;
   top: 0;
   z-index: 100;
   background: var(--clr-3);
