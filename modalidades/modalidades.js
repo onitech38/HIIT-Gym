@@ -153,8 +153,8 @@ function renderModalidades() {
         if (!c) return '';
         const bg = c.avatar ? `style="background-image:url('../${c.avatar}')"` : '';
         return `<div class="coach-mini">
-          <div class="coach-mini-av" ${bg}>${c.avatar ? '' : ini(c.nome)}</div>
-          <span class="coach-mini-tip">${c.nome}</span>
+          <div class="coach-mini-avatar" ${bg}>${c.avatar ? '' : ini(c.nome)}</div>
+          <span class="coach-mini-tooltip">${c.nome}</span>
         </div>`;
       }).join('');
 
@@ -175,7 +175,7 @@ function renderModalidades() {
             </div>
             <p class="mod-card-desc">${d.descricao}</p>
             <div class="mod-card-coaches">${coachesHtml}</div>
-            <div class="mod-card-footer">
+            <div class="mod-card-acoes">
               <span class="mod-badge ${st}">${labelBadge(st)}</span>
               ${btnHtml}
             </div>
@@ -212,14 +212,11 @@ function renderEquipa() {
     const bio = COACH_BIO[key] || 'Profissional certificado ao serviço dos membros da HIIT-Gym.';
 
     return `
-      <div id="coach">
-        <div class="coach-card-img" ${cardBg}>
-          ${!c.card ? `<span class="coach-iniciais">${ini(c.nome)}</span>` : ''}
-        </div>
-        <div id="card_info">
-          <span class="nome">${c.nome}</span>
-          <div id="modalidades">${modTags}</div>
-          <p id="bio">${bio}</p>
+      <div class="equipa-card" ${cardBg}>
+        ${!c.card ? `<span class="equipa-card-iniciais">${ini(c.nome)}</span>` : ''}
+        <div class="equipa-card-info">
+          <span class="equipa-card-nome">${c.nome}</span>
+          <span class="equipa-card-tags">${modTags}</span>
         </div>
       </div>`;
   }).join('');

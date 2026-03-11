@@ -158,7 +158,7 @@ main {
   width: 100%;
 }
 
-.sec-header {
+.sec-label {
   text-align: center;
   margin-bottom: 2.5rem;
 
@@ -178,7 +178,7 @@ main {
 
 
 /* ── SECÇÃO MODALIDADES ─────────────────────── */
-.sec-modalidades {
+.mod {
   padding: 2.5rem;
 
   .mod-lista {
@@ -367,7 +367,7 @@ main {
 
 
 /* ── SECÇÃO EQUIPA ──────────────────────────── */
-.sec-equipa {
+.equipa {
   padding: 2.5rem;
 
   .equipa-grid {
@@ -456,7 +456,7 @@ main {
 
 
 /* ── SECÇÃO INSCRIÇÃO ───────────────────────── */
-.sec-inscricao {
+.inscricao {
   padding: 2.5rem;
 
   /* ── #insc-wrap — container dinâmico ─────── */
@@ -1040,8 +1040,8 @@ main {
 @layer media {
   @media (max-width: 600px) {
     main { padding: 2rem 0.75rem 4rem; gap: 2.5rem; }
-    .sec-modalidades,
-    .sec-equipa,
-    .sec-inscricao { padding: 1.5rem 1rem; }
+    .mod,
+    .equipa,
+    .inscricao { padding: 1.5rem 1rem; }
   }
 }
