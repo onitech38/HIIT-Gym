@@ -173,7 +173,7 @@ function preencherDashboard() {
 
   // Badges de modalidades
   const badgesEl  = document.getElementById('dash-modalidades');
-  const enrolled  = currentEnrollments.filter(e => e.status === 'active').map(e => e.modality);
+  const enrolled  = currentEnrollments.filter(e => e.status === 'pensing').map(e => e.modality);
   badgesEl.innerHTML = enrolled.length === 0
     ? `<p style="font-size:.8rem;color:var(--clr-2);opacity:.6;">Nenhuma modalidade inscrita.</p>`
     : enrolled.map(k => {
@@ -228,7 +228,7 @@ function preencherTreinos() {
 function preencherModalidades() {
   const grid = document.getElementById('modalidades-grid');
   if (!grid) return;
-  const activeKeys = currentEnrollments.filter(e => e.status === 'active').map(e => e.modality);
+  const activeKeys = currentEnrollments.filter(e => e.status === 'pending').map(e => e.modality);
 
   grid.innerHTML = Object.entries(MODALIDADES).map(([key, m]) => {
     const inscrito = activeKeys.includes(key);
