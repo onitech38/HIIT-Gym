@@ -100,85 +100,8 @@
         <h2>Inscrição</h2>
       </div>
 
-      <!-- Estado vazio -->
-      <div class="insc-vazio" id="insc-vazio">
-        <i class="fa-solid fa-arrow-up"></i>
-        <p>Selecciona uma modalidade acima para te inscreveres.</p>
-      </div>
-
-      <!-- Formulário (oculto até clicar num card) -->
-      <div class="insc-wrap hidden" id="insc-wrap">
-
-        <!-- Cabeçalho dinâmico -->
-        <div class="insc-topo">
-          <div>
-            <span class="eyebrow-small">Inscrição em</span>
-            <h3 id="insc-titulo">—</h3>
-          </div>
-          <button class="btn icon glass" id="insc-fechar" aria-label="Cancelar">
-            <i class="fa-solid fa-xmark"></i>
-          </button>
-        </div>
-
-        <!-- Dados do utilizador (preenchidos pelo JS) -->
-        <div class="insc-dados" id="insc-dados"></div>
-
-        <!-- Formulário de saúde -->
-        <form class="insc-saude" id="insc-form" novalidate>
-
-          <div class="insc-saude-header">
-            <i class="fa-solid fa-heart-pulse"></i>
-            <span>Informação de Saúde</span>
-            <small>Confidencial — serve para garantir a tua segurança nas aulas.</small>
-          </div>
-
-          <!-- Toggle: problema de saúde -->
-          <div class="toggle-row">
-            <label for="chk-saude">Tens algum problema de saúde relevante?</label>
-            <input type="checkbox" id="chk-saude" name="has_health" class="t-input">
-            <label for="chk-saude" class="t-label" aria-hidden="true"></label>
-          </div>
-          <div class="extra-campo hidden" id="xtra-saude">
-            <label for="health_notes">Descreve brevemente <span class="opt">(opcional)</span></label>
-            <textarea id="health_notes" name="health_notes" rows="3"
-                      placeholder="Ex: problema no joelho direito, asma leve..."></textarea>
-          </div>
-
-          <!-- Toggle: fisioterapia -->
-          <div class="toggle-row">
-            <label for="chk-fisio">Estás a fazer fisioterapia?</label>
-            <input type="checkbox" id="chk-fisio" name="physio" class="t-input">
-            <label for="chk-fisio" class="t-label" aria-hidden="true"></label>
-          </div>
-
-          <!-- Toggle: recomendação médica -->
-          <div class="toggle-row">
-            <label for="chk-medico">Esta inscrição é por recomendação médica?</label>
-            <input type="checkbox" id="chk-medico" name="medical_ref" class="t-input">
-            <label for="chk-medico" class="t-label" aria-hidden="true"></label>
-          </div>
-          <div class="extra-campo hidden" id="xtra-medico">
-            <label for="medical_notes">Notas médicas <span class="opt">(opcional)</span></label>
-            <textarea id="medical_notes" name="medical_notes" rows="3"
-                      placeholder="Ex: recomendado pelo Dr. para reabilitação..."></textarea>
-          </div>
-
-          <p class="form-error hidden" id="insc-erro" role="alert"></p>
-
-          <button type="submit" class="btn glass insc-btn-submit" id="insc-submit">
-            Confirmar Inscrição <i class="fa-solid fa-check"></i>
-          </button>
-        </form>
-
-        <!-- Sucesso -->
-        <div class="insc-ok hidden" id="insc-ok">
-          <i class="fa-solid fa-circle-check"></i>
-          <h3>Inscrição enviada!</h3>
-          <p>A nossa equipa irá confirmar em 24–48h.</p>
-          <button class="btn glass" id="insc-nova">Inscrever noutra modalidade</button>
-        </div>
-
-      </div><!-- /insc-wrap -->
+      <!-- Conteúdo injectado pelo JS (step1: lista / step2: form) -->
+      <div id="insc-wrap"></div>
     </section>
 
   </main>

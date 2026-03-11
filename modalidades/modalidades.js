@@ -64,6 +64,9 @@ window.addEventListener('load', async () => {
   // Secção de inscrição começa sempre no step 1
   inscricaoStep1();
 
+  // Mostra a página (estava oculta via body.loading para evitar FOUC)
+  document.body.classList.remove('loading');
+
   // ?modal=KEY → abre directamente o step 2
   const autoKey = new URLSearchParams(window.location.search).get('modal');
   if (autoKey && modalidadesData[autoKey]?.active) {
