@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Todas as modalidades, equipa e inscrições da HIIT-Gym Montijo.">
+  <meta name="theme-color" content="#fba002">
+  <title>Modalidades — HIIT-Gym</title>
+  <link rel="icon" type="image/svg+xml" href="../src/logo/favicon.svg">
+  <link rel="manifest" href="../manifest.json">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Jost:ital,wght@0,100..900;1,100..900&family=Saira:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
+        integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw=="
+        crossorigin="anonymous" referrerpolicy="no-referrer">
+
+  <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="modalidades.css">
+  <style>body.loading { visibility: hidden; }</style>
+</head>
+
+<body class="loading" id="modalidades-page">
+
+  <!-- ══════════════
+       HEADER + NAV
+  ══════════════ -->
+  <header>
+    <nav aria-label="Navegação Principal">
+      <a class="logo btn" href="../index.html" aria-label="Logotipo do site">
+        <img src="../src/logo/logo_def1.svg" alt="Hiit-Gym">
+      </a>
+
+      <details class="mobile-nav">
+        <summary class="hamburger btn" aria-label="Abrir menu">
+          <span></span><span></span><span></span>
+        </summary>
+      </details>
+
+      <div class="nav-content glass">
+        <div class="menu">
+          <a class="link-btn" href="../index.html#sobre">sobre</a>
+          <a class="link-btn active" href="modalidades.html">modalidades</a>
+          <a class="link-btn" href="../index.html#planos">planos</a>
+          <a class="link-btn" href="../index.html#contactos">contactos</a>
+          <a class="link-btn" href="../blog/blog.html">blog</a>
+        </div>
+        <span></span>
+        <div class="login-sign_up" id="nav-auth">
+          <a class="link-btn" id="nav-login"  href="../index.html">login</a>
+          <a class="link-btn" id="nav-signup" href="../index.html">signup</a>
+          <a class="nav-user-avatar hidden" href="../user/user.html" id="nav-avatar" aria-label="O meu perfil">
+            <div class="coach-avatar" id="nav-avatar-img"></div>
+          </a>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Hero -->
+    <div class="page-hero">
+      <span class="page-eyebrow"><i class="fa-solid fa-layer-group"></i> hiit-gym montijo</span>
+      <h1>As nossas <span>Modalidades</span></h1>
+      <p>Encontra a actividade ideal para os teus objectivos e inscreve-te directamente aqui.</p>
+    </div>
+  </header>
+
+
+  <!-- ══════════════
+       MAIN
+  ══════════════ -->
+  <main>
+
+    <!-- ── SECÇÃO: MODALIDADES ── -->
+    <section class="mod" id="modalidades">
+      <div class="sec-label">
+        <span class="eyebrow">O que oferecemos</span>
+        <h2>Modalidades</h2>
+      </div>
+      <!-- Cards injectados pelo JS -->
+      <div class="mod-lista" id="mod-lista"></div>
+    </section>
+
+
+    <!-- ── SECÇÃO: EQUIPA ── -->
+    <section class="equipa" id="equipa">
+      <div class="sec-label">
+        <span class="eyebrow">Os nossos profissionais</span>
+        <h2>Equipa</h2>
+      </div>
+      <!-- Grid injectada pelo JS -->
+      <div class="equipa-grid" id="equipa-grid"></div>
+    </section>
+
+
+    <!-- ── SECÇÃO: INSCRIÇÃO ── -->
+    <section class="inscricao golden-border" id="inscricao">
+      <div class="sec-label">
+        <span class="eyebrow">Junta-te a nós</span>
+        <h2>Inscrição</h2>
+      </div>
+
+      <!-- Estado vazio -->
+      <div class="insc-vazio" id="insc-vazio">
+        <i class="fa-solid fa-arrow-up"></i>
+        <p>Selecciona uma modalidade acima para te inscreveres.</p>
+      </div>
+
+      <!-- Formulário (oculto até clicar num card) -->
+      <div class="insc-wrap hidden" id="insc-wrap">
+
+        <!-- Cabeçalho dinâmico -->
+        <div class="insc-topo">
+          <div>
+            <span class="eyebrow-small">Inscrição em</span>
+            <h3 id="insc-titulo">—</h3>
+          </div>
+          <button class="btn icon glass" id="insc-fechar" aria-label="Cancelar">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+
+        <!-- Dados do utilizador (preenchidos pelo JS) -->
+        <div class="insc-dados" id="insc-dados"></div>
+
+        <!-- Formulário de saúde -->
+        <form class="insc-saude" id="insc-form" novalidate>
+
+          <div class="insc-saude-header">
+            <i class="fa-solid fa-heart-pulse"></i>
+            <span>Informação de Saúde</span>
+            <small>Confidencial — serve para garantir a tua segurança nas aulas.</small>
+          </div>
+
+          <!-- Toggle: problema de saúde -->
+          <div class="toggle-row">
+            <label for="chk-saude">Tens algum problema de saúde relevante?</label>
+            <input type="checkbox" id="chk-saude" name="has_health" class="t-input">
+            <label for="chk-saude" class="t-label" aria-hidden="true"></label>
+          </div>
+          <div class="extra-campo hidden" id="xtra-saude">
+            <label for="health_notes">Descreve brevemente <span class="opt">(opcional)</span></label>
+            <textarea id="health_notes" name="health_notes" rows="3"
+                      placeholder="Ex: problema no joelho direito, asma leve..."></textarea>
+          </div>
+
+          <!-- Toggle: fisioterapia -->
+          <div class="toggle-row">
+            <label for="chk-fisio">Estás a fazer fisioterapia?</label>
+            <input type="checkbox" id="chk-fisio" name="physio" class="t-input">
+            <label for="chk-fisio" class="t-label" aria-hidden="true"></label>
+          </div>
+
+          <!-- Toggle: recomendação médica -->
+          <div class="toggle-row">
+            <label for="chk-medico">Esta inscrição é por recomendação médica?</label>
+            <input type="checkbox" id="chk-medico" name="medical_ref" class="t-input">
+            <label for="chk-medico" class="t-label" aria-hidden="true"></label>
+          </div>
+          <div class="extra-campo hidden" id="xtra-medico">
+            <label for="medical_notes">Notas médicas <span class="opt">(opcional)</span></label>
+            <textarea id="medical_notes" name="medical_notes" rows="3"
+                      placeholder="Ex: recomendado pelo Dr. para reabilitação..."></textarea>
+          </div>
+
+          <p class="form-error hidden" id="insc-erro" role="alert"></p>
+
+          <button type="submit" class="btn glass insc-btn-submit" id="insc-submit">
+            Confirmar Inscrição <i class="fa-solid fa-check"></i>
+          </button>
+        </form>
+
+        <!-- Sucesso -->
+        <div class="insc-ok hidden" id="insc-ok">
+          <i class="fa-solid fa-circle-check"></i>
+          <h3>Inscrição enviada!</h3>
+          <p>A nossa equipa irá confirmar em 24–48h.</p>
+          <button class="btn glass" id="insc-nova">Inscrever noutra modalidade</button>
+        </div>
+
+      </div><!-- /insc-wrap -->
+    </section>
+
+  </main>
+
+
+  <!-- ══════════════
+       FOOTER
+  ══════════════ -->
+  <footer>
+    <div class="footer-grid">
+      <div class="footer-marca">
+        <a class="logo btn" href="../index.html">
+          <img src="../src/logo/logo_def1.svg" alt="Hiit-Gym">
+        </a>
+        <p>A academia desportiva completa de Montijo. Treina mais, vive melhor.</p>
+      </div>
+      <nav class="footer-nav" aria-label="Navegação do rodapé">
+        <span class="footer-titulo">Navegação</span>
+        <a class="link-btn" href="../index.html#sobre">Sobre nós</a>
+        <a class="link-btn" href="modalidades.html">Modalidades</a>
+        <a class="link-btn" href="../index.html#planos">Planos</a>
+        <a class="link-btn" href="../index.html#contactos">Contactos</a>
+      </nav>
+      <div class="footer-extra">
+        <span class="footer-titulo">Horário</span>
+        <p><strong>Seg – Sex:</strong> 06h00 – 22h00</p>
+        <p><strong>Sáb – Dom:</strong> 08h00 – 20h00</p>
+        <span class="footer-titulo" style="margin-top:1.5rem">Redes Sociais</span>
+        <div class="footer-sociais">
+          <a href="https://wa.me/351912345678" target="_blank" rel="noopener" aria-label="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>
+          <a href="https://instagram.com/hiitgym"  target="_blank" rel="noopener" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+          <a href="https://facebook.com/hiitgym"   target="_blank" rel="noopener" aria-label="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
+          <a href="https://tiktok.com/@hiitgym"    target="_blank" rel="noopener" aria-label="TikTok"><i class="fa-brands fa-tiktok"></i></a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bar">
+      <span>© 2025 HIIT-Gym · Todos os direitos reservados.</span>
+      <div>
+        <a href="#">Política de Privacidade</a>
+        <span>·</span>
+        <a href="#">Termos e Condições</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- SVG Glass Filter -->
+  <svg width="0" height="0" style="position:absolute;pointer-events:none">
+    <defs>
+      <filter id="glass-filter" x="-20%" y="-20%" width="140%" height="140%" color-interpolation-filters="sRGB">
+        <feTurbulence type="fractalNoise" baseFrequency="0.010 0.018" numOctaves="3" seed="2" result="noise"/>
+        <feDisplacementMap in="SourceGraphic" in2="noise" scale="35" xChannelSelector="R" yChannelSelector="G" result="displaced"/>
+        <feColorMatrix type="saturate" values="1.2" in="displaced" result="saturated"/>
+        <feComposite in="saturated" in2="SourceGraphic" operator="in"/>
+      </filter>
+    </defs>
+  </svg>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+  <script src="../supabase.js"></script>
+  <script src="../data.js"></script>
+  <script src="modalidades.js"></script>
+</body>
+</html>
