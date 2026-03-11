@@ -1,0 +1,868 @@
+/* ============================================
+   MODALIDADES.CSS
+   Depende de ../style.css
+   Segue a mesma convenção:
+   — nesting puro (sem classes desligadas)
+   — variáveis, animações e @media nos @layers
+   ============================================ */
+
+
+/* ─────────────────────────────────────────────
+   VARIÁVEIS LOCAIS
+───────────────────────────────────────────── */
+@layer variables {
+  :root {
+    --card-radius    : 4px 16px 4px 20px;
+    --card-img-w     : 320px;          /* largura da imagem no estado normal (PC) */
+    --coach-card-h   : 380px;
+    --coach-card-h-sm: 260px;
+  }
+}
+
+
+/* ─────────────────────────────────────────────
+   HEADER
+   Reutiliza a estrutura do index.html —
+   o nesting replica a hierarquia exacta do HTML
+───────────────────────────────────────────── */
+header {
+  top: 0;
+  z-index: 100;
+  background: var(--clr-3);
+  border-bottom: var(--clr-smooth-line);
+
+  nav {
+    width: 100%;
+    max-width: 1440px;
+    margin-inline: auto;
+    padding: var(--gap-items);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+
+    * { text-transform: uppercase; }
+
+    .mobile-nav { display: none; }
+
+    .nav-content {
+      padding: 0.5rem 1rem;
+      display: inline-flex;
+      box-shadow: var(--bx-sdw);
+      justify-content: space-around;
+
+      .menu { display: inline-flex; align-items: center; }
+
+      span {
+        border-left : var(--border-size) var(--clr-4);
+        border-right: var(--border-size) var(--clr-4);
+      }
+
+      .login-sign_up {
+        margin-inline: 0.5rem;
+        display: flex;
+
+        .nav-user-avatar {
+          display: inline-flex;
+          align-items: center;
+          text-decoration: none;
+          cursor: pointer;
+
+          .coach-avatar {
+            width           : var(--size-user-avatar);
+            height          : var(--size-user-avatar);
+            border-radius   : 50%;
+            border          : 2px solid var(--clr-4);
+            background-size : cover;
+            background-position: center;
+            background-color: var(--clr-3);
+            display: grid;
+            place-items: center;
+            font-size   : 0.75rem;
+            font-weight : 700;
+            color       : var(--clr-4);
+            transition  : transform var(--tempo) ease, border-color var(--tempo) ease;
+
+            &:hover { transform: scale(1.1); border-color: var(--clr-1); }
+          }
+        }
+      }
+
+      /* Link activo — página corrente */
+      .link-btn.active {
+        color: var(--clr-4);
+        text-decoration: underline;
+        text-decoration-color: var(--clr-4);
+        text-underline-offset: 0.725rem;
+      }
+    }
+  }
+
+  /* ── Hero ── */
+  .page-hero {
+    max-width: 800px;
+    margin-inline: auto;
+    padding: 4rem 1.5rem 3.5rem;
+    display: grid;
+    gap: 0.8rem;
+    place-items: center;
+    text-align: center;
+
+    .page-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.72rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--clr-4);
+
+      i { font-size: 0.85rem; }
+    }
+
+    h1 {
+      font-size : clamp(2.2rem, 5vw, 4.5rem);
+      color     : var(--clr-1);
+      margin    : 0;
+      line-height: 1.08;
+      letter-spacing: -0.01em;
+
+      span { color: var(--clr-4); font-style: italic; }
+    }
+
+    p {
+      font-size : 0.9rem;
+      color     : var(--clr-2);
+      opacity   : 0.7;
+      max-width : 480px;
+      line-height: 1.7;
+      margin: 0;
+    }
+  }
+}
+
+
+/* ─────────────────────────────────────────────
+   MAIN — layout geral
+───────────────────────────────────────────── */
+main {
+  display: grid;
+  gap: 6rem;
+  padding: 4rem 1.5rem 6rem;
+  max-width: 1200px;
+  margin-inline: auto;
+  width: 100%;
+
+  /* Cabeçalho de cada secção */
+  .sec-label {
+    margin-bottom: 2.5rem;
+    text-align: center;
+
+    .eyebrow {
+      color: var(--clr-4);
+      font-size: 0.7rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      margin-bottom: 0.4rem;
+    }
+
+    h2 {
+      font-size: clamp(1.6rem, 3vw, 2.8rem);
+      color: var(--clr-1);
+      margin: 0;
+    }
+  }
+
+
+  /* ─────────────────────────────────────────
+     SECÇÃO MOD — cards de modalidades
+  ───────────────────────────────────────── */
+  .mod {
+    .mod-lista {
+      display: grid;
+      gap: 1.25rem;
+    }
+
+    /* ── Card individual ── */
+    .mod-card {
+      position: relative;
+      display: grid;
+      grid-template-columns: 1fr var(--card-img-w);
+      align-items: stretch;
+      min-height: 200px;
+      border-radius: var(--card-radius);
+      overflow: hidden;
+      background: rgba(18,13,15, 0.7);
+      border: 1px solid rgba(251,160,2, 0.10);
+      cursor: pointer;
+      transition:
+        border-color var(--tempo) ease,
+        box-shadow   var(--tempo) ease;
+
+      &:hover {
+        border-color: rgba(251,160,2, 0.35);
+        box-shadow: 0 8px 40px rgba(251,160,2, 0.06);
+      }
+
+      /* ── Área de conteúdo (esquerda) ── */
+      .mod-card-body {
+        padding: 2rem 2rem 1.5rem;
+        display: grid;
+        grid-template-rows: auto auto 1fr auto;
+        gap: 1rem;
+        align-content: start;
+
+        /* Título da modalidade */
+        .mod-card-titulo {
+          font-family   : var(--fnt-sign);
+          font-size     : clamp(1.1rem, 1.8vw, 1.5rem);
+          font-weight   : 700;
+          color         : var(--clr-1);
+          text-transform: uppercase;
+          letter-spacing: 0.06em;
+          line-height   : 1.1;
+        }
+
+        /* Horários */
+        .mod-card-horarios {
+          display       : flex;
+          flex-direction: column;
+          gap: 0.3rem;
+
+          span {
+            font-size  : 0.78rem;
+            color      : var(--clr-2);
+            opacity    : 0.75;
+            display    : flex;
+            align-items: center;
+            gap        : 0.5rem;
+
+            i {
+              color    : var(--clr-4);
+              font-size: 0.7rem;
+              width    : 0.85rem;
+            }
+          }
+        }
+
+        /* Descrição — só visível no hover */
+        .mod-card-desc {
+          font-size  : 0.82rem;
+          color      : var(--clr-2);
+          line-height: 1.65;
+          opacity    : 0;
+          transform  : translateY(6px);
+          transition :
+            opacity   0.25s ease 0.05s,
+            transform 0.25s ease 0.05s;
+          display: -webkit-box;
+          -webkit-line-clamp: 4;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
+          text-align: left;
+        }
+
+        /* Coaches mini-avatares */
+        .mod-card-coaches {
+          display    : flex;
+          flex-wrap  : wrap;
+          gap        : 0.5rem;
+          align-items: center;
+
+          .coach-mini {
+            position: relative;
+
+            .coach-mini-av {
+              width           : 34px;
+              height          : 34px;
+              border-radius   : 50%;
+              border          : 1.5px solid var(--clr-4);
+              background-size : cover;
+              background-position: center;
+              background-color: var(--clr-3);
+              display         : grid;
+              place-items     : center;
+              font-size       : 0.6rem;
+              font-weight     : 700;
+              color           : var(--clr-4);
+              transition      : transform var(--tempo) ease;
+
+              &:hover { transform: scale(1.12); }
+            }
+
+            .coach-mini-tip {
+              position  : absolute;
+              bottom    : calc(100% + 6px);
+              left      : 50%;
+              transform : translateX(-50%);
+              background: var(--clr-4);
+              color     : var(--clr-3);
+              padding   : 0.3rem 0.6rem;
+              border-radius: 4px;
+              font-size : 0.62rem;
+              font-weight: 600;
+              text-transform: uppercase;
+              white-space: nowrap;
+              pointer-events: none;
+              opacity   : 0;
+              transition: opacity var(--tempo) ease;
+              z-index   : 10;
+            }
+
+            &:hover .coach-mini-tip { opacity: 1; }
+          }
+        }
+
+        /* Botão inscrever */
+        .mod-btn-insc {
+          align-self: end;
+          justify-self: start;
+          display    : inline-flex;
+          align-items: center;
+          gap        : 0.45rem;
+          padding    : 0.55rem 1.2rem;
+          font-size  : 0.78rem;
+        }
+
+        /* Badge de estado */
+        .mod-badge {
+          justify-self: start;
+          font-size   : 0.62rem;
+          font-weight : 600;
+          letter-spacing: 0.1em;
+          text-transform: uppercase;
+          padding     : 0.28rem 0.65rem;
+          border-radius: 100px;
+
+          &.inscrito  { background: rgba(100,200,120,0.12); color: #64c878;         border: 1px solid rgba(100,200,120,0.3); }
+          &.pendente  { background: rgba(251,160,2,0.12);   color: var(--clr-4);    border: 1px solid rgba(251,160,2,0.3); }
+          &.disponivel{ background: rgba(185,207,212,0.07); color: var(--clr-2);    border: 1px solid rgba(185,207,212,0.14); }
+        }
+      }
+
+      /* ── Imagem (direita) ── */
+      .mod-card-img {
+        position: relative;
+        overflow: hidden;
+
+        img {
+          width     : 100%;
+          height    : 100%;
+          object-fit: cover;
+          display   : block;
+          transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* gradiente de fusão esq→direita */
+        &::before {
+          content : '';
+          position: absolute;
+          inset   : 0;
+          background: linear-gradient(
+            to right,
+            rgba(18,13,15, 0.85) 0%,
+            rgba(18,13,15, 0.1)  40%,
+            transparent          100%
+          );
+          z-index: 1;
+          transition: opacity 0.35s ease;
+        }
+      }
+
+      /* ── HOVER STATE: imagem alastra ── */
+      &:hover {
+        .mod-card-img {
+          img { transform: scale(1.04); }
+
+          &::before {
+            background: linear-gradient(
+              to right,
+              rgba(18,13,15, 0.65) 0%,
+              rgba(18,13,15, 0.05) 50%,
+              transparent          100%
+            );
+          }
+        }
+
+        .mod-card-desc {
+          opacity  : 1;
+          transform: translateY(0);
+        }
+      }
+    }
+  }
+
+
+  /* ─────────────────────────────────────────
+     SECÇÃO EQUIPA — auto-grid de cards
+  ───────────────────────────────────────── */
+  .equipa {
+    .equipa-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.25rem;
+    }
+
+    /* ── Card do coach ── */
+    #coach {
+      position: relative;
+      display : flex;
+      flex-direction: column;
+      border-radius: var(--card-radius);
+      overflow: hidden;
+      border  : 1px solid rgba(251,160,2, 0.10);
+      background: rgba(18,13,15, 0.6);
+      transition:
+        transform     var(--tempo) ease,
+        box-shadow    var(--tempo) ease,
+        border-color  var(--tempo) ease;
+
+      &:hover {
+        transform   : translateY(-4px);
+        box-shadow  : var(--bx-sdw);
+        border-color: rgba(251,160,2, 0.3);
+      }
+
+      /* Foto do coach */
+      .coach-card-img {
+        height  : var(--coach-card-h);
+        overflow: hidden;
+        position: relative;
+
+        img {
+          width     : 100%;
+          height    : 100%;
+          object-fit: cover;
+          object-position: top center;
+          display   : block;
+          transition: transform 0.45s ease;
+        }
+
+        &::after {
+          content : '';
+          position: absolute;
+          inset   : 0;
+          background: linear-gradient(to bottom, transparent 50%, rgba(18,13,15,0.95) 100%);
+        }
+      }
+
+      &:hover .coach-card-img img { transform: scale(1.04); }
+
+      /* Iniciais (fallback sem foto) */
+      .coach-iniciais {
+        position  : absolute;
+        top: 50%; left: 50%;
+        transform : translate(-50%, -50%);
+        font-family: var(--fnt-sign);
+        font-size : 2.5rem;
+        font-weight: 700;
+        color     : var(--clr-4);
+        opacity   : 0.3;
+        pointer-events: none;
+      }
+
+      /* Área de informação */
+      #card_info {
+        padding: 1.1rem 1.1rem 1.25rem;
+        display: grid;
+        gap    : 0.4rem;
+
+        /* Nome */
+        .nome {
+          font-family   : var(--fnt-sign);
+          font-size     : 0.95rem;
+          font-weight   : 700;
+          font-style    : italic;
+          color         : var(--clr-1);
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
+          line-height   : 1.2;
+        }
+
+        /* Modalidades */
+        #modalidades {
+          display    : flex;
+          flex-wrap  : wrap;
+          gap        : 0.3rem;
+
+          .mod-tag {
+            font-size     : 0.6rem;
+            font-weight   : 600;
+            color         : var(--clr-4);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+          }
+
+          .mod-sep {
+            font-size: 0.6rem;
+            color    : rgba(251,160,2, 0.4);
+          }
+        }
+
+        /* Bio */
+        #bio {
+          font-size  : 0.72rem;
+          color      : var(--clr-2);
+          opacity    : 0.65;
+          line-height: 1.6;
+          text-align : left;
+          display    : -webkit-box;
+          -webkit-line-clamp: 3;
+          -webkit-box-orient: vertical;
+          overflow   : hidden;
+          margin     : 0;
+        }
+      }
+    }
+  }
+
+
+  /* ─────────────────────────────────────────
+     SECÇÃO INSCRIÇÃO
+  ───────────────────────────────────────── */
+  .inscricao {
+    padding: 2.5rem;
+
+    /* Estado vazio */
+    .insc-vazio {
+      display       : flex;
+      flex-direction: column;
+      align-items   : center;
+      gap           : 0.75rem;
+      padding       : 3rem 1rem;
+      opacity       : 0.38;
+      text-align    : center;
+
+      i  { font-size: 2rem; color: var(--clr-4); animation: bounce-up 1.6s ease-in-out infinite; }
+      p  { font-size: 0.85rem; color: var(--clr-2); margin: 0; }
+    }
+
+    /* Wrapper do form */
+    .insc-wrap {
+      max-width     : 660px;
+      margin-inline : auto;
+      display       : grid;
+      gap           : 1.75rem;
+
+      /* Topo com título + fechar */
+      .insc-topo {
+        display    : flex;
+        align-items: flex-start;
+        gap        : 1rem;
+
+        h3 {
+          font-size     : clamp(1.4rem, 2.5vw, 2rem);
+          color         : var(--clr-4);
+          font-style    : italic;
+          text-transform: uppercase;
+          letter-spacing: 0.06em;
+          margin        : 0;
+          flex          : 1;
+        }
+
+        button { opacity: 0.55; &:hover { opacity: 1; } }
+      }
+
+      /* Bloco de dados do user */
+      .insc-dados {
+        background  : rgba(18,13,15, 0.55);
+        border      : 1px solid rgba(185,207,212, 0.1);
+        border-radius: var(--card-radius);
+        padding     : 1.25rem 1.5rem;
+
+        .dados-grid {
+          display              : grid;
+          grid-template-columns: 1fr 1fr;
+          gap                  : 0.8rem 2rem;
+        }
+
+        .dado-item {
+          display       : flex;
+          flex-direction: column;
+          gap           : 0.15rem;
+
+          .dado-label {
+            font-size     : 0.62rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color         : var(--clr-4);
+          }
+
+          .dado-valor {
+            font-size  : 0.88rem;
+            color      : var(--clr-1);
+            font-weight: 400;
+          }
+        }
+
+        /* Prompt para não-autenticados */
+        .insc-nao-auth {
+          text-align: center;
+          padding   : 0.75rem 0;
+
+          p { font-size: 0.85rem; color: var(--clr-2); margin-bottom: 1rem; }
+
+          .auth-btns {
+            display        : flex;
+            gap            : 0.75rem;
+            justify-content: center;
+            flex-wrap      : wrap;
+          }
+        }
+      }
+
+      /* Form de saúde */
+      .insc-saude {
+        display: grid;
+        gap    : 1.1rem;
+
+        .insc-saude-header {
+          display    : flex;
+          align-items: baseline;
+          flex-wrap  : wrap;
+          gap        : 0.55rem;
+
+          i     { color: var(--clr-4); font-size: 0.82rem; }
+          span  { font-size: 0.76rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--clr-2); font-weight: 600; }
+          small { font-size: 0.67rem; color: var(--clr-2); opacity: 0.5; }
+        }
+
+        /* Toggle row */
+        .toggle-row {
+          display        : flex;
+          align-items    : center;
+          justify-content: space-between;
+          gap            : 1rem;
+          padding        : 0.65rem 0;
+          border-bottom  : 1px solid rgba(185,207,212, 0.07);
+
+          label:first-of-type {
+            font-size: 0.82rem;
+            color    : var(--clr-2);
+            cursor   : pointer;
+            flex     : 1;
+          }
+
+          .t-input { display: none; }
+
+          .t-label {
+            width        : 42px;
+            height       : 24px;
+            background   : rgba(185,207,212, 0.15);
+            border-radius: 100px;
+            position     : relative;
+            cursor       : pointer;
+            flex-shrink  : 0;
+            transition   : background var(--tempo) ease;
+
+            &::after {
+              content      : '';
+              position     : absolute;
+              top: 3px; left: 3px;
+              width        : 18px;
+              height       : 18px;
+              border-radius: 50%;
+              background   : var(--clr-2);
+              transition   : transform var(--tempo) ease, background var(--tempo) ease;
+            }
+          }
+
+          .t-input:checked + .t-label {
+            background: var(--clr-4);
+
+            &::after {
+              transform : translateX(18px);
+              background: var(--clr-3);
+            }
+          }
+        }
+
+        /* Campo extra (textarea) */
+        .extra-campo {
+          display: grid;
+          gap    : 0.4rem;
+
+          label {
+            font-size     : 0.67rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color         : var(--clr-2);
+            opacity       : 0.65;
+          }
+
+          textarea {
+            width        : 100%;
+            padding      : 0.65rem 0.9rem;
+            background   : rgba(18,13,15, 0.6);
+            border       : 1.5px solid rgba(185,207,212, 0.12);
+            border-bottom-color: var(--clr-smooth-line);
+            border-radius: var(--border-radius);
+            color        : var(--clr-1);
+            font-family  : var(--fnt-body);
+            font-size    : 0.88rem;
+            resize       : none;
+            outline      : none;
+            transition   : border-color var(--tempo) ease;
+
+            &:focus       { border-color: var(--clr-4); }
+            &::placeholder{ color: var(--clr-2); opacity: 0.35; }
+          }
+        }
+
+        .insc-btn-submit {
+          width          : 100%;
+          display        : flex;
+          align-items    : center;
+          justify-content: center;
+          gap            : 0.5rem;
+          padding        : 0.85rem;
+          font-size      : 0.85rem;
+          margin-top     : 0.5rem;
+        }
+      }
+
+      /* Sucesso */
+      .insc-ok {
+        text-align : center;
+        padding    : 2.5rem 1rem;
+        display    : grid;
+        place-items: center;
+        gap        : 0.8rem;
+
+        i  { font-size: 3.5rem; color: #64c878; }
+        h3 { color: var(--clr-1); font-size: 1.6rem; margin: 0; }
+        p  { color: var(--clr-2); font-size: 0.88rem; opacity: 0.7; margin: 0; }
+      }
+    }
+  }
+}
+
+
+/* ─────────────────────────────────────────────
+   ANIMAÇÕES
+───────────────────────────────────────────── */
+@layer animations {
+  @keyframes bounce-up {
+    0%, 100% { transform: translateY(0); }
+    50%       { transform: translateY(-10px); }
+  }
+}
+
+
+/* ─────────────────────────────────────────────
+   MEDIA QUERIES
+───────────────────────────────────────────── */
+@layer media {
+
+  /* ── Tablet ── */
+  @media (max-width: 900px) {
+    header {
+      nav {
+        .mobile-nav { display: block; }
+        .nav-content {
+          display       : none;
+          position      : absolute;
+          top: 70px; left: 0; right: 0;
+          padding       : 2rem 1rem;
+          flex-direction: column;
+          align-items   : center;
+          gap           : 2rem;
+          z-index       : 99;
+        }
+        .menu          { flex-direction: column; align-items: center; gap: var(--gap-items); }
+        .login-sign_up { display: flex; gap: var(--gap-items); }
+
+        &:has(.mobile-nav[open]) .nav-content {
+          display: flex;
+          span    { width: 200px; border: var(--border-size) var(--clr-4); }
+        }
+        .mobile-nav[open] > summary span:nth-child(1) { transform: translateY(8px)  rotate(45deg); }
+        .mobile-nav[open] > summary span:nth-child(2) { opacity  : 0; }
+        .mobile-nav[open] > summary span:nth-child(3) { transform: translateY(-8px) rotate(-45deg); }
+        .hamburger { display: flex; }
+      }
+    }
+
+    main {
+      .mod {
+        .mod-card {
+          /* Tablet: imagem sobre o conteúdo */
+          grid-template-columns: 1fr;
+          grid-template-rows   : 180px auto;
+
+          .mod-card-img {
+            height: 180px;
+            grid-row: 1;
+
+            &::before {
+              background: linear-gradient(to bottom, transparent 50%, rgba(18,13,15, 0.85) 100%);
+            }
+          }
+
+          .mod-card-body {
+            grid-row: 2;
+            padding : 1.25rem 1.5rem 1.5rem;
+
+            .mod-card-desc {
+              opacity  : 1;
+              transform: none;
+            }
+          }
+        }
+      }
+
+      .equipa {
+        .equipa-grid { grid-template-columns: repeat(3, 1fr); }
+      }
+    }
+  }
+
+  /* ── Mobile ── */
+  @media (max-width: 600px) {
+    main {
+      gap    : 3.5rem;
+      padding: 2.5rem 0.85rem 4rem;
+
+      .mod {
+        .mod-card {
+          grid-template-rows: 160px auto;
+
+          .mod-card-img { height: 160px; }
+
+          .mod-card-body { padding: 1rem 1.1rem 1.25rem; }
+        }
+      }
+
+      .equipa {
+        .equipa-grid {
+          grid-template-columns: repeat(2, 1fr);
+          gap: 0.85rem;
+
+          #coach {
+            .coach-card-img { height: var(--coach-card-h-sm); }
+            #card_info      { padding: 0.85rem 0.85rem 1rem; }
+          }
+        }
+      }
+
+      .inscricao {
+        padding: 1.5rem 1rem;
+
+        .insc-wrap {
+          .insc-dados {
+            .dados-grid { grid-template-columns: 1fr; }
+          }
+        }
+      }
+    }
+  }
+
+  /* ── Mobile pequeno ── */
+  @media (max-width: 380px) {
+    main {
+      .equipa {
+        .equipa-grid { grid-template-columns: 1fr; }
+      }
+    }
+  }
+}
