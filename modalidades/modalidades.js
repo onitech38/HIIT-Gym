@@ -1,39 +1,21 @@
 /* ============================================
-   MODALIDADES.JS
+   MODALIDADES.JS — mecânica da página
+
+   Conteúdo (coaches, modalidades) → data.js
+   Nav/footer partilhado             → global.js
 
    ÍNDICE:
    1. Estado global + helpers
-   2. Init (sessão, render, auto-open)
-   3. Nav — actualiza login/avatar
-   4. renderModalidades() — cards da secção .mod
-   5. renderEquipa()      — grid de coaches
-   6. Inscrição 2 passos:
-        step1() — lista de modalidades (sempre visível)
-        step2() — form de saúde (substitui step1 inline)
-        Fechar step2 → volta ao step1, sem scroll
-   7. submeterInscricao()
+   2. Init (sessão Supabase, render, auto-open)
+   3. renderModalidades() — cards da secção .mod
+   4. renderEquipa()      — grid de coaches
+   5. Inscrição 2 passos:
+        inscricaoStep1() — lista de modalidades
+        inscricaoStep2() — form de saúde
+   6. submeterInscricao()
    ============================================ */
 
 
-// ── Bio por coach ─────────────────────────────
-const COACH_BIO = {
-  carlos  : 'Personal Trainer certificado com 10 anos em musculação e hipertrofia.',
-  ana     : 'Especialista em treino feminino, nutrição desportiva e transformação corporal.',
-  rafael  : 'Ex-atleta de powerlifting, focado em progressão de carga e técnica correcta.',
-  maria   : 'Instrutora de Zumba e cardio com formação em dança contemporânea.',
-  joao    : 'Treinador de ciclismo e HIIT, foco em condição cardiovascular e perda de peso.',
-  sofia   : 'Instrutora de Yoga certificada pela Yoga Alliance, 8 anos de prática.',
-  pedro   : 'Professor de Pilates clínico especializado em reabilitação postural.',
-  claudia : 'Mestre em Yoga Vinyasa e meditação mindfulness.',
-  tiago   : 'Instrutor de Yoga e Pilates com formação em biomecânica do movimento.',
-  ines    : 'Especialista em Yoga terapêutico para gestão de stress e flexibilidade.',
-  fernando: 'Campeão nacional de Muay Thai e treinador de artes marciais mistas.',
-  patricia: 'Faixa preta de Jiu-Jitsu Brasileiro, ex-competidora internacional.',
-  ricardo : 'Sensei de Karaté com 20 anos de experiência em defesa pessoal.',
-  andre   : 'Treinador de natação competitiva, ex-seleccionado nacional.',
-  fernanda: 'Especialista em natação terapêutica e adaptada para todas as idades.',
-  lucas   : 'Treinador de natação focado em técnica e melhoria de performance.',
-};
 
 
 // ── Estado global ─────────────────────────────
@@ -42,7 +24,7 @@ let currentProfile     = {};
 let currentEnrollments = [];
 let keySeleccionada    = null;
 
-const ini = str => str.split(' ').map(w => w[0]).join('').slice(0,2).toUpperCase();
+
 
 
 /* ============================================
@@ -57,7 +39,6 @@ window.addEventListener('load', async () => {
     await Promise.all([carregarPerfil(), carregarInscricoes()]);
   }
 
-  actualizarNav();
   renderModalidades();
   renderEquipa();
 
@@ -91,33 +72,6 @@ async function carregarInscricoes() {
   const { data } = await window.supabase.from('enrollments').select('*')
     .eq('user_id', currentUser.id);
   currentEnrollments = data || [];
-}
-
-
-/* ============================================
-   2. NAV
-============================================ */
-function actualizarNav() {
-  const navLogin  = document.getElementById('nav-login');
-  const navSignup = document.getElementById('nav-signup');
-  const navAvatar = document.getElementById('nav-avatar');
-  const navImg    = document.getElementById('nav-avatar-img');
-
-  if (!currentUser) return;
-  navLogin?.classList.add('hidden');
-  navSignup?.classList.add('hidden');
-  navAvatar?.classList.remove('hidden');
-
-  if (navImg) {
-    if (currentProfile.avatar_url) {
-      navImg.style.backgroundImage = `url('${currentProfile.avatar_url}')`;
-    } else {
-      navImg.textContent = (
-        (currentProfile.first_name?.[0] || '') +
-        (currentProfile.last_name?.[0]  || '')
-      ).toUpperCase();
-    }
-  }
 }
 
 
@@ -209,7 +163,7 @@ function renderEquipa() {
     const modTags  = c.modalidades
       .map(m => `<span class="mod-tag">${modalidadesData[m]?.titulo || m}</span>`)
       .join('<span class="mod-sep">·</span>');
-    const bio = COACH_BIO[key] || 'Profissional certificado ao serviço dos membros da HIIT-Gym.';
+    const bio = c.bio || 'Profissional certificado ao serviço dos membros da HIIT-Gym.';
 
     return `
       <div class="equipa-card" ${cardBg}>
@@ -217,7 +171,6 @@ function renderEquipa() {
         <div class="equipa-card-info">
           <span class="equipa-card-nome">${c.nome}</span>
           <span class="equipa-card-tags">${modTags}</span>
-          <span class="equipa-card-bio">${bio}</span>
         </div>
       </div>`;
   }).join('');

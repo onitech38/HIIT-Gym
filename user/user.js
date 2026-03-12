@@ -21,7 +21,8 @@ const MODALIDADES = {
 
 // ── HELPERS ──────────────────────────────────
 
-const getIniciais = p => ((p.first_name?.[0] || '') + (p.last_name?.[0] || '')).toUpperCase();
+// ini() vem do global.js — wrapper para perfis de utilizador
+const getIniciais = p => ini(`${p.first_name || ''} ${p.last_name || ''}`.trim() || p.email || '?');
 
 function formatDate(iso) {
   const meses = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
@@ -117,13 +118,10 @@ async function init() {
 
 
 // ── NAV ──────────────────────────────────────
+// actualizarNav() vem do global.js e trata login/signup ↔ avatar.
+// preencherNav() é chamado após auth local — delega no global.
 function preencherNav() {
-  document.getElementById('nav-login')?.classList.add('hidden');
-  document.getElementById('nav-signup')?.classList.add('hidden');
-  const navAvatar    = document.getElementById('nav-avatar');
-  const navAvatarImg = document.getElementById('nav-avatar-img');
-  navAvatar?.classList.remove('hidden');
-  aplicarAvatar(navAvatarImg, currentProfile);
+  actualizarNav(); // global.js
 }
 
 
@@ -173,7 +171,7 @@ function preencherDashboard() {
 
   // Badges de modalidades
   const badgesEl  = document.getElementById('dash-modalidades');
-  const enrolled  = currentEnrollments.filter(e => ['active','pending'].includes(e.status)).map(e => e.modality);
+  const enrolled  = currentEnrollments.filter(e => e.status === 'active').map(e => e.modality_key);
   badgesEl.innerHTML = enrolled.length === 0
     ? `<p style="font-size:.8rem;color:var(--clr-2);opacity:.6;">Nenhuma modalidade inscrita.</p>`
     : enrolled.map(k => {
@@ -228,7 +226,7 @@ function preencherTreinos() {
 function preencherModalidades() {
   const grid = document.getElementById('modalidades-grid');
   if (!grid) return;
-  const activeKeys = currentEnrollments.filter(e => ['active','pending'].includes(e.status)).map(e => e.modality);
+  const activeKeys = currentEnrollments.filter(e => e.status === 'active').map(e => e.modality_key);
 
   grid.innerHTML = Object.entries(MODALIDADES).map(([key, m]) => {
     const inscrito = activeKeys.includes(key);
@@ -253,10 +251,25 @@ function preencherModalidades() {
       </div>`;
   }).join('');
 
-  // Inscrever — redirige para o form de 2 passos
+  // Inscrever
   grid.querySelectorAll('.btn-inscr').forEach(btn => {
-    btn.addEventListener('click', () => {
-      window.location.href = `../modalidades/modalidades.html?modal=${btn.dataset.key}#inscricao`;
+    btn.addEventListener('click', async () => {
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
+      const { data, error } = await supabase.from('enrollments').insert({
+        user_id:      currentUser.id,
+        modality_key: btn.dataset.key,
+        status:       'active',
+      }).select().single();
+      if (!error && data) {
+        currentEnrollments.push(data);
+        preencherModalidades();
+        preencherDashboard();
+      } else {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fa-solid fa-plus"></i> Inscrever-me';
+        alert('Erro ao inscrever. Tenta novamente.');
+      }
     });
   });
 
@@ -266,7 +279,7 @@ function preencherModalidades() {
       const key = btn.dataset.key;
       if (!confirm(`Confirmas que queres pedir a desactivação de "${MODALIDADES[key].titulo}"?`)) return;
       btn.disabled = true;
-      const enrollment = currentEnrollments.find(e => e.modality === key && ['active','pending'].includes(e.status));
+      const enrollment = currentEnrollments.find(e => e.modality_key === key && e.status === 'active');
       if (enrollment) {
         await supabase.from('enrollments').update({ status: 'cancelled' }).eq('id', enrollment.id);
         enrollment.status = 'cancelled';
