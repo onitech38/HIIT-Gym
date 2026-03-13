@@ -77,14 +77,12 @@ function injectChatUI() {
       </button>
     </div>`;
 
+  // Remover o .q_a original do HTML (index.html) ANTES de injectar o novo
+  // — o original não tem #chat-toggle, o nosso tem
+  document.querySelectorAll('.q_a').forEach(el => el.remove());
+
   document.body.appendChild(aside);
   document.body.appendChild(panel);
-
-  // Se a página já tem um .q_a no HTML (index.html),
-  // remover o do HTML para evitar duplicado
-  document.querySelectorAll('.q_a').forEach((el, i) => {
-    if (i > 0) el.remove(); // mantém o primeiro (o injectado)
-  });
 
   bindChatEvents();
 }
