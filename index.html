@@ -651,11 +651,15 @@
     </svg>
 
   
-    <!-- Supabase: necessário para chat e auth bridge -->
+    <!-- Supabase: necessário para o chat verificar sessão/plano -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
     <script src="supabase.js"></script>
+    <!-- NOTA: data.js e global.js NÃO carregados aqui.
+         script.js usa localStorage e já declara coaches/modalidadesData.
+         Carregar ambos causaria SyntaxError (redeclaração de const).
+         Migrar quando script.js passar para Supabase. -->
     <script src="script.js?v=1.0.0"></script>
-    <!-- Chat assistente (auto-init) -->
+    <!-- Chat: carregado após script.js (precisa de modalidadesData do script.js) -->
     <script src="chat.js"></script>
     <script>
         if ('serviceWorker' in navigator) {
