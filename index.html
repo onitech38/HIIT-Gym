@@ -174,7 +174,7 @@
             <div class="nav-content glass" aria-label="Conteúdo da navegação">
                 <div class="menu" aria-label="Páginas do site">
                     <a class="link-btn" href="#sobre">sobre</a>
-                    <a class="link-btn" href="modalidades/modalidades.html">modalidades</a>
+                    <a class="link-btn" href="#modalidades">modalidades</a>
                     <a class="link-btn" href="#planos">planos</a>
                     <a class="link-btn" href="#equipa">equipa</a>
                     <a class="link-btn" href="#contactos">contactos</a>
@@ -374,7 +374,7 @@
                         <h2 id="painel-titulo"></h2>
                         <div class="painel-horarios-bloco" id="painel-horarios-bloco"></div>
                         <ul id="painel-coaches-lista"></ul>
-                        <a class="btn glass" href="modalidades/modalidades.html#inscricao" id="painel-inscrever">inscrever</a>
+                        <a class="btn glass" href="/" id="painel-inscrever" aria-label="Inscrição">inscrever</a>
                     </article>
 
                 </div>
@@ -597,7 +597,7 @@
             <nav class="footer-nav" aria-label="Navegação do rodapé">
                 <span class="footer-titulo">Navegação</span>
                 <a class="link-btn" href="#sobre">Sobre nós</a>
-                <a class="link-btn" href="modalidades/modalidades.html">Modalidades</a>
+                <a class="link-btn" href="#modalidades">Modalidades</a>
                 <a class="link-btn" href="#planos">Planos</a>
                 <a class="link-btn" href="#equipa">Equipa</a>
                 <a class="link-btn" href="#contactos">Contactos</a>
@@ -650,19 +650,18 @@
         </defs>
     </svg>
 
-    <!-- 1. SDK Supabase (CDN) -->
+  
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
-    <!-- 2. Cliente partilhado — define window.supabase -->
     <script src="supabase.js"></script>
-    <!-- 3. Lógica do site -->
-    <script src="script.js?v=2.0.0"></script>
-    <!-- 4. Service Worker -->
+    <script src="data.js"></script>
+    <script src="global.js"></script>
+    <script src="script.js?v=1.0.0"></script>
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/sw.js')
-                    .then(() => console.log('SW: ativo'))
-                    .catch(err => console.warn('SW: erro', err));
+            navigator.serviceWorker.register('/sw.js')
+                .then(() => console.log('SW: ativo'))
+                .catch(err => console.warn('SW: erro', err));
             });
         }
     </script>
