@@ -405,3 +405,16 @@ function perguntaFitnessNutricao(texto) {
 function temPlanoFitness() {
   return ['standard', 'premium'].includes(chatUserPlan);
 }
+
+
+// ── Auto-init ─────────────────────────────────
+// Quando carregado directamente (sem global.js),
+// injeta o UI assim que o DOM estiver pronto.
+// global.js chama injectChatUI() no seu próprio init,
+// portanto este listener é inofensivo nas outras páginas.
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', injectChatUI);
+} else {
+  // DOM já pronto (script defer ou carregado tarde)
+  injectChatUI();
+}
