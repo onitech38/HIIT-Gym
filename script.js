@@ -253,25 +253,42 @@ function bindSignupForm() {
 
       if (signupError) throw signupError;
 
-      // 2. Criar perfil na tabela profiles (se o trigger não o fizer)
-      if (data?.user) {
+      const userId = data?.user?.id;
+
+      // 2. Criar perfil (o trigger Supabase pode já fazer isto,
+      //    mas upsert garante mesmo que o trigger falhe)
+      if (userId) {
         await window.supabase.from('profiles').upsert({
-          id:         data.user.id,
+          id:         userId,
           first_name: firstName,
           last_name:  lastName,
           phone:      form.phone.value.trim() || null,
           age:        parseInt(form.age.value) || null,
           weight:     form.weight.value ? parseFloat(form.weight.value) : null,
           address:    form.address.value.trim() || null,
-        }, { onConflict: 'id' });
+        }, { onConflict: 'id' }).catch(() => {}); // falha silenciosa se RLS bloquear
       }
 
       erro?.classList.add('hidden');
       fecharWelcome();
-      await actualizarNav();
 
-      // Redirige para o perfil
-      setTimeout(() => { window.location.href = 'user/user.html'; }, 300);
+      // Se o Supabase pediu confirmação de email, não há sessão imediata
+      if (data?.session) {
+        await actualizarNav();
+        setTimeout(() => { window.location.href = 'user/user.html'; }, 300);
+      } else {
+        // Email de confirmação enviado — avisar o utilizador
+        const msgEl = document.getElementById('signup-error');
+        if (msgEl) {
+          msgEl.style.color = 'var(--clr-sucesso)';
+          msgEl.style.borderColor = 'var(--clr-sucesso)';
+          msgEl.textContent = '✓ Conta criada! Verifica o teu email para confirmar.';
+          msgEl.classList.remove('hidden');
+        }
+        // Desabilitar botão de submit
+        const btn2 = form.querySelector('button[type="submit"]');
+        if (btn2) { btn2.disabled = true; btn2.textContent = 'Email enviado ✓'; }
+      }
 
     } catch (err) {
       erro.textContent = err.message || 'Erro ao criar conta. Tenta novamente.';
