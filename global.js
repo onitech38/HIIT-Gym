@@ -147,12 +147,20 @@ function injectChatScript() {
 
 // ── To-top: mostra botão após 300px de scroll ─
 function bindToTop() {
-  // Aguarda o chat.js injectar o .q_a
-  setTimeout(() => {
+  // Usar MutationObserver para esperar que o chat.js injete o .q_a
+  const bind = () => {
     const btn = document.querySelector('.q_a .to_top');
-    if (!btn) return;
+    if (!btn) return false;
     window.addEventListener('scroll', () => {
       btn.classList.toggle('visivel', window.scrollY > 300);
     }, { passive: true });
-  }, 500);
+    return true;
+  };
+
+  if (bind()) return; // já existe
+
+  const obs = new MutationObserver(() => {
+    if (bind()) obs.disconnect();
+  });
+  obs.observe(document.body, { childList: true, subtree: true });
 }
