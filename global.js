@@ -125,10 +125,37 @@ function bindMobileNav() {
 
 
 // ── Init automático ao carregar ──────────────
-// Apenas actualizarNav + bindNavAuthLinks.
-// Cada página chama o resto do seu próprio init.
 window.addEventListener('DOMContentLoaded', () => {
   actualizarNav();
   bindNavAuthLinks();
   bindMobileNav();
+  injectChatScript();
+  bindToTop();
 });
+
+// ── Chat: injeta chat.js dinamicamente ───────
+// chat.js trata de tudo (HTML, CSS, eventos)
+function injectChatScript() {
+  if (document.getElementById('chat-script')) return;
+  const depth  = window.location.pathname.split('/').length - 2;
+  const prefix = depth > 0 ? '../'.repeat(depth) : '';
+  const s = document.createElement('script');
+  s.id  = 'chat-script';
+  s.src = `${prefix}chat.js`;
+  s.onload = () => {
+    if (typeof injectChatUI === 'function') injectChatUI();
+  };
+  document.body.appendChild(s);
+}
+
+// ── To-top: mostra botão após 300px de scroll ─
+function bindToTop() {
+  // Aguarda o chat.js injectar o .q_a
+  setTimeout(() => {
+    const btn = document.querySelector('.q_a .to_top');
+    if (!btn) return;
+    window.addEventListener('scroll', () => {
+      btn.classList.toggle('visivel', window.scrollY > 300);
+    }, { passive: true });
+  }, 500);
+}
