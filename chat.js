@@ -31,13 +31,17 @@ function injectChatUI() {
   // Evitar duplicação
   if (document.getElementById('chat-panel')) return;
 
-  // CSS dinâmico — resolve path independentemente da pasta
-  const depth = window.location.pathname.split('/').length - 2;
-  const prefix = depth > 0 ? '../'.repeat(depth) : '';
-  const link = document.createElement('link');
-  link.rel = 'stylesheet';
-  link.href = `${prefix}chat.css`;
-  document.head.appendChild(link);
+  // CSS dinâmico — injectado no <head> para garantir que está
+  // aplicado antes de qualquer render do aside
+  if (!document.getElementById('chat-css')) {
+    const depth  = window.location.pathname.split('/').length - 2;
+    const prefix = depth > 0 ? '../'.repeat(depth) : '';
+    const link   = document.createElement('link');
+    link.id       = 'chat-css';
+    link.rel      = 'stylesheet';
+    link.href     = `${prefix}chat.css`;
+    document.head.insertBefore(link, document.head.firstChild); // primeiro no head
+  }
 
   // HTML: botão flutuante + painel
   const aside = document.createElement('aside');
@@ -77,14 +81,11 @@ function injectChatUI() {
       </button>
     </div>`;
 
+  // Remover .q_a estáticos do HTML que não têm #chat-toggle
+  document.querySelectorAll('.q_a:not(:has(#chat-toggle))').forEach(el => el.remove());
+
   document.body.appendChild(aside);
   document.body.appendChild(panel);
-
-  // Se a página já tem um .q_a no HTML (index.html),
-  // remover o do HTML para evitar duplicado
-  document.querySelectorAll('.q_a').forEach((el, i) => {
-    if (i > 0) el.remove(); // mantém o primeiro (o injectado)
-  });
 
   bindChatEvents();
 }
@@ -260,18 +261,18 @@ function reativarInput() {
 async function chamarClaude(userMessage) {
   const systemPrompt = buildSystemPrompt();
 
-  // Histórico para contexto (últimas 10 trocas)
+  // Histórico para contexto (últimas 10 trocas, sem duplicar a última mensagem)
   const mensagensContexto = chatHistorico
     .slice(-20)
-    .filter(m => m.content !== userMessage); // evitar duplicar a última
+    .filter(m => m.content !== userMessage);
 
-  const response = await fetch('https://api.anthropic.com/v1/messages', {
+  // Chama o proxy seguro (/api/chat — Cloudflare Pages Function)
+  // A API key NUNCA é exposta no browser — fica no servidor Cloudflare.
+  const response = await fetch('/api/chat', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      model: 'claude-sonnet-4-20250514',
-      max_tokens: 1000,
-      system: systemPrompt,
+      systemPrompt,
       messages: [
         ...mensagensContexto,
         { role: 'user', content: userMessage },
@@ -279,9 +280,13 @@ async function chamarClaude(userMessage) {
     }),
   });
 
-  if (!response.ok) throw new Error(`API error: ${response.status}`);
+  if (!response.ok) {
+    const err = await response.json().catch(() => ({}));
+    throw new Error(err.error || `Erro ${response.status}`);
+  }
+
   const data = await response.json();
-  return data.content?.[0]?.text || 'Sem resposta.';
+  return data.text || 'Sem resposta.';
 }
 
 function buildSystemPrompt() {
@@ -404,4 +409,17 @@ function perguntaFitnessNutricao(texto) {
 
 function temPlanoFitness() {
   return ['standard', 'premium'].includes(chatUserPlan);
+}
+
+
+// ── Auto-init ─────────────────────────────────
+// Quando carregado directamente (sem global.js),
+// injeta o UI assim que o DOM estiver pronto.
+// global.js chama injectChatUI() no seu próprio init,
+// portanto este listener é inofensivo nas outras páginas.
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', injectChatUI);
+} else {
+  // DOM já pronto (script defer ou carregado tarde)
+  injectChatUI();
 }

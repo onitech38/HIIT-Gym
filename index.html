@@ -174,7 +174,7 @@
             <div class="nav-content glass" aria-label="Conteúdo da navegação">
                 <div class="menu" aria-label="Páginas do site">
                     <a class="link-btn" href="#sobre">sobre</a>
-                    <a class="link-btn" href="#modalidades">modalidades</a>
+                    <a class="link-btn" href="modalidades/modalidades.html">modalidades</a>
                     <a class="link-btn" href="#planos">planos</a>
                     <a class="link-btn" href="#equipa">equipa</a>
                     <a class="link-btn" href="#contactos">contactos</a>
@@ -597,7 +597,7 @@
             <nav class="footer-nav" aria-label="Navegação do rodapé">
                 <span class="footer-titulo">Navegação</span>
                 <a class="link-btn" href="#sobre">Sobre nós</a>
-                <a class="link-btn" href="#modalidades">Modalidades</a>
+                <a class="link-btn" href="modalidades/modalidades.html">Modalidades</a>
                 <a class="link-btn" href="#planos">Planos</a>
                 <a class="link-btn" href="#equipa">Equipa</a>
                 <a class="link-btn" href="#contactos">Contactos</a>
@@ -651,11 +651,12 @@
     </svg>
 
   
+    <!-- Supabase: necessário para chat e auth bridge -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
     <script src="supabase.js"></script>
-    <script src="data.js"></script>
-    <script src="global.js"></script>
     <script src="script.js?v=1.0.0"></script>
+    <!-- Chat assistente (auto-init) -->
+    <script src="chat.js"></script>
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {

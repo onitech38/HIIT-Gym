@@ -75,33 +75,57 @@ function criarTreinosSimulados() {
 // do user (com a sua foto ou iniciais).
 // ============================================
 
-function actualizarNav() {
-  const user = getUser();
-  const navLogin  = document.getElementById('nav-login');
-  const navSignup = document.getElementById('nav-signup');
-  const navAvatar = document.getElementById('nav-avatar');
+async function actualizarNav() {
+  const navLogin     = document.getElementById('nav-login');
+  const navSignup    = document.getElementById('nav-signup');
+  const navAvatar    = document.getElementById('nav-avatar');
   const navAvatarImg = document.getElementById('nav-avatar-img');
+  if (!navLogin) return;
 
-  if (!navLogin) return; // Nesta página pode não existir (user page)
+  // 1. Tentar sessão Supabase (auth migrado)
+  let nome1 = '', nome2 = '', avatarUrl = null;
+  let autenticado = false;
 
-  if (user) {
-    // Está autenticado → esconde login/signup, mostra avatar
+  try {
+    if (window.supabase) {
+      const { data: { session } } = await window.supabase.auth.getSession();
+      if (session) {
+        autenticado = true;
+        const { data: p } = await window.supabase
+          .from('profiles').select('first_name, last_name, avatar_url')
+          .eq('id', session.user.id).single();
+        nome1     = p?.first_name?.[0] || session.user.email[0];
+        nome2     = p?.last_name?.[0]  || '';
+        avatarUrl = p?.avatar_url || null;
+      }
+    }
+  } catch { /* supabase não disponível ainda */ }
+
+  // 2. Fallback: localStorage (utilizadores criados antes da migração)
+  if (!autenticado) {
+    const user = getUser();
+    if (user) {
+      autenticado = true;
+      nome1     = user.firstName?.[0] || '';
+      nome2     = user.lastName?.[0]  || '';
+      avatarUrl = user.avatar || null;
+    }
+  }
+
+  if (autenticado) {
     navLogin.classList.add('hidden');
     navSignup.classList.add('hidden');
-    navAvatar.classList.remove('hidden');
-
+    navAvatar?.classList.remove('hidden');
     if (navAvatarImg) {
-      if (user.avatar) {
-        navAvatarImg.style.backgroundImage = `url('${user.avatar}')`;
+      if (avatarUrl) {
+        navAvatarImg.style.backgroundImage = `url('${avatarUrl}')`;
         navAvatarImg.textContent = '';
       } else {
-        // Sem foto → mostra iniciais (ex: "JS" para João Silva)
-        navAvatarImg.textContent = (user.firstName[0] + user.lastName[0]).toUpperCase();
+        navAvatarImg.textContent = (nome1 + nome2).toUpperCase();
         navAvatarImg.style.backgroundImage = '';
       }
     }
   } else {
-    // Não autenticado → mostra login/signup
     navLogin.classList.remove('hidden');
     navSignup.classList.remove('hidden');
     navAvatar?.classList.add('hidden');
@@ -160,68 +184,117 @@ function bindLoginForm() {
   const form = document.getElementById('form-login');
   if (!form) return;
 
-  form.addEventListener('submit', e => {
+  form.addEventListener('submit', async e => {
     e.preventDefault();
     const email = form.email.value.trim().toLowerCase();
     const pass  = form.password.value;
-    const user  = getUser();
     const erro  = document.getElementById('login-error');
 
-    // Verifica se o email e password batem certo
+    // 1. Tentar Supabase primeiro (utilizadores migrados)
+    if (window.supabase) {
+      try {
+        const { error } = await window.supabase.auth.signInWithPassword({ email, password: pass });
+        if (!error) {
+          erro?.classList.add('hidden');
+          fecharWelcome();
+          await actualizarNav();
+          // Redirigir para perfil após login Supabase
+          setTimeout(() => { window.location.href = 'user/user.html'; }, 300);
+          return;
+        }
+      } catch { /* Supabase indisponível — continua para localStorage */ }
+    }
+
+    // 2. Fallback: localStorage (utilizadores antigos)
+    const user = getUser();
     if (user && user.email.toLowerCase() === email && user.password === pass) {
       erro?.classList.add('hidden');
       fecharWelcome();
-      actualizarNav();
+      await actualizarNav();
     } else {
       erro?.classList.remove('hidden');
     }
   });
 }
 
-/** Formulário de CRIAR CONTA */
+/** Formulário de CRIAR CONTA — usa Supabase */
 function bindSignupForm() {
   const form = document.getElementById('form-signup');
   if (!form) return;
 
-  form.addEventListener('submit', e => {
+  form.addEventListener('submit', async e => {
     e.preventDefault();
     const erro = document.getElementById('signup-error');
 
-    // Validação extra: password com mínimo 6 chars
-    if (form.password.value.length < 6) {
+    const pass = form.password.value;
+    if (pass.length < 6) {
       erro.textContent = 'A password deve ter pelo menos 6 caracteres.';
       erro.classList.remove('hidden');
       return;
     }
 
-    // Cria o objecto do user
-    const novoUser = {
-      id:         'usr_' + Date.now(),
-      firstName:  form.firstName.value.trim(),
-      lastName:   form.lastName.value.trim(),
-      email:      form.email.value.trim().toLowerCase(),
-      password:   form.password.value,       // NOTA: em produção usaria hashing!
-      phone:      form.phone.value.trim(),
-      age:        parseInt(form.age.value),
-      weight:     form.weight.value  ? parseFloat(form.weight.value)  : null,
-      address:    form.address.value ? form.address.value.trim()      : null,
-      avatar:     null,
-      // Inscreve-o nas modalidades mais populares por defeito
-      enrolledModalities: ['musculacao'],
-      // Dá-lhe treinos simulados para a dashboard parecer preenchida
-      trainings:  criarTreinosSimulados(),
-      createdAt:  new Date().toISOString()
-    };
+    const firstName = form.firstName.value.trim();
+    const lastName  = form.lastName.value.trim();
+    const email     = form.email.value.trim().toLowerCase();
 
-    saveUser(novoUser);
-    erro?.classList.add('hidden');
-    fecharWelcome();
-    actualizarNav();
+    // Botão de loading
+    const btn = form.querySelector('button[type="submit"]');
+    if (btn) { btn.disabled = true; btn.textContent = 'A criar conta...'; }
 
-    // Redirige para a página de perfil
-    setTimeout(() => {
-      window.location.href = 'user/user.html';
-    }, 300);
+    try {
+      // 1. Criar conta no Supabase Auth
+      const { data, error: signupError } = await window.supabase.auth.signUp({
+        email,
+        password: pass,
+        options: {
+          data: { firstName, lastName }
+        }
+      });
+
+      if (signupError) throw signupError;
+
+      const userId = data?.user?.id;
+
+      // 2. Criar perfil (o trigger Supabase pode já fazer isto,
+      //    mas upsert garante mesmo que o trigger falhe)
+      if (userId) {
+        await window.supabase.from('profiles').upsert({
+          id:         userId,
+          first_name: firstName,
+          last_name:  lastName,
+          phone:      form.phone.value.trim() || null,
+          age:        parseInt(form.age.value) || null,
+          weight:     form.weight.value ? parseFloat(form.weight.value) : null,
+          address:    form.address.value.trim() || null,
+        }, { onConflict: 'id' }).catch(() => {}); // falha silenciosa se RLS bloquear
+      }
+
+      erro?.classList.add('hidden');
+      fecharWelcome();
+
+      // Se o Supabase pediu confirmação de email, não há sessão imediata
+      if (data?.session) {
+        await actualizarNav();
+        setTimeout(() => { window.location.href = 'user/user.html'; }, 300);
+      } else {
+        // Email de confirmação enviado — avisar o utilizador
+        const msgEl = document.getElementById('signup-error');
+        if (msgEl) {
+          msgEl.style.color = 'var(--clr-sucesso)';
+          msgEl.style.borderColor = 'var(--clr-sucesso)';
+          msgEl.textContent = '✓ Conta criada! Verifica o teu email para confirmar.';
+          msgEl.classList.remove('hidden');
+        }
+        // Desabilitar botão de submit
+        const btn2 = form.querySelector('button[type="submit"]');
+        if (btn2) { btn2.disabled = true; btn2.textContent = 'Email enviado ✓'; }
+      }
+
+    } catch (err) {
+      erro.textContent = err.message || 'Erro ao criar conta. Tenta novamente.';
+      erro.classList.remove('hidden');
+      if (btn) { btn.disabled = false; btn.innerHTML = 'Criar Conta <i class="fa-solid fa-arrow-right"></i>'; }
+    }
   });
 }
 
@@ -237,14 +310,19 @@ function bindWelcomeClose() {
 }
 
 /** Timer de 1s — mostra o welcome se não estiver autenticado */
-window.addEventListener('load', () => {
-  actualizarNav();
+window.addEventListener('load', async () => {
+  await actualizarNav();   // async: verifica Supabase + localStorage
   bindNavAuthLinks();
   bindLoginForm();
   bindSignupForm();
   bindWelcomeClose();
 
-  if (!getUser()) {
+  // Mostrar welcome só se não houver sessão em nenhum dos dois sistemas
+  const { data: { session } } = window.supabase
+    ? await window.supabase.auth.getSession().catch(() => ({ data: { session: null } }))
+    : { data: { session: null } };
+
+  if (!session && !getUser()) {
     setTimeout(mostrarWelcome, 1000);
   }
 });
@@ -540,7 +618,7 @@ function estado3(key) {
   descEl.classList.add('visivel');
   renderCoaches(d.coaches);
 
-  // Actualiza href do botão inscrever com a modalidade seleccionada
+  // Href do botão "inscrever" → abre a página de modalidades na inscrição correcta
   const btnInsc = document.getElementById('painel-inscrever');
   if (btnInsc) btnInsc.href = `modalidades/modalidades.html?modal=${key}#inscricao`;
 }

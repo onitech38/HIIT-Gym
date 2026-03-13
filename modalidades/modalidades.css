@@ -371,7 +371,6 @@ main {
   padding: 2.5rem;
 
   .equipa-grid {
-    width: 100%;
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: 1.25rem;

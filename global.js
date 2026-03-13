@@ -134,7 +134,7 @@ window.addEventListener('DOMContentLoaded', () => {
 });
 
 // ── Chat: injeta chat.js dinamicamente ───────
-// chat.js trata de tudo (HTML, CSS, eventos)
+// chat.js tem auto-init: ao carregar chama injectChatUI() sozinho.
 function injectChatScript() {
   if (document.getElementById('chat-script')) return;
   const depth  = window.location.pathname.split('/').length - 2;
@@ -142,20 +142,25 @@ function injectChatScript() {
   const s = document.createElement('script');
   s.id  = 'chat-script';
   s.src = `${prefix}chat.js`;
-  s.onload = () => {
-    if (typeof injectChatUI === 'function') injectChatUI();
-  };
   document.body.appendChild(s);
 }
 
 // ── To-top: mostra botão após 300px de scroll ─
 function bindToTop() {
-  // Aguarda o chat.js injectar o .q_a
-  setTimeout(() => {
+  // Usar MutationObserver para esperar que o chat.js injete o .q_a
+  const bind = () => {
     const btn = document.querySelector('.q_a .to_top');
-    if (!btn) return;
+    if (!btn) return false;
     window.addEventListener('scroll', () => {
       btn.classList.toggle('visivel', window.scrollY > 300);
     }, { passive: true });
-  }, 500);
+    return true;
+  };
+
+  if (bind()) return; // já existe
+
+  const obs = new MutationObserver(() => {
+    if (bind()) obs.disconnect();
+  });
+  obs.observe(document.body, { childList: true, subtree: true });
 }
