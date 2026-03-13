@@ -44,8 +44,11 @@ window.addEventListener('load', async () => {
 
   } catch (err) {
     console.error('Modalidades init error:', err);
+    // Mesmo com erro, tentar render básico
+    try { renderModalidades(); } catch(_) {}
+    try { renderEquipa(); }      catch(_) {}
   } finally {
-    // Sempre remove .loading — página nunca fica branca
+    // SEMPRE remover loading — sem isto a página fica invisível
     document.body.classList.remove('loading');
   }
 });
