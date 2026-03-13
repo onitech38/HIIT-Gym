@@ -664,6 +664,14 @@
                 .catch(err => console.warn('SW: erro', err));
             });
         }
+
+        <!-- 130320260900z -->
+            <!-- Supabase: necessário para o chat verificar sessão/plano -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="supabase.js"></script>
+<!-- data.js e global.js NÃO aqui — conflitam com script.js (localStorage) -->
+<script src="script.js?v=1.0.0"></script>
+<script src="chat.js"></script>
     </script>
 </body>
 </html>
