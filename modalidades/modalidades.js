@@ -8,26 +8,6 @@
    5. Auto-open via ?modal= na URL
    ============================================ */
 
-// ── Bio simulada por coach ────────────────────
-const COACH_BIO = {
-  carlos  : 'Personal Trainer certificado com 10 anos de experiência em musculação e hipertrofia.',
-  ana     : 'Especialista em treino feminino, nutrição desportiva e transformação corporal.',
-  rafael  : 'Ex-atleta de powerlifting, focado em progressão de carga e técnica correcta.',
-  maria   : 'Instrutora de Zumba e cardio com formação em dança contemporânea.',
-  joao    : 'Treinador de ciclismo e HIIT com foco em condição cardiovascular e perda de peso.',
-  sofia   : 'Instrutora de Yoga certificada pela Yoga Alliance, com 8 anos de prática.',
-  pedro   : 'Professor de Pilates clínico especializado em reabilitação postural.',
-  claudia : 'Mestre em Yoga Vinyasa e meditação mindfulness.',
-  tiago   : 'Instrutor de Yoga e Pilates com formação em biomecânica do movimento.',
-  ines    : 'Especialista em Yoga terapêutico para gestão de stress e flexibilidade.',
-  fernando: 'Campeão nacional de Muay Thai e treinador de artes marciais mistas.',
-  patricia: 'Faixa preta de Jiu-Jitsu Brasileiro, ex-competidora internacional.',
-  ricardo : 'Sensei de Karaté com 20 anos de experiência e formação em defesa pessoal.',
-  andre   : 'Treinador de natação competitiva, ex-seleccionado nacional.',
-  fernanda: 'Especialista em natação terapêutica e adaptada para todas as idades.',
-  lucas   : 'Treinador de natação focado em técnica e melhoria de performance.',
-};
-
 // ── Estado global ─────────────────────────────
 let currentUser           = null;
 let currentProfile        = null;
@@ -41,30 +21,33 @@ const ini = s => s.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
    INIT
 ============================================ */
 window.addEventListener('load', async () => {
+  try {
+    // 1. Sessão Supabase
+    const { data: { session } } = await window.supabase.auth.getSession();
+    if (session) {
+      currentUser = session.user;
+      await carregarPerfil();
+      await carregarInscricoes();
+    }
 
-  // 1. Sessão Supabase
-  const { data: { session } } = await window.supabase.auth.getSession();
-  if (session) {
-    currentUser = session.user;
-    await carregarPerfil();
-    await carregarInscricoes();
+    // 2. Render UI
+    await actualizarNav();  // global.js — async
+    renderModalidades();
+    renderEquipa();
+    bindInscricao();
+
+    // 3. Auto-open via ?modal=KEY na URL
+    const autoModal = new URLSearchParams(window.location.search).get('modal');
+    if (autoModal && modalidadesData[autoModal]) {
+      abrirInscricao(autoModal);
+    }
+
+  } catch (err) {
+    console.error('Modalidades init error:', err);
+  } finally {
+    // Sempre remove .loading — página nunca fica branca
+    document.body.classList.remove('loading');
   }
-
-  // 2. Render UI
-  actualizarNav();
-  renderModalidades();
-  renderEquipa();
-  bindInscricao();
-
-  // 3. Auto-open: se a URL tiver ?modal=musculacao abre directamente a inscrição
-  const params    = new URLSearchParams(window.location.search);
-  const autoModal = params.get('modal');
-  if (autoModal && modalidadesData[autoModal]) {
-    abrirInscricao(autoModal);
-  }
-
-  // 4. Mostrar página
-  document.body.classList.remove('loading');
 });
 
 
@@ -205,7 +188,7 @@ function renderEquipa() {
       return `<span class="mod-tag">${titulo}</span>${sep}`;
     }).join('');
 
-    const bioText = COACH_BIO[key] || 'Profissional certificado ao serviço dos membros da HIIT-Gym.';
+    const bioText = c.bio || 'Profissional certificado ao serviço dos membros da HIIT-Gym.';
 
     return `
       <div id="coach">
