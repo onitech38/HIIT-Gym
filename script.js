@@ -217,50 +217,67 @@ function bindLoginForm() {
   });
 }
 
-/** Formulário de CRIAR CONTA */
+/** Formulário de CRIAR CONTA — usa Supabase */
 function bindSignupForm() {
   const form = document.getElementById('form-signup');
   if (!form) return;
 
-  form.addEventListener('submit', e => {
+  form.addEventListener('submit', async e => {
     e.preventDefault();
     const erro = document.getElementById('signup-error');
 
-    // Validação extra: password com mínimo 6 chars
-    if (form.password.value.length < 6) {
+    const pass = form.password.value;
+    if (pass.length < 6) {
       erro.textContent = 'A password deve ter pelo menos 6 caracteres.';
       erro.classList.remove('hidden');
       return;
     }
 
-    // Cria o objecto do user
-    const novoUser = {
-      id:         'usr_' + Date.now(),
-      firstName:  form.firstName.value.trim(),
-      lastName:   form.lastName.value.trim(),
-      email:      form.email.value.trim().toLowerCase(),
-      password:   form.password.value,       // NOTA: em produção usaria hashing!
-      phone:      form.phone.value.trim(),
-      age:        parseInt(form.age.value),
-      weight:     form.weight.value  ? parseFloat(form.weight.value)  : null,
-      address:    form.address.value ? form.address.value.trim()      : null,
-      avatar:     null,
-      // Inscreve-o nas modalidades mais populares por defeito
-      enrolledModalities: ['musculacao'],
-      // Dá-lhe treinos simulados para a dashboard parecer preenchida
-      trainings:  criarTreinosSimulados(),
-      createdAt:  new Date().toISOString()
-    };
+    const firstName = form.firstName.value.trim();
+    const lastName  = form.lastName.value.trim();
+    const email     = form.email.value.trim().toLowerCase();
 
-    saveUser(novoUser);
-    erro?.classList.add('hidden');
-    fecharWelcome();
-    actualizarNav();
+    // Botão de loading
+    const btn = form.querySelector('button[type="submit"]');
+    if (btn) { btn.disabled = true; btn.textContent = 'A criar conta...'; }
 
-    // Redirige para a página de perfil
-    setTimeout(() => {
-      window.location.href = 'user/user.html';
-    }, 300);
+    try {
+      // 1. Criar conta no Supabase Auth
+      const { data, error: signupError } = await window.supabase.auth.signUp({
+        email,
+        password: pass,
+        options: {
+          data: { firstName, lastName }
+        }
+      });
+
+      if (signupError) throw signupError;
+
+      // 2. Criar perfil na tabela profiles (se o trigger não o fizer)
+      if (data?.user) {
+        await window.supabase.from('profiles').upsert({
+          id:         data.user.id,
+          first_name: firstName,
+          last_name:  lastName,
+          phone:      form.phone.value.trim() || null,
+          age:        parseInt(form.age.value) || null,
+          weight:     form.weight.value ? parseFloat(form.weight.value) : null,
+          address:    form.address.value.trim() || null,
+        }, { onConflict: 'id' });
+      }
+
+      erro?.classList.add('hidden');
+      fecharWelcome();
+      await actualizarNav();
+
+      // Redirige para o perfil
+      setTimeout(() => { window.location.href = 'user/user.html'; }, 300);
+
+    } catch (err) {
+      erro.textContent = err.message || 'Erro ao criar conta. Tenta novamente.';
+      erro.classList.remove('hidden');
+      if (btn) { btn.disabled = false; btn.innerHTML = 'Criar Conta <i class="fa-solid fa-arrow-right"></i>'; }
+    }
   });
 }
 
