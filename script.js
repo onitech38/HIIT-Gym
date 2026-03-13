@@ -540,7 +540,7 @@ function estado3(key) {
   descEl.classList.add('visivel');
   renderCoaches(d.coaches);
 
-  // Actualiza href do botão inscrever com a modalidade seleccionada
+  // Actualiza o href do botão "inscrever" para abrir a página de modalidades
   const btnInsc = document.getElementById('painel-inscrever');
   if (btnInsc) btnInsc.href = `modalidades/modalidades.html?modal=${key}#inscricao`;
 }
