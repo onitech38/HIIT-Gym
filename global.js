@@ -134,7 +134,7 @@ window.addEventListener('DOMContentLoaded', () => {
 });
 
 // ── Chat: injeta chat.js dinamicamente ───────
-// chat.js trata de tudo (HTML, CSS, eventos)
+// chat.js tem auto-init: ao carregar chama injectChatUI() sozinho.
 function injectChatScript() {
   if (document.getElementById('chat-script')) return;
   const depth  = window.location.pathname.split('/').length - 2;
@@ -142,9 +142,6 @@ function injectChatScript() {
   const s = document.createElement('script');
   s.id  = 'chat-script';
   s.src = `${prefix}chat.js`;
-  s.onload = () => {
-    if (typeof injectChatUI === 'function') injectChatUI();
-  };
   document.body.appendChild(s);
 }
 
