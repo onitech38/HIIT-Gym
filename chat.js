@@ -31,13 +31,17 @@ function injectChatUI() {
   // Evitar duplicação
   if (document.getElementById('chat-panel')) return;
 
-  // CSS dinâmico — resolve path independentemente da pasta
-  const depth = window.location.pathname.split('/').length - 2;
-  const prefix = depth > 0 ? '../'.repeat(depth) : '';
-  const link = document.createElement('link');
-  link.rel = 'stylesheet';
-  link.href = `${prefix}chat.css`;
-  document.head.appendChild(link);
+  // CSS dinâmico — injectado no <head> para garantir que está
+  // aplicado antes de qualquer render do aside
+  if (!document.getElementById('chat-css')) {
+    const depth  = window.location.pathname.split('/').length - 2;
+    const prefix = depth > 0 ? '../'.repeat(depth) : '';
+    const link   = document.createElement('link');
+    link.id       = 'chat-css';
+    link.rel      = 'stylesheet';
+    link.href     = `${prefix}chat.css`;
+    document.head.insertBefore(link, document.head.firstChild); // primeiro no head
+  }
 
   // HTML: botão flutuante + painel
   const aside = document.createElement('aside');
@@ -77,9 +81,8 @@ function injectChatUI() {
       </button>
     </div>`;
 
-  // Remover o .q_a original do HTML (index.html) ANTES de injectar o novo
-  // — o original não tem #chat-toggle, o nosso tem
-  document.querySelectorAll('.q_a').forEach(el => el.remove());
+  // Remover .q_a estáticos do HTML que não têm #chat-toggle
+  document.querySelectorAll('.q_a:not(:has(#chat-toggle))').forEach(el => el.remove());
 
   document.body.appendChild(aside);
   document.body.appendChild(panel);
