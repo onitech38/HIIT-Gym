@@ -100,15 +100,17 @@ function bindSignupForm() {
       // 2. Criar perfil (o trigger Supabase pode já fazer isto,
       //    mas upsert garante mesmo que o trigger falhe)
       if (userId) {
-        await window.supabase.from('profiles').upsert({
-          id:         userId,
-          first_name: firstName,
-          last_name:  lastName,
-          phone:      form.phone.value.trim() || null,
-          age:        parseInt(form.age.value) || null,
-          weight:     form.weight.value ? parseFloat(form.weight.value) : null,
-          address:    form.address.value.trim() || null,
-        }, { onConflict: 'id' }).catch(() => {}); // falha silenciosa se RLS bloquear
+        try {
+          await window.supabase.from('profiles').upsert({
+            id:         userId,
+            first_name: firstName,
+            last_name:  lastName,
+            phone:      form.phone.value.trim() || null,
+            age:        parseInt(form.age.value) || null,
+            weight:     form.weight.value ? parseFloat(form.weight.value) : null,
+            address:    form.address.value.trim() || null,
+          }, { onConflict: 'id' });
+        } catch { /* o trigger já criou o perfil — falha silenciosa */ }
       }
 
       erro?.classList.add('hidden');
