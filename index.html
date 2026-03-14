@@ -149,12 +149,6 @@
         </div><!-- /welcome-panel -->
     </aside><!-- /welcome -->
 
-    <aside class="q_a">
-        <a class="btn to_top icon-small glass" href="#home"><i class="fa-solid fa-arrow-up-from-bracket"></i></a>
-
-        <button class="chat icon glass"><i class="fa-regular fa-comment-dots fa-flip-horizontal"></i></button>
-    </aside>
-
     <header>
         <img class="bg" src="src/BG_hero-home.jpg" alt="Imagem de um ginásio">
     
@@ -651,16 +645,12 @@
     </svg>
 
   
-    <!-- Supabase: necessário para o chat verificar sessão/plano -->
+    <!-- Supabase: necessário para chat e auth bridge -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
     <script src="supabase.js"></script>
-    <!-- NOTA: data.js e global.js NÃO carregados aqui.
-         script.js usa localStorage e já declara coaches/modalidadesData.
-         Carregar ambos causaria SyntaxError (redeclaração de const).
-         Migrar quando script.js passar para Supabase. -->
+    <script src="data.js"></script>
+    <script src="global.js"></script>
     <script src="script.js?v=1.0.0"></script>
-    <!-- Chat: carregado após script.js (precisa de modalidadesData do script.js) -->
-    <script src="chat.js"></script>
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {

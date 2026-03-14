@@ -3,7 +3,7 @@
 // Atualiza CACHE_NAME a cada deploy relevante
 // ============================================
 
-const CACHE_NAME = 'hiitgym-v3.0';
+const CACHE_NAME = 'hiitgym-v3.1';
 
 // Ficheiros a guardar em cache na instalação
 const STATIC_ASSETS = [
@@ -13,6 +13,9 @@ const STATIC_ASSETS = [
   '/script.js',
   '/data.js',
   '/supabase.js',
+  '/global.js',
+  '/chat.js',
+  '/chat.css',
   '/manifest.json',
   '/user/user.html',
   '/user/user.css',
@@ -20,9 +23,9 @@ const STATIC_ASSETS = [
   '/blog/blog.html',
   '/blog/blog.css',
   '/blog/blog.js',
-  '/inscricao/inscricao.html',
-  '/inscricao/inscricao.css',
-  '/inscricao/inscricao.js',
+  '/modalidades/modalidades.html',
+  '/modalidades/modalidades.css',
+  '/modalidades/modalidades.js',
   '/src/logo/logo_def1.svg',
   '/src/logo/favicon.svg',
 ];
