@@ -1,165 +1,18 @@
 /* ============================================
    HIIT-GYM — SCRIPT.JS
 
+   Auth e nav delegados no global.js (Supabase).
+
    ÍNDICE:
-   1. AUTH — funções de login/signup/logout
-   2. NAV  — actualiza o nav consoante o estado
-   3. WELCOME — timer 1s + handlers dos forms
-   4. MAP — funcionalidade do mapa existente
-   5. DADOS DAS MODALIDADES (existente)
-   6. ESTADOS 1/2/3 das modalidades (existente)
-   7. EQUIPA — carrossel (existente)
+   1. WELCOME — timer 1s + handlers dos forms
+   2. MAP — funcionalidade do mapa
+   3. ESTADOS 1/2/3 das modalidades
+   4. EQUIPA — carrossel
    ============================================ */
 
 
 // ============================================
-// 1. AUTH — BASE DE DADOS SIMULADA (localStorage)
-//
-// Pensa no localStorage como uma "gaveta" no
-// browser onde guardamos a informação do user.
-// Não precisa de internet nem de servidor!
-//
-// Chave usada: 'hiitgym_user'
-// Valor: um objecto JSON com todos os dados
-// ============================================
-
-const AUTH_KEY = 'hiitgym_user';
-
-/** Lê o user da "gaveta" */
-function getUser() {
-  try {
-    return JSON.parse(localStorage.getItem(AUTH_KEY));
-  } catch { return null; }
-}
-
-/** Guarda o user na "gaveta" */
-function saveUser(user) {
-  localStorage.setItem(AUTH_KEY, JSON.stringify(user));
-}
-
-/** Remove o user da "gaveta" (logout) */
-function removeUser() {
-  localStorage.removeItem(AUTH_KEY);
-}
-
-/**
- * Cria treinos simulados para um novo utilizador.
- * Simula dados sincronizados de um smartwatch
- * + alguns inseridos manualmente.
- */
-function criarTreinosSimulados() {
-  const hoje = new Date();
-  const diaMenos = (n) => {
-    const d = new Date(hoje);
-    d.setDate(d.getDate() - n);
-    return d.toISOString().split('T')[0];
-  };
-
-  return [
-    { id: 't1', date: diaMenos(1),  duration: 55, modality: 'musculacao',   calories: 420, source: 'smartwatch', notes: '' },
-    { id: 't2', date: diaMenos(3),  duration: 30, modality: 'natacao',      calories: 280, source: 'smartwatch', notes: '' },
-    { id: 't3', date: diaMenos(5),  duration: 60, modality: 'yoga_pilates', calories: 190, source: 'manual',     notes: 'Sessão de relaxamento' },
-    { id: 't4', date: diaMenos(7),  duration: 45, modality: 'cardio',       calories: 350, source: 'smartwatch', notes: '' },
-    { id: 't5', date: diaMenos(10), modality: 'musculacao',   duration: 50, calories: 400, source: 'smartwatch', notes: '' },
-    { id: 't6', date: diaMenos(14), modality: 'lutas',        duration: 90, calories: 520, source: 'smartwatch', notes: 'Treino intenso' },
-    { id: 't7', date: diaMenos(18), modality: 'zumba_danca',  duration: 60, calories: 310, source: 'manual',     notes: '' },
-  ];
-}
-
-
-// ============================================
-// 2. NAV — actualiza login/signup ↔ avatar
-//
-// Depois de entrar, escondemos os links
-// "login" e "signup" e mostramos o avatar
-// do user (com a sua foto ou iniciais).
-// ============================================
-
-async function actualizarNav() {
-  const navLogin     = document.getElementById('nav-login');
-  const navSignup    = document.getElementById('nav-signup');
-  const navAvatar    = document.getElementById('nav-avatar');
-  const navAvatarImg = document.getElementById('nav-avatar-img');
-  if (!navLogin) return;
-
-  // 1. Tentar sessão Supabase (auth migrado)
-  let nome1 = '', nome2 = '', avatarUrl = null;
-  let autenticado = false;
-
-  try {
-    if (window.supabase) {
-      const { data: { session } } = await window.supabase.auth.getSession();
-      if (session) {
-        autenticado = true;
-        const { data: p } = await window.supabase
-          .from('profiles').select('first_name, last_name, avatar_url')
-          .eq('id', session.user.id).single();
-        nome1     = p?.first_name?.[0] || session.user.email[0];
-        nome2     = p?.last_name?.[0]  || '';
-        avatarUrl = p?.avatar_url || null;
-      }
-    }
-  } catch { /* supabase não disponível ainda */ }
-
-  // 2. Fallback: localStorage (utilizadores criados antes da migração)
-  if (!autenticado) {
-    const user = getUser();
-    if (user) {
-      autenticado = true;
-      nome1     = user.firstName?.[0] || '';
-      nome2     = user.lastName?.[0]  || '';
-      avatarUrl = user.avatar || null;
-    }
-  }
-
-  if (autenticado) {
-    navLogin.classList.add('hidden');
-    navSignup.classList.add('hidden');
-    navAvatar?.classList.remove('hidden');
-    if (navAvatarImg) {
-      if (avatarUrl) {
-        navAvatarImg.style.backgroundImage = `url('${avatarUrl}')`;
-        navAvatarImg.textContent = '';
-      } else {
-        navAvatarImg.textContent = (nome1 + nome2).toUpperCase();
-        navAvatarImg.style.backgroundImage = '';
-      }
-    }
-  } else {
-    navLogin.classList.remove('hidden');
-    navSignup.classList.remove('hidden');
-    navAvatar?.classList.add('hidden');
-  }
-}
-
-/**
- * Quando clicamos em "login" ou "signup" no nav
- * abre o welcome modal (se não estiver autenticado)
- */
-function bindNavAuthLinks() {
-  const navLogin  = document.getElementById('nav-login');
-  const navSignup = document.getElementById('nav-signup');
-  const welcome   = document.getElementById('welcome');
-  if (!welcome) return;
-
-  navLogin?.addEventListener('click', e => {
-    e.preventDefault();
-    // Garante que está no tab "Login"
-    document.getElementById('mode-login')?.click();
-    mostrarWelcome();
-  });
-
-  navSignup?.addEventListener('click', e => {
-    e.preventDefault();
-    // Garante que está no tab "Criar Conta"
-    document.getElementById('mode-signup')?.click();
-    mostrarWelcome();
-  });
-}
-
-
-// ============================================
-// 3. WELCOME MODAL
+// 1. WELCOME MODAL
 //
 // Aparece 1 segundo após a página carregar,
 // mas SÓ SE o user não estiver autenticado.
@@ -190,28 +43,17 @@ function bindLoginForm() {
     const pass  = form.password.value;
     const erro  = document.getElementById('login-error');
 
-    // 1. Tentar Supabase primeiro (utilizadores migrados)
-    if (window.supabase) {
-      try {
-        const { error } = await window.supabase.auth.signInWithPassword({ email, password: pass });
-        if (!error) {
-          erro?.classList.add('hidden');
-          fecharWelcome();
-          await actualizarNav();
-          // Redirigir para perfil após login Supabase
-          setTimeout(() => { window.location.href = 'user/user.html'; }, 300);
-          return;
-        }
-      } catch { /* Supabase indisponível — continua para localStorage */ }
-    }
-
-    // 2. Fallback: localStorage (utilizadores antigos)
-    const user = getUser();
-    if (user && user.email.toLowerCase() === email && user.password === pass) {
-      erro?.classList.add('hidden');
-      fecharWelcome();
-      await actualizarNav();
-    } else {
+    try {
+      const { error } = await window.supabase.auth.signInWithPassword({ email, password: pass });
+      if (!error) {
+        erro?.classList.add('hidden');
+        fecharWelcome();
+        await actualizarNav();
+        setTimeout(() => { window.location.href = 'user/user.html'; }, 300);
+      } else {
+        erro?.classList.remove('hidden');
+      }
+    } catch {
       erro?.classList.remove('hidden');
     }
   });
@@ -311,18 +153,14 @@ function bindWelcomeClose() {
 
 /** Timer de 1s — mostra o welcome se não estiver autenticado */
 window.addEventListener('load', async () => {
-  await actualizarNav();   // async: verifica Supabase + localStorage
-  bindNavAuthLinks();
   bindLoginForm();
   bindSignupForm();
   bindWelcomeClose();
 
-  // Mostrar welcome só se não houver sessão em nenhum dos dois sistemas
-  const { data: { session } } = window.supabase
-    ? await window.supabase.auth.getSession().catch(() => ({ data: { session: null } }))
-    : { data: { session: null } };
+  const { data: { session } } = await window.supabase.auth.getSession()
+    .catch(() => ({ data: { session: null } }));
 
-  if (!session && !getUser()) {
+  if (!session) {
     setTimeout(mostrarWelcome, 1000);
   }
 });
@@ -361,177 +199,6 @@ document.addEventListener('click', (e) => {
   }
 });
 
-
-// ============================================
-// FONTE DE VERDADE — edita só aqui
-// ============================================
-const coaches = {
-  carlos: { 
-    nome: 'Carlos Silva',     
-    avatar: 'src/coaches/carlos/carlos.jpg',    
-    card: 'src/coaches/carlos/carlos_card.jpg',    
-    modalidades: ['musculacao'] 
-  },
-
-  ana: { 
-    nome: 'Ana Costa',        
-    avatar: 'src/coaches/ana/Ana.jpg',        
-    card: 'src/coaches/ana/ana_card.jpg',        
-    modalidades: ['musculacao'] 
-  },
-
-  rafael: { 
-    nome: 'Rafael Mendes',    
-    avatar: 'src/coaches/rafael/rafael.jpg',     
-    card: 'src/coaches/rafael/rafael_card.jpg',     
-    modalidades: ['musculacao'] 
-  },
-
-  maria: { 
-    nome: 'Maria Oliveira',   
-    avatar: 'src/coaches/maria/maria.png',      
-    card: 'src/coaches/maria/maria_card.png',      
-    modalidades: ['cardio', 'zumba_danca'] 
-  },
-
-  joao: { 
-    nome: 'João Pereira',     
-    avatar: 'src/coaches/joao/joao.png',       
-    card: 'src/coaches/joao/joao_card.png',       
-    modalidades: ['cardio', 'zumba_danca'] 
-  },
-
-  sofia: { 
-    nome: 'Sofia Almeida',    
-    avatar: 'src/coaches/sofia/sofia.png',      
-    card: 'src/coaches/sofia/sofia_card.png',      
-    modalidades: ['yoga_pilates'] 
-  },
-
-  pedro: { 
-    nome: 'Pedro Santos',     
-    avatar: 'src/coaches/pedro/pedro.png',      
-    card: 'src/coaches/pedro/pedro_card.png',      
-    modalidades: ['yoga_pilates'] 
-  },
-
-  claudia: { 
-    nome: 'Cláudia Ferreira', 
-    avatar: 'src/coaches/claudia/claudia.png',    
-    card: 'src/coaches/claudia/claudia_card.png',    
-    modalidades: ['yoga_pilates'] 
-  },
-
-  tiago: { 
-    nome: 'Tiago Ribeiro',    
-    avatar: 'src/coaches/tiago/tiago.png',      
-    card: 'src/coaches/tiago/tiago_card.png',     
-     modalidades: ['yoga_pilates'] 
-  },
-
-  ines: { 
-    nome: 'Inês Martins',     
-    avatar: 'src/coaches/ines/ines.png',       
-    card: 'src/coaches/ines/ines_card.png',       
-    modalidades: ['yoga_pilates'] 
-  },
-
-  fernando: { 
-    nome: 'Fernando Gomes',   
-    avatar: 'src/coaches/fernando/fernando.jpg',   
-    card: 'src/coaches/fernando/fernando_card.jpg',   
-    modalidades: ['lutas'] 
-  },
-
-  patricia: { 
-    nome: 'Patrícia Lima',    
-    avatar: 'src/coaches/patricia/patricia.jpg',   
-    card: 'src/coaches/patricia/patricia_card.jpg',   
-    modalidades: ['lutas'] 
-  },
-
-  ricardo: { 
-    nome: 'Ricardo Alves',    
-    avatar: 'src/coaches/ricardo/ricardo.jpg',    
-    card: 'src/coaches/ricardo/ricardo_card.jpg',    
-    modalidades: ['lutas'] 
-  },
-
-  andre: { 
-    nome: 'André Sousa',      
-    avatar: 'src/coaches/andre/andre.jpg',      
-    card: 'src/coaches/andre/andre_card.jpg',      
-    modalidades: ['natacao'] 
-  },
-
-  fernanda: {
-     nome: 'Fernanda Rocha',   
-    avatar: 'src/coaches/fernanda/fernanda.jpg',   
-    card: 'src/coaches/fernanda/fernanda_card.jpg',   
-    modalidades: ['natacao'] 
-  },
-
-  lucas: { 
-    nome: 'Lucas Dias',       
-    avatar: 'src/coaches/lucas/lucas.jpg',      
-    card: 'src/coaches/lucas/lucas_card.jpg',      
-    modalidades: ['natacao'] 
-  },
-
-};
-
-const modalidadesData = {
-  // ── Para remover uma modalidade do site: active: false ──
-  // O layout reage automaticamente ao número de fatias activas.
-  musculacao: {
-    active:    true,
-    titulo:    'Musculação',
-    dias:      'Todos os dias',
-    horas:     '06h00 – 22h00',
-    descricao: 'Treino de força com pesos e equipamentos, adaptado para desenvolver massa muscular e resistência, com orientação de treinador para garantir a técnica correta e maximizar resultados.',
-    coaches:   ['carlos', 'ana', 'rafael'],
-  },
-  cardio: {
-    active:    true,
-    titulo:    'Cardio',
-    dias:      'Todos os dias',
-    horas:     '07h00 – 21h00',
-    descricao: 'Atividades aeróbicas como corrida, CROSS-FIT, ciclismo e spinning, personalizadas em intensidade e duração, com suporte de profissionais para monitorar o teu progresso.',
-    coaches:   ['maria', 'joao'],
-  },
-  yoga_pilates: {
-    active:    true,
-    titulo:    'Yoga & Pilates',
-    dias:      '2ª, 4ª e 6ª feira',
-    horas:     '17h00 – 19h30',
-    descricao: 'Prática que combina posturas físicas, respiração e meditação, adaptada ao teu nível de experiência, com instrutores que oferecem acompanhamento individualizado.',
-    coaches:   ['sofia', 'pedro', 'claudia', 'tiago', 'ines'],
-  },
-  lutas: {
-    active:    true,
-    titulo:    'Lutas e Artes Marciais',
-    dias:      '2ª feira a sábado',
-    horas:     '19h00 – 20h30',
-    descricao: 'Aulas de boxe, jiu-jitsu, muay thai ou karaté, ajustadas ao teu nível e objetivos, com treinadores que oferecem suporte e feedback constante.',
-    coaches:   ['fernando', 'patricia', 'ricardo'],
-  },
-  zumba_danca: {
-    active:    true,
-    titulo:    'Zumba e Danças',
-    dias:      '3ª e 5ª feira',
-    horas:     '20h00 – 21h30',
-    descricao: 'Aulas energéticas com ritmos latinos e coreografias divertidas, perfeitas para perder calorias num ambiente descontraído e motivador.',
-    coaches:   ['maria', 'joao'],
-  },
-  natacao: {
-    active:    true,
-    titulo:    'Natação',
-    dias:      '2ª, 4ª e 6ª feira',
-    horas:     '08h00 – 20h00',
-    descricao: 'Aulas para todos os níveis na nossa piscina semi-olímpica aquecida. Treinos personalizados para melhorar técnica, resistência e velocidade.',
-    coaches:   ['andre', 'fernanda', 'lucas'],
-  }
-};
 
 // ============================================
 // REFERÊNCIAS DOM
@@ -731,18 +398,13 @@ window.addEventListener('load', () => {
 // BOTÃO "Área de Membro"
 // Se não está autenticado → abre form de signup
 // ============================================
-document.getElementById('btn-membro')?.addEventListener('click', e => {
-  if (!getUser()) {
+document.getElementById('btn-membro')?.addEventListener('click', async e => {
+  const { data: { session } } = await window.supabase.auth.getSession()
+    .catch(() => ({ data: { session: null } }));
+  if (!session) {
     e.preventDefault();
-    // Abre o welcome/signup
-    const modeSignup = document.getElementById('mode-signup');
-    if (modeSignup) {
-      modeSignup.click();
-      mostrarWelcome();
-    } else {
-      // Fallback: vai para o inicio com param
-      window.location.href = 'index.html?auth=login';
-    }
+    document.getElementById('mode-signup')?.click();
+    mostrarWelcome();
   }
   // Se autenticado, o href normal navega para user/user.html
 });

@@ -149,12 +149,6 @@
         </div><!-- /welcome-panel -->
     </aside><!-- /welcome -->
 
-    <aside class="q_a">
-        <a class="btn to_top icon-small glass" href="#home"><i class="fa-solid fa-arrow-up-from-bracket"></i></a>
-
-        <button class="chat icon glass"><i class="fa-regular fa-comment-dots fa-flip-horizontal"></i></button>
-    </aside>
-
     <header>
         <img class="bg" src="src/BG_hero-home.jpg" alt="Imagem de um ginásio">
     
@@ -654,9 +648,9 @@
     <!-- Supabase: necessário para chat e auth bridge -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
     <script src="supabase.js"></script>
+    <script src="data.js"></script>
+    <script src="global.js"></script>
     <script src="script.js?v=1.0.0"></script>
-    <!-- Chat assistente (auto-init) -->
-    <script src="chat.js"></script>
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
