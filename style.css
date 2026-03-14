@@ -696,9 +696,10 @@ header {
       }
     }
   }
+
   #map {
     position: absolute; width: 100%; padding-inline: 1rem; margin-inline: auto;
-    max-width: var(--container-mid); transform: translateY(200rem); top: calc(var(--container-height) -20px);
+    max-width: var(--container-mid); top: calc(var(--container-height) - 60px);
     display: grid; justify-items: stretch; z-index: 10; gap: 1rem; place-self: center;
   
     summary {
@@ -749,7 +750,7 @@ main {
 
     scroll-margin-top: 6rem;
     min-height: calc(var(--container-height) - 5.125rem);
-    margin-top: -4rem;
+    margin-top: -3rem;
 
     display: flex;
     flex-wrap: wrap; 
