@@ -89,6 +89,7 @@
     --margin-block-section: 1rem;
     --container-max: 1440px;
     --container-mid: 1024px;
+    --container-small: 520px;
     --container-height: 100svh;
     --gap-items: 1.2rem;
     --border-size: 1.5px solid;
@@ -273,6 +274,8 @@
     transition: color var(--tempo) ease, box-shadow var(--tempo) ease, backdrop-filter var(--tempo) ease;
     &:hover { color: var(--clr-2); backdrop-filter: var(--backdrop-filter); border: var(--border-size) transparent; border-radius: var(--border-radius); text-decoration-color: var(--clr-4); text-underline-offset: .725rem; box-shadow: var(--bx-sdw); }
     &:focus-visible, :active { color: var(--clr-4); text-decoration: underline; text-decoration-color: var(--clr-4); text-underline-offset: .725rem; }
+    &.active { color: var(--clr-4); text-decoration: underline; text-decoration-color: var(--clr-4); text-underline-offset: 0.725rem;
+    }
   }
 }
 
