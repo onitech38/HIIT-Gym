@@ -1,148 +1,34 @@
 /* ============================================
    MODALIDADES.CSS
-   Depende de ../style.css (variáveis, .glass,
+   Depende de ../style.css (header, nav,variáveis, .glass,
    .golden-border, .btn, .campo, tipografia)
    ============================================ */
-
-/* ── NAV / HEADER ───────────────────────────── */
-.mod-header {
-  position: relative;
-  background: var(--clr-3);
+header{
+  background: url(../src/BG_hero-home.jpg) center/cover no-repeat;
   border-bottom: var(--clr-smooth-line);
 
-  nav {
+  .mod-hero {
     width: 100%;
-    max-width: 1440px;
-    margin-inline: auto;
-    padding: var(--gap-items);
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: space-between;
-
-    * { text-transform: uppercase; }
-
-    .mobile-nav { display: none; }
-
-    .nav-content {
-      max-width: 1200px;
-      padding: 0.5rem 1rem;
-      display: inline-flex;
-      box-shadow: var(--bx-sdw);
-      justify-content: space-around;
-
-      .menu { display: inline-flex; align-items: center; }
-      span  { border-left: var(--border-size) var(--clr-4); border-right: var(--border-size) var(--clr-4); }
-
-      .login-sign_up {
-        margin-inline: .5rem;
-        display: flex;
-
-        .nav-user-avatar {
-          display: inline-flex;
-          align-items: center;
-          text-decoration: none;
-          border: none;
-          background: transparent;
-          cursor: pointer;
-
-          .coach-avatar {
-            width: var(--size-user-avatar);
-            height: var(--size-user-avatar);
-            border-radius: 50%;
-            border: 2px solid var(--clr-4);
-            background-size: cover;
-            background-position: center;
-            background-color: var(--clr-3);
-            display: grid;
-            place-items: center;
-            font-size: 0.75rem;
-            font-weight: 700;
-            color: var(--clr-4);
-            transition: transform var(--tempo) ease, border-color var(--tempo) ease;
-          }
-          &:hover .coach-avatar {
-            transform: scale(1.1);
-            border-color: var(--clr-1);
-          }
-        }
-      }
-
-      .link-btn.active {
-        color: var(--clr-4);
-        text-decoration: underline;
-        text-decoration-color: var(--clr-4);
-        text-underline-offset: 0.725rem;
-      }
-    }
-
-    @media (max-width: 700px) {
-      .mobile-nav { display: block; }
-      .nav-content {
-        display: none;
-        position: absolute;
-        top: 70px; left: 0; right: 0;
-        padding: 2rem 1rem;
-        flex-direction: column;
-        align-items: center;
-        gap: 2rem;
-        border-radius: var(--border-radius);
-        box-shadow: var(--bx-sdw);
-        z-index: 99;
-      }
-      .login-sign_up { display: flex; gap: var(--gap-items); }
-      .menu { flex-direction: column; align-items: center; gap: var(--gap-items); }
-      &:has(.mobile-nav[open]) .nav-content {
-        display: flex;
-        margin-inline: auto;
-        span { width: 200px; border: var(--border-size) var(--clr-4); }
-      }
-      .mobile-nav[open] > summary span:nth-child(1) { transform: translateY(8px) rotate(45deg); }
-      .mobile-nav[open] > summary span:nth-child(2) { opacity: 0; }
-      .mobile-nav[open] > summary span:nth-child(3) { transform: translateY(-8px) rotate(-45deg); }
-      .hamburger { display: flex; }
-    }
-  }
-
-  /* Hero da página */
-  .mod-page-hero {
-    max-width: 860px;
-    margin-inline: auto;
     padding: 4rem 1.5rem 3rem;
+    background-image: radial-gradient(circle at top left, transparent 1%, var(--clr-transp) 50%);
     display: grid;
-    gap: 0.75rem;
-    text-align: center;
-    place-items: center;
+    /* gap: 0.75rem; */
+    text-align: start;
+    place-items: start;
+    justify-content: start;
 
-    .mod-eyebrow {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      font-size: 0.72rem;
-      letter-spacing: 0.2em;
-      text-transform: uppercase;
-      color: var(--clr-4);
-
-      i { font-size: 0.85rem; }
-    }
+    * { max-width: var(--container-max); margin-top: 0; }
 
     h1 {
-      font-size: clamp(2rem, 5vw, 4rem);
       color: var(--clr-1);
-      letter-spacing: -0.01em;
-      line-height: 1.1;
-      margin: 0;
-
       span { color: var(--clr-4); font-style: italic; }
     }
 
-    p {
-      font-size: 0.95rem;
+    h2 {
+      font-size: medium;
+      max-width: var(--container-small);
       color: var(--clr-2);
-      opacity: 0.75;
-      max-width: 500px;
-      line-height: 1.7;
-      margin: 0;
+      text-align: start;
     }
   }
 }
@@ -365,8 +251,6 @@ main {
   }
 }
 
-
-/* ── SECÇÃO EQUIPA ──────────────────────────── */
 .equipa {
   padding: 2.5rem;
 
@@ -454,8 +338,6 @@ main {
   }
 }
 
-
-/* ── SECÇÃO INSCRIÇÃO ───────────────────────── */
 .inscricao {
   padding: 2.5rem;
 
@@ -1023,25 +905,5 @@ main {
     i  { font-size: 3rem; color: #64c878; }
     h3 { color: var(--clr-1); font-size: 1.5rem; margin: 0; }
     p  { color: var(--clr-2); font-size: 0.88rem; opacity: 0.75; margin: 0; }
-  }
-}
-
-
-/* ── ANIMAÇÕES ──────────────────────────────── */
-@layer animations {
-  @keyframes bounce-up {
-    0%, 100% { transform: translateY(0); }
-    50%       { transform: translateY(-8px); }
-  }
-}
-
-
-/* ── MEDIA QUERIES ──────────────────────────── */
-@layer media {
-  @media (max-width: 600px) {
-    main { padding: 2rem 0.75rem 4rem; gap: 2.5rem; }
-    .mod,
-    .equipa,
-    .inscricao { padding: 1.5rem 1rem; }
   }
 }
