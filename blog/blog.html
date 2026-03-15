@@ -20,21 +20,7 @@
     <link rel="stylesheet" href="../auth.css">
     <link rel="stylesheet" href="blog.css">
 
-    <!-- AUTH GUARD — redirige se não estiver autenticado -->
-    <script>
-      (function() {
-        try {
-          const user = JSON.parse(localStorage.getItem('hiitgym_user'));
-          if (!user) {
-            // Guarda destino para voltar após login
-            sessionStorage.setItem('hiitgym_redirect', 'blog/blog.html');
-            window.location.replace('../index.html');
-          }
-        } catch(e) {
-          window.location.replace('../index.html');
-        }
-      })();
-    </script>
+    <!-- AUTH GUARD — via Supabase (assíncrono, tratado pelo blog.js) -->
 </head>
 
 <body id="blog-page">
