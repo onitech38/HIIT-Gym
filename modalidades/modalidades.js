@@ -1,12 +1,11 @@
-/* ============================================
-   MODALIDADES.JS
-
-   1. Sessão Supabase → actualiza nav
-   2. renderModalidades() — cards com dados do data.js
-   3. renderEquipa()      — grid auto de coaches
-   4. Inscrição integrada — form de saúde + submit
-   5. Auto-open via ?modal= na URL
-   ============================================ */
+// ============================================
+// MODALIDADES.JS
+// 1. Sessão Supabase → actualiza nav
+// 2. renderModalidades() — cards com dados do data.js
+// 3. renderEquipa()      — grid auto de coaches
+// 4. Inscrição integrada — form de saúde + submit
+// 5. Auto-open via ?modal= na URL
+// ============================================ 
 
 // ── Estado global ─────────────────────────────
 let currentUser           = null;
