@@ -1,14 +1,14 @@
-/* ============================================
-   HIIT-GYM — USER.JS  (Supabase)
-
-   1. Verifica autenticação via Supabase
-   2. Preenche a página com dados do perfil
-   3. Upload de avatar (Supabase Storage)
-   4. Treinos: adicionar, sincronizar (Supabase)
-   5. Modalidades: inscrever / desactivar (Supabase)
-   6. QR Code de acesso
-   7. Logout / eliminar conta
-   ============================================ */
+//============================================
+//   HIIT-GYM — USER.JS  (Supabase)
+//
+//   1. Verifica autenticação via Supabase
+//   2. Preenche a página com dados do perfil
+//   3. Upload de avatar (Supabase Storage)
+//   4. Treinos: adicionar, sincronizar (Supabase)
+//   5. Modalidades: inscrever / desactivar (Supabase)
+//   6. QR Code de acesso
+//   7. Logout / eliminar conta
+//============================================
 
 const MODALIDADES = {
   musculacao:   { titulo: 'Musculação',             icon: 'fa-dumbbell',        dias: 'Todos os dias',      horas: '06h00 – 22h00' },

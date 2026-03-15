@@ -1,19 +1,19 @@
-/* ============================================
-   CHAT.JS — Assistente HIIT-Gym
-
-   Injectado em todas as páginas via global.js.
-
-   FLUXO:
-   1. Injeta HTML (aside .q_a + .chat-panel) no body
-   2. Injeta chat.css dinamicamente
-   3. Ao abrir → carrega histórico (Supabase ou localStorage)
-   4. Ao enviar → verifica plano → chama Claude API
-   5. Guarda resposta no histórico
-
-   GATING:
-   • Info do ginásio     → livre para todos
-   • Fitness / nutrição  → só standard / premium
-   ============================================ */
+//============================================
+//   CHAT.JS — Assistente HIIT-Gym
+//
+//   Injectado em todas as páginas via global.js.
+//
+//   FLUXO:
+//   1. Injeta HTML (aside .q_a + .chat-panel) no body
+//   2. Injeta chat.css dinamicamente
+//   3. Ao abrir → carrega histórico (Supabase ou localStorage)
+//   4. Ao enviar → verifica plano → chama Claude API
+//   5. Guarda resposta no histórico
+//
+//   GATING:
+//   • Info do ginásio     → livre para todos
+//   • Fitness / nutrição  → só standard / premium
+//============================================
 
 const CHAT_LS_KEY = 'hiitgym_chat_history';
 const CHAT_MAX_HISTORY = 20; // mensagens guardadas (pares user+assistant)
@@ -24,9 +24,9 @@ let chatHistorico = []; // [{role, content}]
 let chatUserPlan  = null; // 'none' | 'basic' | 'standard' | 'premium' | null
 
 
-/* ============================================
-   1. INJECT HTML + CSS
-============================================ */
+//============================================
+//   1. INJECT HTML + CSS
+//============================================
 function injectChatUI() {
   // Evitar duplicação
   if (document.getElementById('chat-panel')) return;
@@ -91,9 +91,9 @@ function injectChatUI() {
 }
 
 
-/* ============================================
-   2. EVENTOS
-============================================ */
+//============================================
+//   2. EVENTOS
+//============================================
 function bindChatEvents() {
   document.getElementById('chat-toggle')?.addEventListener('click', toggleChat);
   document.getElementById('chat-fechar')?.addEventListener('click', fecharChat);
@@ -139,9 +139,9 @@ function fecharChat() {
 }
 
 
-/* ============================================
-   3. PLANO + HISTÓRICO
-============================================ */
+//============================================
+//   3. PLANO + HISTÓRICO
+//============================================
 async function carregarPlano() {
   try {
     const { data: { session } } = await window.supabase.auth.getSession();
@@ -202,9 +202,9 @@ async function guardarMensagem(role, content) {
 }
 
 
-/* ============================================
-   4. ENVIAR MENSAGEM
-============================================ */
+//============================================
+//   4. ENVIAR MENSAGEM
+//============================================
 async function enviarMensagem() {
   const input = document.getElementById('chat-input');
   const texto = input?.value.trim();
@@ -255,9 +255,9 @@ function reativarInput() {
 }
 
 
-/* ============================================
-   5. CLAUDE API
-============================================ */
+//============================================
+//   5. CLAUDE API
+//============================================
 async function chamarClaude(userMessage) {
   const systemPrompt = buildSystemPrompt();
 
@@ -337,9 +337,9 @@ REGRAS:
 }
 
 
-/* ============================================
-   6. HELPERS — RENDER
-============================================ */
+//============================================
+//   6. HELPERS — RENDER
+//============================================
 function mostrarMensagem(role, content, animar = true) {
   const msgs = document.getElementById('chat-messages');
   if (!msgs) return;
@@ -390,9 +390,9 @@ function mensagemBoasVindas() {
 }
 
 
-/* ============================================
-   7. HELPERS — LÓGICA
-============================================ */
+//============================================
+// 7. HELPERS — LÓGICA
+//============================================
 const PALAVRAS_FITNESS = [
   'calorias','proteína','proteinas','carboidratos','gordura','dieta','nutrição',
   'nutriçao','alimentação','alimentacao','suplemento','suplementos','creatina',

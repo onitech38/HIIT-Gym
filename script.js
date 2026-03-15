@@ -1,14 +1,14 @@
-/* ============================================
-   HIIT-GYM — SCRIPT.JS
+//
+//   HIIT-GYM — SCRIPT.JS
 
-   Auth e nav delegados no global.js (Supabase).
+//   Auth e nav delegados no global.js (Supabase).
 
-   ÍNDICE:
-   1. WELCOME — timer 1s + handlers dos forms
-   2. MAP — funcionalidade do mapa
-   3. ESTADOS 1/2/3 das modalidades
-   4. EQUIPA — carrossel
-   ============================================ */
+//   ÍNDICE:
+//   1. WELCOME — timer 1s + handlers dos forms
+//   2. MAP — funcionalidade do mapa
+//   3. ESTADOS 1/2/3 das modalidades
+//   4. EQUIPA — carrossel
+//   ============================================ */
 
 
 // ============================================
