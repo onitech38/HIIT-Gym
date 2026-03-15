@@ -1,16 +1,14 @@
-/* ============================================
-   GLOBAL.JS — Componentes partilhados
-
-   Carregado em TODAS as páginas que usam
-   Supabase: modalidades, user, blog.
-   (index.html usa ainda script.js/localStorage
-    durante a migração de auth)
-
-   EXPORTA (globals acessíveis):
-   ▸ actualizarNav()      — nav login ↔ avatar
-   ▸ bindNavAuthLinks()   — clique em login/signup
-   ▸ ini(str)             — iniciais de um nome
-   ============================================ */
+// ============================================
+// GLOBAL.JS — Componentes partilhados
+// Carregado em TODAS as páginas que usam
+// Supabase: modalidades, user, blog.
+// (index.html usa ainda script.js/localStorage
+//  durante a migração de auth)
+// EXPORTA (globals acessíveis):
+// ▸ actualizarNav()      — nav login ↔ avatar
+// ▸ bindNavAuthLinks()   — clique em login/signup
+// ▸ ini(str)             — iniciais de um nome
+// ============================================
 
 
 // ── Helper: iniciais de um nome ──────────────

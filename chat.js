@@ -1,10 +1,32 @@
-/* ============================================
-   functions/api/chat.js
-   Cloudflare Pages Function — proxy seguro para Anthropic
+//============================================
+//   CHAT.JS — Assistente HIIT-Gym
+//
+//   Injectado em todas as páginas via global.js.
+//
+//   FLUXO:
+//   1. Injeta HTML (aside .q_a + .chat-panel) no body
+//   2. Injeta chat.css dinamicamente
+//   3. Ao abrir → carrega histórico (Supabase ou localStorage)
+//   4. Ao enviar → verifica plano → chama Claude API
+//   5. Guarda resposta no histórico
+//
+//   GATING:
+//   • Info do ginásio     → livre para todos
+//   • Fitness / nutrição  → só standard / premium
+//============================================
 
-   Variável de ambiente necessária (Cloudflare Dashboard):
-   Settings → Environment variables → ANTHROPIC_API_KEY
+const CHAT_LS_KEY = 'hiitgym_chat_history';
+const CHAT_MAX_HISTORY = 20; // mensagens guardadas (pares user+assistant)
 
+// ── Estado ────────────────────────────────────
+let chatAberto    = false;
+let chatHistorico = []; // [{role, content}]
+let chatUserPlan  = null; // 'none' | 'basic' | 'standard' | 'premium' | null
+
+
+//============================================
+//   1. INJECT HTML + CSS
+//============================================
 function injectChatUI() {
   // Evitar duplicação
   if (document.getElementById('chat-panel')) return;
@@ -69,82 +91,173 @@ function injectChatUI() {
 }
 
 
-/* ============================================
-   2. EVENTOS
-   O browser chama POST /api/chat com { messages, systemPrompt }
-   Esta function chama a Anthropic com a chave secreta
-   e devolve a resposta — a chave NUNCA chega ao browser.
-============================================ */
+//============================================
+//   2. EVENTOS
+//============================================
+function bindChatEvents() {
+  document.getElementById('chat-toggle')?.addEventListener('click', toggleChat);
+  document.getElementById('chat-fechar')?.addEventListener('click', fecharChat);
 
-export async function onRequestPost(context) {
-  const { request, env } = context;
+  const input = document.getElementById('chat-input');
+  const send  = document.getElementById('chat-send');
 
-  // CORS — permite chamadas do mesmo domínio e localhost
-  const origin = request.headers.get('Origin') || '';
-  const headers = {
-    'Content-Type': 'application/json',
-    'Access-Control-Allow-Origin': origin,
-    'Access-Control-Allow-Methods': 'POST, OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type',
-  };
-
-  // Preflight
-  if (request.method === 'OPTIONS') {
-    return new Response(null, { status: 204, headers });
-  }
-
-  // Validar body
-  let body;
-  try {
-    body = await request.json();
-  } catch {
-    return new Response(JSON.stringify({ error: 'Body inválido' }), { status: 400, headers });
-  }
-
-  const { messages, systemPrompt } = body;
-  if (!messages || !Array.isArray(messages)) {
-    return new Response(JSON.stringify({ error: 'messages obrigatório' }), { status: 400, headers });
-  }
-
-  // Chave da API (variável de ambiente Cloudflare)
-  const apiKey = env.ANTHROPIC_API_KEY;
-  if (!apiKey) {
-    return new Response(JSON.stringify({ error: 'API key não configurada' }), { status: 500, headers });
-  }
-
-  // Chamada à Anthropic
-  try {
-    const resp = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': apiKey,
-        'anthropic-version': '2023-06-01',
-      },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-6',
-        max_tokens: 1000,
-        system: systemPrompt,
-        messages,
-      }),
-    });
-
-    const data = await resp.json();
-
-    if (!resp.ok) {
-      return new Response(JSON.stringify({ error: data.error?.message || 'Erro API' }), {
-        status: resp.status, headers
-      });
+  send?.addEventListener('click', enviarMensagem);
+  input?.addEventListener('keydown', e => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      enviarMensagem();
     }
-
-    const text = data.content?.[0]?.text || '';
-    return new Response(JSON.stringify({ text }), { status: 200, headers });
-
-  } catch (err) {
-    return new Response(JSON.stringify({ error: err.message }), { status: 500, headers });
-  }
+  });
 }
 
+function toggleChat() {
+  chatAberto ? fecharChat() : abrirChat();
+}
+
+async function abrirChat() {
+  chatAberto = true;
+  const panel = document.getElementById('chat-panel');
+  panel?.classList.add('aberto');
+  document.getElementById('chat-toggle')?.querySelector('i')
+    .classList.replace('fa-comment-dots', 'fa-xmark');
+
+  await carregarPlano();
+  await carregarHistorico();
+
+  if (chatHistorico.length === 0) {
+    mostrarMensagem('assistant', mensagemBoasVindas());
+  }
+
+  setTimeout(() => document.getElementById('chat-input')?.focus(), 300);
+}
+
+function fecharChat() {
+  chatAberto = false;
+  document.getElementById('chat-panel')?.classList.remove('aberto');
+  document.getElementById('chat-toggle')?.querySelector('i')
+    .classList.replace('fa-xmark', 'fa-comment-dots');
+}
+
+
+//============================================
+//   3. PLANO + HISTÓRICO
+//============================================
+async function carregarPlano() {
+  try {
+    const { data: { session } } = await window.supabase.auth.getSession();
+    if (!session) { chatUserPlan = 'none'; return; }
+
+    const { data } = await window.supabase
+      .from('profiles').select('plan').eq('id', session.user.id).single();
+    chatUserPlan = data?.plan || 'none';
+  } catch { chatUserPlan = 'none'; }
+}
+
+async function carregarHistorico() {
+  const msgs = document.getElementById('chat-messages');
+  if (!msgs) return;
+
+  try {
+    const { data: { session } } = await window.supabase.auth.getSession();
+
+    if (session) {
+      // Supabase
+      const { data } = await window.supabase
+        .from('chat_history')
+        .select('role, content, created_at')
+        .eq('user_id', session.user.id)
+        .order('created_at', { ascending: true })
+        .limit(CHAT_MAX_HISTORY * 2);
+
+      chatHistorico = (data || []).map(r => ({ role: r.role, content: r.content }));
+    } else {
+      // localStorage
+      const raw = localStorage.getItem(CHAT_LS_KEY);
+      chatHistorico = raw ? JSON.parse(raw).slice(-CHAT_MAX_HISTORY * 2) : [];
+    }
+  } catch { chatHistorico = []; }
+
+  // Render histórico
+  msgs.innerHTML = '';
+  chatHistorico.forEach(m => mostrarMensagem(m.role, m.content, false));
+  scrollChat();
+}
+
+async function guardarMensagem(role, content) {
+  try {
+    const { data: { session } } = await window.supabase.auth.getSession();
+
+    if (session) {
+      await window.supabase.from('chat_history').insert({
+        user_id: session.user.id,
+        role,
+        content,
+      });
+    } else {
+      const hist = JSON.parse(localStorage.getItem(CHAT_LS_KEY) || '[]');
+      hist.push({ role, content });
+      localStorage.setItem(CHAT_LS_KEY, JSON.stringify(hist.slice(-CHAT_MAX_HISTORY * 2)));
+    }
+  } catch { /* silencioso */ }
+}
+
+
+//============================================
+//   4. ENVIAR MENSAGEM
+//============================================
+async function enviarMensagem() {
+  const input = document.getElementById('chat-input');
+  const texto = input?.value.trim();
+  if (!texto) return;
+
+  input.value = '';
+  input.disabled = true;
+  document.getElementById('chat-send').disabled = true;
+
+  // Mostra mensagem do user
+  mostrarMensagem('user', texto);
+  guardarMensagem('user', texto);
+  chatHistorico.push({ role: 'user', content: texto });
+
+  // Verifica gating
+  if (perguntaFitnessNutricao(texto) && !temPlanoFitness()) {
+    const respGating = `Para aconselhamento personalizado de fitness e nutrição, esta funcionalidade está disponível a partir do plano **Standard**. 💪\n\nPodes fazer upgrade em [Planos](/index.html#planos) ou perguntar-me sobre horários, modalidades e inscrições da HIIT-Gym — isso é grátis para todos!`;
+    mostrarMensagem('assistant', respGating);
+    guardarMensagem('assistant', respGating);
+    chatHistorico.push({ role: 'assistant', content: respGating });
+    reativarInput();
+    return;
+  }
+
+  // Indicador de escrita
+  const typingId = mostrarTyping();
+
+  try {
+    const resposta = await chamarClaude(texto);
+    removerTyping(typingId);
+    mostrarMensagem('assistant', resposta);
+    guardarMensagem('assistant', resposta);
+    chatHistorico.push({ role: 'assistant', content: resposta });
+  } catch (err) {
+    removerTyping(typingId);
+    mostrarMensagem('assistant', 'Ocorreu um erro. Tenta novamente em breve.');
+    console.error('Chat error:', err);
+  }
+
+  reativarInput();
+}
+
+function reativarInput() {
+  const input = document.getElementById('chat-input');
+  const send  = document.getElementById('chat-send');
+  if (input) { input.disabled = false; input.focus(); }
+  if (send)    send.disabled = false;
+}
+
+
+//============================================
+//   5. CLAUDE API
+//============================================
 async function chamarClaude(userMessage) {
   const systemPrompt = buildSystemPrompt();
 
@@ -224,8 +337,9 @@ REGRAS:
 }
 
 
-/* ============================================
-   6. HELPERS — RENDER
+//============================================
+//   6. HELPERS — RENDER
+//============================================
 function mostrarMensagem(role, content, animar = true) {
   const msgs = document.getElementById('chat-messages');
   if (!msgs) return;
@@ -276,8 +390,9 @@ function mensagemBoasVindas() {
 }
 
 
-/* ============================================
-   7. HELPERS — LÓGICA
+//============================================
+// 7. HELPERS — LÓGICA
+//============================================
 const PALAVRAS_FITNESS = [
   'calorias','proteína','proteinas','carboidratos','gordura','dieta','nutrição',
   'nutriçao','alimentação','alimentacao','suplemento','suplementos','creatina',
@@ -294,16 +409,6 @@ function perguntaFitnessNutricao(texto) {
 
 function temPlanoFitness() {
   return ['standard', 'premium'].includes(chatUserPlan);
-// OPTIONS preflight
-export async function onRequestOptions() {
-  return new Response(null, {
-    status: 204,
-    headers: {
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Methods': 'POST, OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type',
-    },
-  });
 }
 
 

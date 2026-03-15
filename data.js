@@ -1,17 +1,15 @@
-/* ============================================
-   DATA.JS — CMS da HIIT-Gym
-   ============================================
-   Carregado antes de script.js e blog.js.
-
-   ▸ MODALIDADES
-     active: true  → aparece no site
-     active: false → escondida (layout ajusta)
-
-   ▸ ARTIGOS
-     active: true   → visível no blog
-     active: false  → rascunho / escondido
-     destaque: true → artigo em destaque (só 1)
-   ============================================ */
+// ============================================
+// DATA.JS — CMS da HIIT-Gym
+// ============================================
+// Carregado antes de script.js e blog.js.
+// ▸ MODALIDADES
+//   active: true  → aparece no site
+//   active: false → escondida (layout ajusta)
+// ▸ ARTIGOS
+//   active: true   → visível no blog
+//   active: false  → rascunho / escondido
+//   destaque: true → artigo em destaque (só 1)
+// ============================================
 
 // ── COACHES ──────────────────────────────────
 const coaches = {
