@@ -3,23 +3,16 @@
    Depende de ../style.css (header, nav,variáveis, .glass,
    .golden-border, .btn, .campo, tipografia)
    ============================================ */
-header{
-  background: url(../src/BG_hero-home.jpg) center/cover no-repeat;
-  border-bottom: var(--clr-smooth-line);
+header {
+  .bg { height: var(--container-height); }
 
-  .mod-hero {
-    width: 100%;
-    padding: 4rem 1.5rem 3rem;
-    background-image: radial-gradient(circle at top left, transparent 1%, var(--clr-transp) 50%);
-    display: grid;
-    /* gap: 0.75rem; */
-    text-align: start;
-    place-items: start;
-    justify-content: start;
+  .hero {
+    gap: 2rem ;
 
-    * { max-width: var(--container-max); margin-top: 0; }
+    * { text-align: start; margin-top: 0; }
+    span { margin-bottom: -1rem; }
 
-    h1 {
+    h1 {      
       color: var(--clr-1);
       span { color: var(--clr-4); font-style: italic; }
     }
@@ -27,8 +20,6 @@ header{
     h2 {
       font-size: medium;
       max-width: var(--container-small);
-      color: var(--clr-2);
-      text-align: start;
     }
   }
 }
