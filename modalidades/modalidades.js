@@ -1,12 +1,11 @@
-/* ============================================
-   MODALIDADES.JS
-
-   1. Sessão Supabase → actualiza nav
-   2. renderModalidades() — cards com dados do data.js
-   3. renderEquipa()      — grid auto de coaches
-   4. Inscrição integrada — form de saúde + submit
-   5. Auto-open via ?modal= na URL
-   ============================================ */
+// ============================================
+// MODALIDADES.JS
+// 1. Sessão Supabase → actualiza nav
+// 2. renderModalidades() — cards com dados do data.js
+// 3. renderEquipa()      — grid auto de coaches
+// 4. Inscrição integrada — form de saúde + submit
+// 5. Auto-open via ?modal= na URL
+// ============================================ 
 
 // ── Estado global ─────────────────────────────
 let currentUser           = null;
@@ -17,9 +16,9 @@ let modalidadeSelecionada = null;
 const ini = s => s.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
 
 
-/* ============================================
-   INIT
-============================================ */
+//==============================================
+// INIT
+//==============================================
 window.addEventListener('load', async () => {
   try {
     // 1. Sessão Supabase
@@ -54,7 +53,7 @@ window.addEventListener('load', async () => {
 });
 
 
-/* ── Supabase helpers ────────────────────────── */
+// ── Supabase helpers ────────────────────────── 
 async function carregarPerfil() {
   const { data } = await window.supabase
     .from('profiles').select('*')
@@ -71,14 +70,14 @@ async function carregarInscricoes() {
 }
 
 
-/* ── NAV ──────────────────────────────────────── */
+// ── NAV ──────────────────────────────────────── 
 // actualizarNav() definida em global.js (async, Supabase)
 
 
-/* ============================================
-   RENDER MODALIDADES
-   Lê modalidadesData e coaches de data.js
-============================================ */
+// ============================================
+// RENDER MODALIDADES
+// Lê modalidadesData e coaches de data.js
+//========================================== 
 function renderModalidades() {
   const lista = document.getElementById('mod-lista');
   if (!lista) return;
@@ -170,10 +169,10 @@ function botaoInscricao(key, status) {
 }
 
 
-/* ============================================
-   RENDER EQUIPA
-   Grid usando coaches de data.js
-============================================ */
+// ============================================
+// RENDER EQUIPA
+// Grid usando coaches de data.js
+// ========================================== 
 function renderEquipa() {
   const grid = document.getElementById('equipa-grid');
   if (!grid) return;
@@ -208,9 +207,9 @@ function renderEquipa() {
 }
 
 
-/* ============================================
-   INSCRIÇÃO
-============================================ */
+// ============================================
+// INSCRIÇÃO
+//==========================================
 function abrirInscricao(key) {
   modalidadeSelecionada = key;
   const d = modalidadesData[key];
