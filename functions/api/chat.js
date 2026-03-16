@@ -20,55 +20,35 @@ export async function onRequestOptions() {
 
 
 // ── POST — chamada à Anthropic ───────────────
-export async function onRequestPost(context) {
-  const apiKey = context.env.ANTHROPIC_API_KEY;
-
-  if (!apiKey) {
-    return new Response(JSON.stringify({ error: 'API key não configurada' }), {
-      status: 500, headers: { 'Content-Type': 'application/json', ...CORS }
-    });
-  }
-
-  let body;
-  try { body = await context.request.json(); }
-  catch { return new Response(JSON.stringify({ error: 'Body inválido' }), {
-    status: 400, headers: { 'Content-Type': 'application/json', ...CORS }
-  }); }
-
-  const { systemPrompt, messages } = body;
-
-  if (!Array.isArray(messages) || messages.length === 0) {
-    return new Response(JSON.stringify({ error: 'Parâmetros em falta' }), {
-      status: 400, headers: { 'Content-Type': 'application/json', ...CORS }
-    });
-  }
-
-  // Chama Anthropic
-  const res = await fetch('https://api.anthropic.com/v1/messages', {
-    method : 'POST',
+export async function onRequestOptions() {
+  return new Response(null, {
+    status: 204,
     headers: {
-      'Content-Type'     : 'application/json',
-      'x-api-key'        : env.ANTHROPIC_API_KEY,
-      'anthropic-version': '2023-06-01',
-    },
-    body: JSON.stringify({
-      model     : 'claude-3-haiku-20240307',
-      max_tokens: 512,
-      system    : systemPrompt || '',
-      messages,
-    }),
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'POST, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type',
+    }
+  });
+}
+
+export async function onRequestPost({ request, env }) {
+  const headers = { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' };
+  const key = (env || {}).ANTHROPIC_API_KEY;
+
+  if (!key) return new Response(JSON.stringify({ error: 'API key não configurada' }), { status: 500, headers });
+
+  const { systemPrompt, messages } = await request.json();
+
+  const res = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'x-api-key': key, 'anthropic-version': '2023-06-01' },
+    body: JSON.stringify({ model: 'claude-haiku-4-5-20251001', max_tokens: 512, system: systemPrompt || '', messages }),
   });
 
-  if (!res.ok) {
-    const err = await res.json().catch(() => ({}));
-    return new Response(JSON.stringify({ error: err?.error?.message || `Erro ${res.status}` }), {
-      status: res.status, headers: { 'Content-Type': 'application/json', ...CORS }
-    });
-  }
+  const data = await res.json();
+  if (!res.ok) return new Response(JSON.stringify({ error: data?.error?.message || `Erro ${res.status}` }), { status: res.status, headers });
 
-  return new Response(JSON.stringify({ text }), {
-    status: 200, headers: { 'Content-Type': 'application/json', ...CORS }
-  });
+  return new Response(JSON.stringify({ text: data?.content?.[0]?.text ?? '' }), { status: 200, headers });
 }
 
 
