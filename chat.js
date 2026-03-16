@@ -259,35 +259,27 @@ function reativarInput() {
 //   5. CLAUDE API
 //============================================
 async function chamarClaude(userMessage) {
-  const systemPrompt = buildSystemPrompt();
-
-  // Histórico para contexto (últimas 10 trocas, sem duplicar a última mensagem)
-  const mensagensContexto = chatHistorico
-    .slice(-20)
-    .filter(m => m.content !== userMessage);
-
-  // Chama o proxy seguro (/api/chat — Cloudflare Pages Function)
-  // A API key NUNCA é exposta no browser — fica no servidor Cloudflare.
   const response = await fetch('/api/chat', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: {
+      'Content-Type': 'application/json'
+    },
     body: JSON.stringify({
-      systemPrompt,
+      systemPrompt: buildSystemPrompt(),
       messages: [
-        ...mensagensContexto,
-        { role: 'user', content: userMessage },
-      ],
-    }),
+        { role: 'user', content: userMessage }
+      ]
+    })
   });
 
   if (!response.ok) {
-    const err = await response.json().catch(() => ({}));
-    throw new Error(err.error || `Erro ${response.status}`);
+    throw new Error('Erro ao contactar o backend do chat');
   }
 
   const data = await response.json();
-  return data.text || 'Sem resposta.';
+  return data.text;
 }
+
 
 function buildSystemPrompt() {
   // Constrói contexto a partir do data.js (disponível globalmente)
