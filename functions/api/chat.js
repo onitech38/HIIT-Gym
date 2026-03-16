@@ -1,25 +1,3 @@
-// ============================================
-// functions/api/chat.js — Cloudflare Pages Function
-// Proxy seguro entre o browser e a API Anthropic.
-// A ANTHROPIC_API_KEY nunca sai do servidor.
-//
-// Cloudflare Pages → Settings → Environment Variables
-// → ANTHROPIC_API_KEY = sk-ant-...
-// ============================================
-
-const CORS = {
-  'Access-Control-Allow-Origin' : '*',
-  'Access-Control-Allow-Methods': 'POST, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type',
-};
-
-// ── OPTIONS — preflight CORS ─────────────────
-export async function onRequestOptions() {
-  return new Response(null, { status: 204, headers: CORS });
-}
-
-
-// ── POST — chamada à Anthropic ───────────────
 export async function onRequestOptions() {
   return new Response(null, {
     status: 204,
@@ -50,14 +28,3 @@ export async function onRequestPost({ request, env }) {
 
   return new Response(JSON.stringify({ text: data?.content?.[0]?.text ?? '' }), { status: 200, headers });
 }
-
-
-// ── Helper ───────────────────────────────────
-function json(body, status = 200) {
-  return new Response(JSON.stringify(body), {
-    status,
-    headers: { 'Content-Type': 'application/json', ...CORS },
-  });
-}
-
-console.log('Anthropic key exists:', !!env.ANTHROPIC_API_KEY);
