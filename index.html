@@ -652,9 +652,10 @@
 
   
     <!-- Supabase: necessário para chat e auth bridge -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.4/dist/umd/supabase.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
     <script src="supabase.js"></script>
-    <script src="script.js?v=1.0.0"></script>
+    <script src="data.js"></script>          <!-- ← adicionar ANTES do script.js -->
+    <script src="script.js?v=1.1.0"></script> <!-- ← bump versão para buscar cache -->
     <!-- Chat assistente (auto-init) -->
     <script src="chat.js"></script>
     <script>
