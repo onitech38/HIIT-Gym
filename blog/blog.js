@@ -3,6 +3,24 @@
 // Depende de data.js (artigosData)
 // ============================================
 
+// ── AUTH GATE ─────────────────────────────────
+// Espera até o global.js definir o estado de auth
+(function waitForAuth() {
+  if (window.currentUser === undefined) {
+    requestAnimationFrame(waitForAuth);
+    return;
+  }
+
+  if (!window.currentUser) {
+    window.location.href = '../index.html';
+    return;
+  }
+
+  // Autenticado → inicializar blog
+  initBlog();
+})();
+
+
 // ── HELPERS ──────────────────────────────────
 
 const meses = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
@@ -197,5 +215,8 @@ document.getElementById('form-newsletter')?.addEventListener('submit', e => {
 
 
 // ── INIT ──────────────────────────────────────
-renderDestaque();
-renderGrelha();
+
+function initBlog() {
+  renderDestaque();
+  renderGrelha();
+}

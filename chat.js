@@ -144,10 +144,10 @@ function fecharChat() {
 //============================================
 async function carregarPlano() {
   try {
-    const { data: { session } } = await window.supabase.auth.getSession();
+    const { data: { session } } = await window.supabaseClient.auth.getSession();
     if (!session) { chatUserPlan = 'none'; return; }
 
-    const { data } = await window.supabase
+    const { data } = await window.supabaseClient
       .from('profiles').select('plan').eq('id', session.user.id).single();
     chatUserPlan = data?.plan || 'none';
   } catch { chatUserPlan = 'none'; }
@@ -158,11 +158,11 @@ async function carregarHistorico() {
   if (!msgs) return;
 
   try {
-    const { data: { session } } = await window.supabase.auth.getSession();
+    const { data: { session } } = await window.supabaseClient.auth.getSession();
 
     if (session) {
       // Supabase
-      const { data } = await window.supabase
+      const { data } = await window.supabaseClient
         .from('chat_history')
         .select('role, content, created_at')
         .eq('user_id', session.user.id)
@@ -185,10 +185,10 @@ async function carregarHistorico() {
 
 async function guardarMensagem(role, content) {
   try {
-    const { data: { session } } = await window.supabase.auth.getSession();
+    const { data: { session } } = await window.supabaseClient.auth.getSession();
 
     if (session) {
-      await window.supabase.from('chat_history').insert({
+      await window.supabaseClient.from('chat_history').insert({
         user_id: session.user.id,
         role,
         content,
@@ -411,15 +411,4 @@ function temPlanoFitness() {
   return ['standard', 'premium'].includes(chatUserPlan);
 }
 
-
-// ── Auto-init ─────────────────────────────────
-// Quando carregado directamente (sem global.js),
-// injeta o UI assim que o DOM estiver pronto.
-// global.js chama injectChatUI() no seu próprio init,
-// portanto este listener é inofensivo nas outras páginas.
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', injectChatUI);
-} else {
-  // DOM já pronto (script defer ou carregado tarde)
-  injectChatUI();
-}
+injectChatUI();
