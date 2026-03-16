@@ -49,11 +49,11 @@ if (!Array.isArray(messages) || messages.length === 0) {
       'anthropic-version': '2023-06-01',
     },
     body: JSON.stringify({
-      model: 'claude-3-haiku-20240307',
-      max_tokens: 512,
-      system: systemPrompt || '',
-      messages,
-    }),
+  model: 'claude-3-haiku-20240307',
+  max_tokens: 512,
+  system: systemPrompt || '',
+  messages,
+}),
   });
 
 const data = await res.json();
