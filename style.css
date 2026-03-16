@@ -346,7 +346,7 @@ body {
 }
 
 @layer media {
-  @media ( prefered-color-scheme: light) {
+  @media (prefers-color-scheme: light) {
     :root {
       --clr-4: red;
       --clr-2: blue ;

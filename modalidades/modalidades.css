@@ -149,7 +149,7 @@ main {
             gap: 0.75rem;
             flex-shrink: 0;
       
-            .mod-status-badge {
+            .mod-badge {
               font-size: 0.65rem;
               font-weight: 600;
               letter-spacing: 0.1em;
@@ -198,6 +198,21 @@ main {
       }
     }
     
+    @media (max-width: 624px) {
+      .mod-card {
+        grid-template-columns: 1fr !important;
+
+        .mod-card-body {
+          gap: 1rem;
+          padding-bottom: 0;
+        }
+
+        .mod-card-img img {
+          display: none !important;
+        }
+      }
+    }
+
     @container modcard (max-width: 992px) and (min-width: 496px) {
       /*780px*/
       .mod-card {
@@ -235,21 +250,7 @@ main {
     }    
 
   }
-  @media (max-width: 624px) {
-    .mod-card {
-      grid-template-columns: 1fr !important;
-    }
-  
-    .mod-card-body {
-      gap: 1rem;
-      padding-bottom: 0;
-    }
 
-    .mod-card-img img {   
-      display: none !important;
-    }
-    
-  }
 
   .equipa {
     padding: 2.5rem;
@@ -351,11 +352,11 @@ main {
         text-transform: uppercase;
         letter-spacing: 0.08em;
         font-weight: 600;
-  
-        .equipa-card-bio {
-          font-size: 0.7rem;
-          color: var(--clr-2);
-        }
+      }
+
+      .equipa-card-bio {
+        font-size: 0.7rem;
+        color: var(--clr-2);
       }
   
       @media (max-width: 420px) { height: 220px; }
@@ -690,245 +691,6 @@ main {
         h3 { color: var(--clr-1); font-size: 1.5rem; margin: 0; }
         p  { color: var(--clr-2); font-size: 0.88rem; opacity: 0.75; margin: 0; }
       }
-    }
-  
-    /* ── Estado vazio (fallback antigo — mantém compatibilidade) ── */
-    .insc-vazio {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 0.75rem;
-      padding: 3rem 1rem;
-      opacity: 0.4;
-      text-align: center;
-  
-      i {
-        font-size: 2rem;
-        color: var(--clr-4);
-        animation: bounce-up 1.5s ease-in-out infinite;
-      }
-  
-      p {
-        font-size: 0.85rem;
-        color: var(--clr-2);
-        margin: 0;
-      }
-    }
-  
-    /* Wrapper do formulário */
-    .insc-form-wrap {
-      max-width: 640px;
-      margin-inline: auto;
-      display: grid;
-      gap: 1.5rem;
-    }
-  
-    /* Cabeçalho dinâmico */
-    .insc-form-header {
-      display: flex;
-      align-items: flex-start;
-      gap: 1rem;
-      position: relative;
-  
-      .insc-eyebrow {
-        display: none; /* escondido — usa apenas o h3 */
-      }
-  
-      h3 {
-        font-size: clamp(1.25rem, 2.5vw, 1.75rem);
-        color: var(--clr-4);
-        font-style: italic;
-        text-transform: uppercase;
-        letter-spacing: 0.06em;
-        flex: 1;
-      }
-  
-      .insc-fechar {
-        flex-shrink: 0;
-        font-size: 0.9rem;
-        opacity: 0.6;
-        &:hover { opacity: 1; }
-      }
-    }
-  
-    /* Dados do user */
-    .insc-dados-user {
-      background: rgba(18,13,15,0.5);
-      border: 1px solid rgba(185,207,212,0.1);
-      border-radius: var(--border-radius);
-      padding: 1.25rem 1.5rem;
-  
-      .dados-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 0.75rem 2rem;
-  
-        @media (max-width: 480px) { grid-template-columns: 1fr; }
-      }
-  
-      .dado-item {
-        display: flex;
-        flex-direction: column;
-        gap: 0.15rem;
-      }
-  
-      .dado-label {
-        font-size: 0.65rem;
-        text-transform: uppercase;
-        letter-spacing: 0.1em;
-        color: var(--clr-4);
-        font-weight: 400;
-      }
-  
-      .dado-valor {
-        font-size: 0.88rem;
-        color: var(--clr-1);
-        font-weight: 400;
-      }
-  
-      .insc-nao-autenticado {
-        text-align: center;
-        padding: 1rem 0;
-  
-        p {
-          font-size: 0.85rem;
-          color: var(--clr-2);
-          margin-bottom: 1rem;
-        }
-  
-        .insc-auth-btns {
-          display: flex;
-          gap: 0.75rem;
-          justify-content: center;
-          flex-wrap: wrap;
-        }
-      }
-    }
-  
-    /* Formulário de saúde */
-    .insc-form-saude {
-      display: grid;
-      gap: 1.25rem;
-  
-      .insc-saude-titulo {
-        display: flex;
-        align-items: baseline;
-        gap: 0.6rem;
-        flex-wrap: wrap;
-  
-        i    { color: var(--clr-4); font-size: 0.85rem; }
-        span { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--clr-2); font-weight: 600; }
-        small{ font-size: 0.68rem; color: var(--clr-2); opacity: 0.55; }
-      }
-  
-      /* Toggle row */
-      .insc-toggle-row {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 1rem;
-        padding: 0.75rem 0;
-        border-bottom: 1px solid rgba(185,207,212,0.07);
-  
-        label:first-of-type {
-          font-size: 0.82rem;
-          color: var(--clr-2);
-          cursor: pointer;
-          flex: 1;
-        }
-  
-        /* Input oculto */
-        .toggle-input { display: none; }
-  
-        /* Toggle visual */
-        .toggle-label {
-          width: 42px;
-          height: 24px;
-          background: rgba(185,207,212,0.15);
-          border-radius: 100px;
-          position: relative;
-          cursor: pointer;
-          flex-shrink: 0;
-          transition: background var(--tempo) ease;
-  
-          &::after {
-            content: '';
-            position: absolute;
-            top: 3px;
-            left: 3px;
-            width: 18px;
-            height: 18px;
-            border-radius: 50%;
-            background: var(--clr-2);
-            transition: transform var(--tempo) ease, background var(--tempo) ease;
-          }
-        }
-  
-        /* Checked state */
-        .toggle-input:checked + .toggle-label {
-          background: var(--clr-4);
-          &::after {
-            transform: translateX(18px);
-            background: var(--clr-3);
-          }
-        }
-      }
-  
-      /* Campo extra (textarea) */
-      .insc-campo-extra {
-        display: grid;
-        gap: 0.4rem;
-  
-        label {
-          font-size: 0.68rem;
-          text-transform: uppercase;
-          letter-spacing: 0.1em;
-          color: var(--clr-2);
-          opacity: 0.7;
-        }
-  
-        textarea {
-          width: 100%;
-          padding: 0.65rem 0.9rem;
-          background: rgba(18,13,15,0.6);
-          border: 1.5px solid rgba(185,207,212,0.12);
-          border-bottom-color: var(--clr-smooth-line);
-          border-radius: var(--border-radius);
-          color: var(--clr-1);
-          font-family: var(--fnt-body);
-          font-size: 0.88rem;
-          resize: none;
-          outline: none;
-          transition: border-color var(--tempo) ease;
-  
-          &:focus { border-color: var(--clr-4); }
-          &::placeholder { color: var(--clr-2); opacity: 0.35; }
-        }
-      }
-  
-      .insc-submit {
-        width: 100%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 0.5rem;
-        padding: 0.8rem;
-        font-size: 0.88rem;
-        margin-top: 0.5rem;
-      }
-    }
-  
-    /* Sucesso */
-    .insc-sucesso {
-      text-align: center;
-      padding: 2rem 1rem;
-      display: grid;
-      place-items: center;
-      gap: 0.75rem;
-  
-      i  { font-size: 3rem; color: #64c878; }
-      h3 { color: var(--clr-1); font-size: 1.5rem; margin: 0; }
-      p  { color: var(--clr-2); font-size: 0.88rem; opacity: 0.75; margin: 0; }
     }
   }
 }
