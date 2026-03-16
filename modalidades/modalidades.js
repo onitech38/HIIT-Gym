@@ -127,7 +127,6 @@ function renderModalidades() {
               <span><i class="fa-solid fa-calendar-days"></i>${d.dias}</span>
               <span><i class="fa-solid fa-clock"></i>${d.horas}</span>
             </div>
-            <p class="mod-card-desc">${d.descricao}</p>
             <div class="mod-card-coaches">${coachesHtml}</div>
             <div class="mod-card-acoes">
               <span class="mod-badge ${st}">${labelBadge(st)}</span>
@@ -136,6 +135,7 @@ function renderModalidades() {
           </div>
           <div class="mod-card-img">
             <img src="../${d.imagem}" alt="${d.titulo}" loading="lazy">
+            <p class="mod-card-desc">${d.descricao}</p>
           </div>
         </article>`;
     }).join('');
@@ -171,7 +171,7 @@ function renderEquipa() {
         <div class="equipa-card-info">
           <span class="equipa-card-nome">${c.nome}</span>
           <span class="equipa-card-tags">${modTags}</span>
-          <span class="equipa-card-tags">${bio}</span>
+          <span class="equipa-card-bio">${bio}</span>
         </div>
       </div>`;
   }).join('');
