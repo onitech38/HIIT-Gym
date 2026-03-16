@@ -21,25 +21,26 @@ export async function onRequestOptions() {
 
 // ── POST — chamada à Anthropic ───────────────
 export async function onRequestPost(context) {
-  const { request, env } = context;
+  const apiKey = context.env.ANTHROPIC_API_KEY;
 
-  // Valida API key
-  if (!env.ANTHROPIC_API_KEY) {
-    return json({ error: 'API key não configurada' }, 500);
+  if (!apiKey) {
+    return new Response(JSON.stringify({ error: 'API key não configurada' }), {
+      status: 500, headers: { 'Content-Type': 'application/json', ...CORS }
+    });
   }
 
-  // Parse body
   let body;
-  try {
-    body = await request.json();
-  } catch {
-    return json({ error: 'Body inválido' }, 400);
-  }
+  try { body = await context.request.json(); }
+  catch { return new Response(JSON.stringify({ error: 'Body inválido' }), {
+    status: 400, headers: { 'Content-Type': 'application/json', ...CORS }
+  }); }
 
   const { systemPrompt, messages } = body;
 
   if (!Array.isArray(messages) || messages.length === 0) {
-    return json({ error: 'Parâmetros em falta' }, 400);
+    return new Response(JSON.stringify({ error: 'Parâmetros em falta' }), {
+      status: 400, headers: { 'Content-Type': 'application/json', ...CORS }
+    });
   }
 
   // Chama Anthropic
@@ -60,13 +61,14 @@ export async function onRequestPost(context) {
 
   if (!res.ok) {
     const err = await res.json().catch(() => ({}));
-    return json({ error: err?.error?.message || `Erro Anthropic ${res.status}` }, res.status);
+    return new Response(JSON.stringify({ error: err?.error?.message || `Erro ${res.status}` }), {
+      status: res.status, headers: { 'Content-Type': 'application/json', ...CORS }
+    });
   }
 
-  const data = await res.json();
-  const text = data?.content?.[0]?.text ?? '';
-
-  return json({ text }, 200);
+  return new Response(JSON.stringify({ text }), {
+    status: 200, headers: { 'Content-Type': 'application/json', ...CORS }
+  });
 }
 
 
