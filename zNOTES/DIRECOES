@@ -1,0 +1,95 @@
+<!-- =========================================
+ESTRUTURA: ficheiros já existentes
+========================================== -->
+HIIT Gym/(RAIZ)
+|__ blog
+|   |__ blog.css
+|   |__ blog.html
+|   |__ blog.js
+|
+|
+|__ functions
+|   |__ api.css
+|         |__ chat.js
+|
+|
+|__ modalidades
+|   |__ modalidades.css
+|   |__ modalidades.html
+|   |__ modalidades.js
+|
+|
+|__ src
+|__ user
+|   |__ user.css
+|   |__ user.html
+|   |__ user.js
+|
+|
+|__ _header
+|__ chat.js
+|__ chat.css
+|__ data.js
+|__ global.js
+|__ index.html
+|__ manifest.json
+|__ package.json
+|__ script.js
+|__ style.css
+|__ supabase.js
+|__ sw.js
+
+
+<!-- =========================================
+MEMÓRIA:
+========================================== -->
+Purpose & context
+Jose is building HIIT-Gym, a full-stack gym website hosted on Cloudflare Pages with 
+Supabase for authentication and database. The project includes pages for class types (modalidades), 
+user profiles, and coach information. The stack uses vanilla JS, CSS with nesting, 
+and Supabase for auth and enrollment data, allong with vscode->github->cloudflare.
+
+<!-- =========================================
+INSTRUÇÕES:
+========================================== -->
+Pretendo que:
+- sejas um ajudante senyor de front-end/back-end web dev;
+- entregues o resultado mais simples e limpo;
+- NESTING puro:que a hierarquia seja respeitada tal como está estruturada no html no mesmo - IMPORTANTE!!!
+- animações, @media queries, variaveis ... tudo nos respectivos @layers - IMPORTANTE!!!
+- que cada processo seja explicado passo a passo;
+- tentes evitar a utilização de JS(mas informes no fim caso seja a melhor opção e 
+  perguntes se quero ver/que seja implementada);
+
+
+<!-- =========================================
+O QUE FALTA:
+========================================== -->
+1. Blog
+Não estar a ter acesso ao blog, depois de estar logged
+
+2. Chat
+Não consigo colocar a funcionar o chat
+Erro que dá na consola:
+"chat.js:1 Uncaught SyntaxError: Identifier 'CHAT_LS_KEY' has already been declared (at chat.js:1:1)"
+"chat.js:244 Chat error: Error: API key não configurada
+    at chamarClaude (chat.js:285:11)
+    at async HTMLButtonElement.enviarMensagem (chat.js:236:22)
+enviarMensagem	@	chat.js:244"
+
+3. Email
+Resend — 3.000 emails/mês grátis:
+
+Integra diretamente com Supabase
+Templates HTML bonitos
+API simples
+Para confirmações, notificações de inscrição, etc.
+
+4. Pagamentos
+Stripe — o melhor, sem mensalidade:
+
+Só cobras quando recebes (2.9% + 30¢ por transação)
+Checkout pronto, seguro e certificado (PCI)
+Suporta MB Way, cartão, Apple Pay, Google Pay
+Dashboard de gestão completo
+Webhooks para atualizar Supabase automaticamente
