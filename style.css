@@ -64,8 +64,8 @@
     --bg_pttrn_calc: calc(var(--icon-size-logo) * var(--bg_pttrn_size));
 
     --tempo: 300ms;
-    --section-anim-in: 10%;
-    --section-anim-full: 35%;
+    --section-anim-in: 8%;
+    --section-anim-full: 25%;
 
     --icon-size: 2rem ;
     --icon-font-size: 1.5rem;
@@ -85,7 +85,7 @@
     --fs-h6: calc(var(--fs-h5) - 0.125rem);
 
     --font-weight: 800;
-    --margin-block-element: 2rem;
+    --padding-element: 3rem 1rem 5rem;;
     --margin-block-section: 1rem;
     --container-max: 1440px;
     --container-mid: 1024px;
@@ -150,9 +150,10 @@
   } 
 
   main, footer { 
-    margin-block: var(--margin-block-element); 
-    max-width: 1440px;
-    text-align: center; 
+    width: 100%; max-width: var(--container-max);
+    margin-inline: auto; padding: var(--padding-element); 
+    display: grid; gap: 4rem;
+
   }
   section, .container {    
     scroll-margin-top: 2.5rem;
@@ -345,7 +346,7 @@ body {
 }
 
 @layer media {
-  @media ( prefered-color-scheme: light) {
+  @media (prefers-color-scheme: light) {
     :root {
       --clr-4: red;
       --clr-2: blue ;
@@ -744,8 +745,7 @@ header {
 }
 
 main {
-  position: relative; margin-inline: auto; width: 100%;
-  display: grid; place-items: center; gap: 5rem; z-index: 1;
+  position: relative; z-index: 1;
 
   /* *{border: var(--border-size);} */
   .sobre {
@@ -753,7 +753,7 @@ main {
 
     scroll-margin-top: 6rem;
     min-height: calc(var(--container-height) - 5.125rem);
-    margin-top: -3rem;
+    /* margin-top: -3rem; */
 
     display: flex;
     flex-wrap: wrap; 
@@ -1471,16 +1471,14 @@ main {
   }
 }
 
-footer {
-  width: 100%;     
-  position: relative;  margin-inline: auto; 
-  margin-top: 4rem; padding: 3rem 1rem 0;
-  display: grid; align-content: space-between;
-  z-index: 2; place-items: center; background: var(--clr-3);
+footer { 
+  position: relative;
+  margin-top: 4rem; padding-bottom: 0;
+  align-content: space-between;
+  z-index: 2; background: var(--clr-3);
   border-top: var(--border-size) var(--clr-4);
 
   .footer-grid {
-    max-width: var(--container-max);
     margin-inline: auto;
     display: grid;
     grid-template-columns: 1.4fr 1fr 1fr;
@@ -1569,14 +1567,14 @@ footer {
 
   .footer-bar {
     max-width: var(--container-max);
-    margin-inline: auto;
     padding-block: 1rem;
     border-top: 1px solid rgba(251, 160, 2, 0.2);
-    display: flex;
     justify-content: space-between;
     align-items: center;
     flex-wrap: wrap;
     gap: 0.5rem;
+    text-align: center;
+    place-items: center;
 
     @media (max-width: 480px) { flex-direction: column; text-align: center; }
 
