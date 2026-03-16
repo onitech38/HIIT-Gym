@@ -39,7 +39,9 @@ async function actualizarNav() {
   if (!navLogin) return;
 
   // Sessão Supabase
-  const { data: { session } } = await window.supabase.auth.getSession();
+  const { data: { session } } = await window.supabaseClient.auth.getSession();
+  
+
 
   if (!session) {
     navLogin.classList.remove('hidden');
@@ -54,7 +56,7 @@ async function actualizarNav() {
   navAvatar?.classList.remove('hidden');
 
   if (navImg) {
-    const { data: profile } = await window.supabase
+    const { data: profile } = await window.supabaseClient
       .from('profiles').select('first_name, last_name, avatar_url')
       .eq('id', session.user.id).single();
 
@@ -90,10 +92,7 @@ function bindNavAuthLinks() {
 
   // Determinar path para o index consoante a profundidade
   // Funciona com 1 nível de pasta (modalidades/, user/, blog/)
-  const pathToIndex = window.location.pathname.includes('/')
-    && window.location.pathname.split('/').length > 2
-    ? '../index.html'
-    : 'index.html';
+  const pathToIndex = `${window.location.origin}/index.html`;
 
   navLogin?.addEventListener('click', e => {
     e.preventDefault();
@@ -129,21 +128,9 @@ window.addEventListener('DOMContentLoaded', () => {
   actualizarNav();
   bindNavAuthLinks();
   bindMobileNav();
-  injectChatScript();
   bindToTop();
 });
 
-// ── Chat: injeta chat.js dinamicamente ───────
-// chat.js tem auto-init: ao carregar chama injectChatUI() sozinho.
-function injectChatScript() {
-  if (document.getElementById('chat-script')) return;
-  const depth  = window.location.pathname.split('/').length - 2;
-  const prefix = depth > 0 ? '../'.repeat(depth) : '';
-  const s = document.createElement('script');
-  s.id  = 'chat-script';
-  s.src = `${prefix}chat.js`;
-  document.body.appendChild(s);
-}
 
 // ── To-top: mostra botão após 300px de scroll ─
 function bindToTop() {
