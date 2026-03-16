@@ -4,8 +4,6 @@
    .golden-border, .btn, .campo, tipografia)
    ============================================ */
 header {
-  .bg { height: var(--container-height); }
-
   .hero {
     gap: 2rem ;
 
@@ -24,188 +22,7 @@ header {
   }
 }
 
-
-/* ── LAYOUT GERAL ───────────────────────────── */
 main {
-  display: grid;
-  gap: 4rem;
-  padding: 3rem 1rem 5rem;
-  max-width: 1200px;
-  margin-inline: auto;
-  width: 100%;
-
-  
-  /* ── SECÇÃO MODALIDADES ─────────────────────── */
-  /* .mod {
-    padding: 2.5rem;
-    border: 1px solid lime;
-  
-    .mod-lista {
-      display: grid;
-      gap: 1.5rem;
-  
-      * { border: 1px solid lime; }
-  
-      .mod-card {
-        display: grid;
-        grid-template-columns: 230px 1fr;
-        overflow: hidden;
-        border: 1px solid rgba(251,160,2,0.12);
-        border-radius: var(--border-radius);
-        background: rgba(18,13,15,0.6);
-        transition: border-color var(--tempo) ease, box-shadow var(--tempo) ease;
-    
-        &:hover {
-          border-color: rgba(251,160,2,0.35);
-          box-shadow: 0 4px 32px rgba(251,160,2,0.06);
-        }          
-    
-        .mod-card-body {
-          display: grid;
-          grid-template-columns: subgrid;
-          justify-items: center;
-          align-content: space-between;
-    
-          .mod-card-titulo {
-            margin-top: 2rem;
-            font-family: var(--fnt-sign);
-            font-size: clamp(1.1rem, 1.8vw, 1.4rem);
-            font-weight: 700;
-            color: var(--clr-1);
-            text-transform: uppercase;
-            letter-spacing: 0.06em;
-          }
-    
-          .mod-card-horarios {
-            display: flex;
-            flex-direction: column;
-            gap: 0.25rem;
-    
-            span {
-              font-size: 0.78rem;
-              color: var(--clr-2);
-              opacity: 0.75;
-              display: flex;
-              align-items: center;
-              gap: 0.5rem;
-    
-              i { color: var(--clr-4); font-size: 0.7rem; width: 0.9rem; }
-            }
-          }
-    
-          .mod-card-coaches {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.5rem;
-            align-items: center;
-    
-            .coach-mini {
-              position: relative;
-    
-              .coach-mini-avatar {
-                width: 32px;
-                height: 32px;
-                border-radius: 50%;
-                border: 1.5px solid var(--clr-4);
-                background-size: cover;
-                background-position: center;
-                background-color: var(--clr-3);
-                display: grid;
-                place-items: center;
-                font-size: 0.6rem;
-                font-weight: 700;
-                color: var(--clr-4);
-                transition: transform var(--tempo) ease;
-    
-                &:hover { transform: scale(1.15); }
-              }
-    
-              .coach-mini-tooltip {
-                position: absolute;
-                bottom: calc(100% + 6px);
-                left: 50%;
-                transform: translateX(-50%);
-                background: var(--clr-4);
-                color: var(--clr-3);
-                padding: 0.3rem 0.6rem;
-                border-radius: 4px;
-                font-size: 0.65rem;
-                font-weight: 600;
-                text-transform: uppercase;
-                white-space: nowrap;
-                pointer-events: none;
-                opacity: 0;
-                transition: opacity var(--tempo) ease;
-                z-index: 10;
-              }
-    
-              &:hover .coach-mini-tooltip { opacity: 1; }
-            }
-          }
-  
-          .mod-card-acoes {
-            padding: 1.5rem;
-            display: flex;
-            flex-direction: column;
-            align-items: flex-end;
-            gap: 0.75rem;
-            flex-shrink: 0;
-      
-            .mod-status-badge {
-              font-size: 0.65rem;
-              font-weight: 600;
-              letter-spacing: 0.1em;
-              text-transform: uppercase;
-              padding: 0.3rem 0.7rem;
-              border-radius: 100px;
-      
-              &.inscrito  { background: rgba(100,200,120,0.12); color: #64c878; border: 1px solid rgba(100,200,120,0.3); }
-              &.pendente  { background: rgba(251,160,2,0.12);   color: var(--clr-4); border: 1px solid rgba(251,160,2,0.3); }
-              &.disponivel{ background: rgba(185,207,212,0.08); color: var(--clr-2); border: 1px solid rgba(185,207,212,0.15); }
-            }
-      
-            .btn-inscrever {
-              padding: 0.55rem 1.1rem;
-              font-size: 0.78rem;
-              white-space: nowrap;
-              display: flex;
-              align-items: center;
-              gap: 0.4rem;
-            }
-          }
-        }
-  
-        .mod-card-img {
-          padding: 1.5rem;
-          max-height: 350px; min-width: 23px;
-          display: grid;
-          grid-template-columns: subgrid;
-          justify-items: start;
-          grid-template-rows: minmax(100px, auto);
-          gap: var(--gap-items);
-          overflow: hidden;
-    
-          img, video {
-            width: 100%;
-            height: 100%; 
-            border-radius: var(--border-radius);
-            object-fit: cover;
-            display: block;
-            transition: transform 0.4s ease;
-          }
-  
-          .mod-card-desc {
-            text-align: start;
-            width: 100%; max-width: 720px;
-            margin-left: 1rem; margin-bottom: 0;
-          } 
-        }
-        &:hover .mod-card-img img { transform: scale(1.04); }
-    
-      }
-    }
-  } */
-  
   .mod {
     max-width: 1440px;
     margin-inline: auto;
@@ -426,32 +243,9 @@ main {
     .mod-card-body {
       gap: 1rem;
       padding-bottom: 0;
-
-      /* .mod-card-titulo {
-        order: 0;
-      }
-      .mod-card-horarios {
-        order: 2;
-      }
-      .mod-card-desc {
-        order: 3;
-      }
-      .mod-card-coaches {
-        order: 4;
-      }
-      
-      .mod-card-acoes {
-        order: 5;
-        flex-direction: row;
-        justify-content: space-between;
-        align-items: center;
-        padding: 1rem;
-        border-top: 1px solid rgba(251,160,2,0.12);
-      } */
     }
 
-    .mod-card-img img{
-      /* max-height: 180px; */
+    .mod-card-img img {   
       display: none !important;
     }
     
@@ -1138,7 +932,3 @@ main {
     }
   }
 }
-
-
-
-
