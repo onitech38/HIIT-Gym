@@ -1,6 +1,5 @@
 // ============================================
 // functions/api/chat.js — Cloudflare Pages Function
-//
 // Proxy seguro entre o browser e a API Anthropic.
 // A ANTHROPIC_API_KEY nunca sai do servidor.
 //
