@@ -52,7 +52,10 @@ if (!Array.isArray(messages) || messages.length === 0) {
   model: 'claude-3-haiku-20240307',
   max_tokens: 512,
   system: systemPrompt || '',
-  messages,
+  messages: messages.map(m => ({
+    role: m.role,
+    content: [{ type: 'text', text: m.content }]
+  })),
 }),
   });
 
