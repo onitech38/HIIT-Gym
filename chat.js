@@ -279,33 +279,21 @@ async function enviarMensagem() {
   input.disabled = true;
   document.getElementById('chat-send').disabled = true;
 
-  // Mostra mensagem do user
+  // Mostrar mensagem do utilizador
   mostrarMensagem('user', texto);
-  guardarMensagem('user', texto);
-  chatHistorico.push({ role: 'user', content: texto });
 
-  // Verifica gating
-  if (perguntaFitnessNutricao(texto) && !temPlanoFitness()) {
-    const respGating = `Para aconselhamento personalizado de fitness e nutrição, esta funcionalidade está disponível a partir do plano **Standard**. 💪\n\nPodes fazer upgrade em [Planos](/index.html#planos) ou perguntar-me sobre horários, modalidades e inscrições da HIIT-Gym — isso é grátis para todos!`;
-    mostrarMensagem('assistant', respGating);
-    guardarMensagem('assistant', respGating);
-    chatHistorico.push({ role: 'assistant', content: respGating });
-    reativarInput();
-    return;
-  }
-
-  // Indicador de escrita
   const typingId = mostrarTyping();
 
   try {
     const resposta = await chamarClaude(texto);
     removerTyping(typingId);
     mostrarMensagem('assistant', resposta);
-    guardarMensagem('assistant', resposta);
-    chatHistorico.push({ role: 'assistant', content: resposta });
   } catch (err) {
     removerTyping(typingId);
-    mostrarMensagem('assistant', 'Ocorreu um erro. Tenta novamente em breve.');
+    mostrarMensagem(
+      'assistant',
+      'De momento não consigo responder. Tenta novamente em breve.'
+    );
     console.error('Chat error:', err);
   }
 
@@ -331,13 +319,7 @@ async function chamarClaude(userMessage) {
       'Content-Type': 'application/json'
     },
     body: JSON.stringify({
-      systemPrompt: buildSystemPrompt(),
-      messages: [
-        {
-          role: 'user',
-          content: userMessage
-        }
-      ]
+      message: userMessage
     })
   });
 
