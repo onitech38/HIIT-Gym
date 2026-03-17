@@ -1,12 +1,13 @@
+// functions/api/chat.js
 export async function onRequestPost({ request, env }) {
   const headers = {
     'Content-Type': 'application/json',
     'Access-Control-Allow-Origin': '*'
   };
 
-  if (!env?.ANTHROPIC_API_KEY) {
+  if (!env.OPENAI_API_KEY) {
     return new Response(
-      JSON.stringify({ error: 'API key não configurada' }),
+      JSON.stringify({ error: 'OpenAI API key não configurada' }),
       { status: 500, headers }
     );
   }
@@ -29,48 +30,42 @@ export async function onRequestPost({ request, env }) {
     );
   }
 
-  const res = await fetch('https://api.anthropic.com/v1/messages', {
+  const res = await fetch('https://api.openai.com/v1/chat/completions', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'x-api-key': env.ANTHROPIC_API_KEY,
-      'anthropic-version': '2023-06-01'
+      'Authorization': `Bearer ${env.OPENAI_API_KEY}`
     },
     body: JSON.stringify({
-      model: 'claude-3-haiku-20240307',
-      max_tokens: 300,
+      model: 'gpt-4o-mini',
       messages: [
         {
+          role: 'system',
+          content: 'És o assistente virtual da HIIT-Gym. Responde sempre em português europeu.'
+        },
+        {
           role: 'user',
-          content: [{ type: 'text', text: userMessage }]
+          content: userMessage
         }
-      ]
+      ],
+      temperature: 0.4,
+      max_tokens: 300
     })
   });
 
   const data = await res.json();
 
-  
-  
-if (!res.ok) {
-  console.log('ANTHROPIC STATUS:', res.status);
-  console.log('ANTHROPIC RESPONSE:', JSON.stringify(data));
+  if (!res.ok) {
+    return new Response(
+      JSON.stringify({ error: data?.error?.message || 'Erro OpenAI' }),
+      { status: 500, headers }
+    );
+  }
 
   return new Response(
     JSON.stringify({
-      error: data?.error?.message || JSON.stringify(data)
-    }),
-    { status: 500, headers }
-  );
-}
-
-
-
-  return new Response(
-    JSON.stringify({
-      text: data?.content?.[0]?.text ?? ''
+      text: data.choices[0].message.content
     }),
     { status: 200, headers }
   );
 }
-``
