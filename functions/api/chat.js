@@ -51,17 +51,19 @@ export async function onRequestPost({ request, env }) {
   const data = await res.json();
 
   
-  if (!res.ok) {
-    console.log('ANTHROPIC ERROR STATUS:', res.status);
-    console.log('ANTHROPIC ERROR BODY:', data);
   
-    return new Response(
-      JSON.stringify({
-        error: data?.error?.message || JSON.stringify(data)
-      }),
-      { status: 500, headers }
-    );
-  }
+if (!res.ok) {
+  console.log('ANTHROPIC STATUS:', res.status);
+  console.log('ANTHROPIC RESPONSE:', JSON.stringify(data));
+
+  return new Response(
+    JSON.stringify({
+      error: data?.error?.message || JSON.stringify(data)
+    }),
+    { status: 500, headers }
+  );
+}
+
 
 
   return new Response(
