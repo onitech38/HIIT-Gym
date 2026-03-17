@@ -225,8 +225,20 @@ async function carregarHistorico() {
 
 
 async function guardarMensagem(role, content) {
+  // ✅ Se Supabase não existir nesta página → localStorage
+  if (!window.supabaseClient) {
+    const hist = JSON.parse(localStorage.getItem(CHAT_LS_KEY) || '[]');
+    hist.push({ role, content });
+    localStorage.setItem(
+      CHAT_LS_KEY,
+      JSON.stringify(hist.slice(-CHAT_MAX_HISTORY * 2))
+    );
+    return;
+  }
+
   try {
-    const { data: { session } } = await window.supabaseClient.auth.getSession();
+    const { data: { session } } =
+      await window.supabaseClient.auth.getSession();
 
     if (session) {
       await window.supabaseClient.from('chat_history').insert({
@@ -237,10 +249,22 @@ async function guardarMensagem(role, content) {
     } else {
       const hist = JSON.parse(localStorage.getItem(CHAT_LS_KEY) || '[]');
       hist.push({ role, content });
-      localStorage.setItem(CHAT_LS_KEY, JSON.stringify(hist.slice(-CHAT_MAX_HISTORY * 2)));
+      localStorage.setItem(
+        CHAT_LS_KEY,
+        JSON.stringify(hist.slice(-CHAT_MAX_HISTORY * 2))
+      );
     }
-  } catch { /* silencioso */ }
+  } catch {
+    // fallback silencioso
+    const hist = JSON.parse(localStorage.getItem(CHAT_LS_KEY) || '[]');
+    hist.push({ role, content });
+    localStorage.setItem(
+      CHAT_LS_KEY,
+      JSON.stringify(hist.slice(-CHAT_MAX_HISTORY * 2))
+    );
+  }
 }
+``
 
 
 //============================================
