@@ -48,15 +48,20 @@ if (!Array.isArray(messages) || messages.length === 0) {
       'x-api-key': env.ANTHROPIC_API_KEY,
       'anthropic-version': '2023-06-01',
     },
+    
     body: JSON.stringify({
-  model: 'claude-3-haiku-20240307',
-  max_tokens: 512,
-  system: systemPrompt || '',
-  messages: messages.map(m => ({
-    role: m.role,
-    content: [{ type: 'text', text: m.content }]
-  })),
-}),
+      model: 'claude-3-haiku-20240307',
+      max_tokens: 512,
+      messages: [
+        ...(systemPrompt
+          ? [{ role: 'user', content: [{ type: 'text', text: systemPrompt }] }]
+          : []),
+        ...messages.map(m => ({
+          role: m.role === 'assistant' ? 'assistant' : 'user',
+          content: [{ type: 'text', text: m.content }]
+        }))
+      ]
+    }),
   });
 
 const data = await res.json();
