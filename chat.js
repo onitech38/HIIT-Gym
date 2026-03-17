@@ -143,25 +143,58 @@ function fecharChat() {
 //   3. PLANO + HISTÓRICO
 //============================================
 async function carregarPlano() {
+  // Se Supabase não existir nesta página
+  if (!window.supabaseClient) {
+    chatUserPlan = 'none';
+    return;
+  }
+
   try {
-    const { data: { session } } = await window.supabaseClient.auth.getSession();
-    if (!session) { chatUserPlan = 'none'; return; }
+    const { data: { session } } =
+      await window.supabaseClient.auth.getSession();
+
+    if (!session) {
+      chatUserPlan = 'none';
+      return;
+    }
 
     const { data } = await window.supabaseClient
-      .from('profiles').select('plan').eq('id', session.user.id).single();
+      .from('profiles')
+      .select('plan')
+      .eq('id', session.user.id)
+      .single();
+
     chatUserPlan = data?.plan || 'none';
-  } catch { chatUserPlan = 'none'; }
+  } catch {
+    chatUserPlan = 'none';
+  }
 }
 
 async function carregarHistorico() {
   const msgs = document.getElementById('chat-messages');
   if (!msgs) return;
 
+  // ✅ Se Supabase NÃO existir → usar localStorage
+  if (!window.supabaseClient) {
+    const raw = localStorage.getItem(CHAT_LS_KEY);
+    chatHistorico = raw
+      ? JSON.parse(raw).slice(-CHAT_MAX_HISTORY * 2)
+      : [];
+
+    msgs.innerHTML = '';
+    chatHistorico.forEach(m =>
+      mostrarMensagem(m.role, m.content, false)
+    );
+    scrollChat();
+    return;
+  }
+
+  // ✅ Se Supabase existir → usar DB
   try {
-    const { data: { session } } = await window.supabaseClient.auth.getSession();
+    const { data: { session } } =
+      await window.supabaseClient.auth.getSession();
 
     if (session) {
-      // Supabase
       const { data } = await window.supabaseClient
         .from('chat_history')
         .select('role, content, created_at')
@@ -169,19 +202,27 @@ async function carregarHistorico() {
         .order('created_at', { ascending: true })
         .limit(CHAT_MAX_HISTORY * 2);
 
-      chatHistorico = (data || []).map(r => ({ role: r.role, content: r.content }));
+      chatHistorico = (data || []).map(r => ({
+        role: r.role,
+        content: r.content
+      }));
     } else {
-      // localStorage
       const raw = localStorage.getItem(CHAT_LS_KEY);
-      chatHistorico = raw ? JSON.parse(raw).slice(-CHAT_MAX_HISTORY * 2) : [];
+      chatHistorico = raw
+        ? JSON.parse(raw).slice(-CHAT_MAX_HISTORY * 2)
+        : [];
     }
-  } catch { chatHistorico = []; }
+  } catch {
+    chatHistorico = [];
+  }
 
-  // Render histórico
   msgs.innerHTML = '';
-  chatHistorico.forEach(m => mostrarMensagem(m.role, m.content, false));
+  chatHistorico.forEach(m =>
+    mostrarMensagem(m.role, m.content, false)
+  );
   scrollChat();
 }
+
 
 async function guardarMensagem(role, content) {
   try {
