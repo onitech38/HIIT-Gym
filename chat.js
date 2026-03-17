@@ -258,6 +258,7 @@ function reativarInput() {
 //============================================
 //   5. CLAUDE API
 //============================================
+
 async function chamarClaude(userMessage) {
   const response = await fetch('/api/chat', {
     method: 'POST',
@@ -267,13 +268,16 @@ async function chamarClaude(userMessage) {
     body: JSON.stringify({
       systemPrompt: buildSystemPrompt(),
       messages: [
-        { role: 'user', content: userMessage }
+        {
+          role: 'user',
+          content: userMessage
+        }
       ]
     })
   });
 
   if (!response.ok) {
-    throw new Error('Erro ao contactar o backend do chat');
+    throw new Error(`Erro backend: ${response.status}`);
   }
 
   const data = await response.json();
