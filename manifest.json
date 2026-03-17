@@ -2,41 +2,59 @@
   "name": "HIIT-Gym Montijo",
   "short_name": "HIIT-Gym",
   "description": "O teu ginásio HIIT em Montijo. Treino, perfil e modalidades no bolso.",
-  "start_url": "./index.html",
-  "scope": "./",
+  "lang": "pt-PT",
+
+  "start_url": "/index.html",
+  "scope": "/",
+
   "display": "standalone",
   "orientation": "portrait-primary",
+
   "background_color": "#120D0F",
   "theme_color": "#fba002",
-  "lang": "pt-PT",
+
   "icons": [
     {
-      "src": "src/logo/icon-192.png",
+      "src": "/src/logo/icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "src/logo/icon-512.png",
+      "src": "/src/logo/icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
     }
   ],
+
   "shortcuts": [
+    {
+      "name": "Modalidades",
+      "short_name": "Modalidades",
+      "description": "Ver modalidades disponíveis",
+      "url": "/modalidades/modalidades.html",
+      "icons": [
+        { "src": "/src/logo/icon-192.png", "sizes": "192x192" }
+      ]
+    },
     {
       "name": "Blog",
       "short_name": "Blog",
-      "description": "Abre o blog HIIT-Gym",
-      "url": "./blog/blog.html",
-      "icons": [{ "src": "src/logo/icon-192.png", "sizes": "192x192" }]
+      "description": "Abrir o blog HIIT-Gym",
+      "url": "/blog/blog.html",
+      "icons": [
+        { "src": "/src/logo/icon-192.png", "sizes": "192x192" }
+      ]
     },
     {
       "name": "O Meu Perfil",
       "short_name": "Perfil",
-      "description": "Abre a área de membro",
-      "url": "./user/user.html",
-      "icons": [{ "src": "src/logo/icon-192.png", "sizes": "192x192" }]
+      "description": "Abrir a área de membro",
+      "url": "/user/user.html",
+      "icons": [
+        { "src": "/src/logo/icon-192.png", "sizes": "192x192" }
+      ]
     }
   ]
 }

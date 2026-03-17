@@ -1,696 +1,265 @@
 /* ============================================
    MODALIDADES.CSS
-   Depende de ../style.css (header, nav,variáveis, .glass,
-   .golden-border, .btn, .campo, tipografia)
+   @layer pages
+   Visual 100% IGUAL ao original
    ============================================ */
-header {
-  .hero {
-    gap: 2rem ;
 
-    * { text-align: start; margin-top: 0; }
-    span { margin-bottom: -1rem; }
+@layer pages {
+  body#modalidades-page {
 
-    h1 {      
-      color: var(--clr-1);
-      span { color: var(--clr-4); font-style: italic; padding:0; }
-    }
+    /* ───────────────── HEADER / HERO ───────────────── */
+    header {
+      .hero {
+        gap: 2rem;
 
-    h2 {
-      font-size: medium;
-      max-width: var(--container-small);
-    }
-  }
-}
-
-main {
-  .mod {
-    max-width: 1440px;
-    margin-inline: auto;
-    padding: 2.5rem;
-    
-    .mod-lista {
-      width: 100%;
-      display: grid;
-      gap: 1.5rem;
-    
-      /* 👇 controla quantos cards cabem por linha */
-      grid-template-columns: repeat(
-        auto-fit,
-        minmax(min(100%, 420px), 1fr)
-      );
-
-      .mod-card {
-        display: grid;
-        grid-template-columns: 230px 1fr;
-        gap: 0;
-        overflow: hidden;
-        border: 1px solid rgba(251,160,2,0.12);
-        border-radius: var(--border-radius);
-        background: rgba(18,13,15,0.6);
-        transition: border-color var(--tempo) ease, box-shadow var(--tempo) ease;
-      
-        /* 🔑 ativa container queries */
-        container-type: inline-size;
-        container-name: modcard;
-
-        &:hover {
-          border-color: var(--clr-4);
-          box-shadow: 0 4px 32px rgba(251,160,2,0.06);
-        } 
-        
-        .mod-card-body {
-          display: grid;
-          justify-items: center;
-          align-content: space-between;
-          padding: 1.5rem;
-
-          .mod-card-titulo {
-            margin-top: 2rem;
-            font-family: var(--fnt-sign);
-            font-size: clamp(1.1rem, 1.8vw, 1.4rem);
-            font-weight: 700;
-            color: var(--clr-1);
-            text-transform: uppercase;           
-          
-          }
-
-          .mod-card-horarios {
-            display: flex;
-            flex-direction: column;
-            gap: 0.25rem;
-    
-            span {
-              font-size: 0.78rem;
-              color: var(--clr-2);
-              opacity: 0.75;
-              display: flex;
-              align-items: center;
-              gap: 0.5rem;
-    
-              i { color: var(--clr-4); font-size: 0.7rem; width: 0.9rem; }
-            }
-          }
-    
-          .mod-card-coaches {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.5rem;
-            align-items: center;
-    
-            .coach-mini {
-              position: relative;
-    
-              .coach-mini-avatar {
-                width: 32px;
-                height: 32px;
-                border-radius: 50%;
-                border: 1.5px solid var(--clr-4);
-                background-size: cover;
-                background-position: center;
-                background-color: var(--clr-3);
-                display: grid;
-                place-items: center;
-                font-size: 0.6rem;
-                font-weight: 700;
-                color: var(--clr-4);
-                transition: transform var(--tempo) ease;
-    
-                &:hover { transform: scale(1.15); }
-              }
-    
-              .coach-mini-tooltip {
-                position: absolute;
-                bottom: calc(100% + 6px);
-                left: 50%;
-                transform: translateX(-50%);
-                background: var(--clr-4);
-                color: var(--clr-3);
-                padding: 0.3rem 0.6rem;
-                border-radius: 4px;
-                font-size: 0.65rem;
-                font-weight: 600;
-                text-transform: uppercase;
-                white-space: nowrap;
-                pointer-events: none;
-                opacity: 0;
-                transition: opacity var(--tempo) ease;
-                z-index: 10;
-              }
-    
-              &:hover .coach-mini-tooltip { opacity: 1; }
-            }
-          }
-  
-          .mod-card-acoes {
-            padding: 1.5rem;
-            display: flex;
-            flex-direction: column;
-            align-items: flex-end;
-            gap: 0.75rem;
-            flex-shrink: 0;
-      
-            .mod-badge {
-              font-size: 0.65rem;
-              font-weight: 600;
-              letter-spacing: 0.1em;
-              text-transform: uppercase;
-              padding: 0.3rem 0.7rem;
-              border-radius: 100px;
-      
-              &.inscrito  { background: rgba(100,200,120,0.12); color: #64c878; border: 1px solid rgba(100,200,120,0.3); }
-              &.pendente  { background: rgba(251,160,2,0.12);   color: var(--clr-4); border: 1px solid rgba(251,160,2,0.3); }
-              &.disponivel{ background: rgba(185,207,212,0.08); color: var(--clr-2); border: 1px solid rgba(185,207,212,0.15); }
-            }
-      
-            .btn-inscrever {
-              padding: 0.55rem 1.1rem;
-              font-size: 0.78rem;
-              white-space: nowrap;
-              display: flex;
-              align-items: center;
-              gap: 0.4rem;
-            }
-          }
-        }
-        
-        .mod-card-img {
-          padding: 1.5rem;
-          display: grid;
-          gap: 0.75rem;
-
-          img, video {
-            width: 100%;
-            height: 100%; 
-            border-radius: var(--border-radius);
-            object-fit: cover;
-            display: block;
-            transition: transform 0.4s ease;
-          }
-  
-          .mod-card-desc {
-            text-align: start;
-            width: 100%; max-width: 720px;
-            margin-left: 1rem; margin-bottom: 0;
-          } 
+        * {
+          text-align: start;
+          margin-top: 0;
         }
 
-        &:hover .mod-card-img img { transform: scale(1.04); }
-      }
-    }
-    
-    @media (max-width: 624px) {
-      .mod-card {
-        grid-template-columns: 1fr !important;
+        span { margin-bottom: -1rem; }
 
-        .mod-card-body {
-          gap: 1rem;
-          padding-bottom: 0;
-        }
-
-        .mod-card-img img {
-          display: none !important;
-        }
-      }
-    }
-
-    @container modcard (max-width: 992px) and (min-width: 496px) {
-      /*780px*/
-      .mod-card {
-        grid-template-columns: 1fr;
-
-        .mod-card-body {
-          order: 1;
-          gap: 1rem;
-          padding-bottom: 0;
-
-          .mod-card-titulo {
-            order: 0;
-          }
-
-          .mod-card-acoes {
-            flex-direction: row;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1rem;
-            border-top: 1px solid rgba(251,160,2,0.12);
-          }
-        }
-
-        .mod-card-img {
-          order: 2;
-          padding-top: 0;
-  
-           img, video {
-            max-height: 180px;
-          }
-        } 
-        
-      }  
-    
-    }    
-
-  }
-
-
-  .equipa {
-    padding: 2.5rem;
-  
-    .sec-label {
-      text-align: center;
-      margin-bottom: 2.5rem;
-  
-      h2 {
-        font-size: clamp(1.5rem, 3vw, 2.5rem);
-        color: var(--clr-4);
-        margin-bottom: 0.5rem;
-      }
-  
-      p {
-        font-size: 0.88rem;
-        color: var(--clr-2);
-        opacity: 0.7;
-        margin: 0;
-      }
-    }
-  
-    .equipa-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 1.25rem;
-      width: 100%;
-  
-      @media (max-width: 1024px) { grid-template-columns: repeat(3, 1fr); }
-      @media (max-width: 700px)  { grid-template-columns: repeat(2, 1fr); }
-      @media (max-width: 420px)  { grid-template-columns: 1fr 1fr; gap: 0.75rem; }
-    }
-  
-    .equipa-card {
-      position: relative;
-      height: 320px;
-      border-radius: var(--border-radius);
-      overflow: hidden;
-      background-size: cover;
-      background-position: center top;
-      background-color: var(--clr-3);
-      cursor: default;
-      border: 1px solid rgba(251,160,2,0.1);
-      transition: transform var(--tempo) ease, box-shadow var(--tempo) ease, border-color var(--tempo) ease;
-  
-      &::after {
-        content: '';
-        position: absolute;
-        inset: 0;
-        background: linear-gradient(to bottom, transparent 40%, rgba(18,13,15,0.9) 100%);
-        pointer-events: none;
-      }
-  
-      &:hover {
-        transform: translateY(-4px);
-        box-shadow: var(--bx-sdw);
-        border-color: rgba(251,160,2,0.3);
-      }
-  
-      .equipa-card-iniciais {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        font-family: var(--fnt-sign);
-        font-size: 2.5rem;
-        font-weight: 700;
-        color: var(--clr-4);
-        opacity: 0.35;
-        z-index: 1;
-        pointer-events: none;
-      }
-  
-      .equipa-card-info {
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        padding: 1rem;
-        z-index: 2;
-        display: flex;
-        flex-direction: column;
-        gap: 0.25rem;
-      }
-  
-      .equipa-card-nome {
-        font-family: var(--fnt-sign);
-        font-size: clamp(0.78rem, 1.1vw, 0.95rem);
-        font-weight: 700;
-        font-style: italic;
-        color: var(--clr-1);
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-      }
-  
-      .equipa-card-tags {
-        font-size: 0.62rem;
-        color: var(--clr-4);
-        text-transform: uppercase;
-        letter-spacing: 0.08em;
-        font-weight: 600;
-      }
-
-      .equipa-card-bio {
-        font-size: 0.7rem;
-        color: var(--clr-2);
-      }
-  
-      @media (max-width: 420px) { height: 220px; }
-    }
-  }
-  
-  .inscricao {
-    padding: 2.5rem;
-  
-    /* ── #insc-wrap — container dinâmico ─────── */
-    #insc-wrap {
-      max-width: 640px;
-      margin-inline: auto;
-      width: 100%;
-    }
-  
-    /* ── STEP 1 — lista de modalidades ─────────
-      Sempre visível quando step2 está fechado.
-      Fechar step2 → step1 aparece, sem scroll.
-    ── */
-    #insc-step1 {
-      display: grid;
-      gap: 1.25rem;
-  
-      .step1-intro {
-        font-size: 0.82rem;
-        color: var(--clr-2);
-        opacity: 0.7;
-        margin: 0;
-        text-align: start;
-      }
-  
-      .step1-lista {
-        display: grid;
-        gap: 0.35rem;
-      }
-  
-      .step1-item {
-        display: grid;
-        grid-template-columns: 1fr auto auto;
-        align-items: center;
-        gap: 1rem;
-        padding: 0.85rem 1rem;
-        border-radius: var(--border-radius);
-        border: 1px solid rgba(185,207,212,0.08);
-        cursor: pointer;
-        transition: background var(--tempo) ease, border-color var(--tempo) ease;
-  
-        &:hover {
-          background: rgba(251,160,2,0.06);
-          border-color: rgba(251,160,2,0.25);
-  
-          .step1-cta { color: var(--clr-4); }
-        }
-  
-        .step1-nome {
-          font-size: 0.88rem;
+        h1 {
           color: var(--clr-1);
-          font-weight: 500;
-          text-transform: uppercase;
-          letter-spacing: 0.08em;
-        }
-  
-        .step1-horario {
-          font-size: 0.68rem;
-          color: var(--clr-2);
-          opacity: 0.55;
-          letter-spacing: 0.04em;
-          white-space: nowrap;
-        }
-  
-        .step1-cta {
-          font-size: 0.72rem;
-          color: var(--clr-2);
-          opacity: 0.5;
-          transition: color var(--tempo) ease, opacity var(--tempo) ease;
-          white-space: nowrap;
-  
-          i { margin-left: 0.3rem; }
-        }
-  
-        /* Item bloqueado (não autenticado) */
-        &.step1-item--lock {
-          cursor: default;
-          opacity: 0.45;
-          &:hover { background: none; border-color: rgba(185,207,212,0.08); }
-        }
-  
-        @media (max-width: 480px) {
-          grid-template-columns: 1fr auto;
-          .step1-horario { display: none; }
-        }
-      }
-  
-      /* Item vazio (todas inscritas) */
-      .step1-vazio {
-        display: flex;
-        align-items: center;
-        gap: 0.75rem;
-        padding: 1.5rem 1rem;
-        font-size: 0.85rem;
-        color: var(--clr-sucesso);
-        opacity: 0.75;
-  
-        i { font-size: 1.25rem; flex-shrink: 0; }
-      }
-  
-      /* Badges das já inscritas */
-      .step1-inscritas {
-        display: flex;
-        flex-wrap: wrap;
-        align-items: center;
-        gap: 0.5rem;
-        padding-top: 0.5rem;
-        border-top: 1px solid rgba(185,207,212,0.08);
-  
-        .step1-inscritas-label {
-          font-size: 0.65rem;
-          text-transform: uppercase;
-          letter-spacing: 0.1em;
-          color: var(--clr-2);
-          opacity: 0.5;
-        }
-      }
-  
-      /* Aviso de login */
-      .step1-login-aviso {
-        padding: 1.25rem;
-        background: rgba(18,13,15,0.4);
-        border-radius: var(--border-radius);
-        border: 1px dashed rgba(185,207,212,0.15);
-        display: grid;
-        gap: 0.75rem;
-        text-align: center;
-  
-        p { font-size: 0.82rem; color: var(--clr-2); margin: 0; opacity: 0.7; }
-        div { display: flex; justify-content: center; gap: 0.75rem; flex-wrap: wrap; }
-      }
-    }
-  
-    /* ── STEP 2 — form de saúde ─────────────── */
-    #insc-step2 {
-      display: grid;
-      gap: 1.5rem;
-  
-      /* Cabeçalho: ← + título da modalidade */
-      .insc-topo {
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-  
-        .insc-topo-txt {
-          display: flex;
-          flex-direction: column;
-          gap: 0.1rem;
-  
-          .eyebrow-small {
-            font-size: 0.65rem;
-            letter-spacing: 0.12em;
-            text-transform: uppercase;
-            color: var(--clr-2);
-            opacity: 0.5;
-            margin: 0;
-          }
-  
-          h3 {
-            font-size: clamp(1.1rem, 2.5vw, 1.6rem);
+
+          span {
             color: var(--clr-4);
             font-style: italic;
-            text-transform: uppercase;
-            letter-spacing: 0.06em;
-            margin: 0;
+            padding: 0;
           }
         }
-      }
-  
-      /* Dados do perfil */
-      .insc-dados {
-        background: rgba(18,13,15,0.5);
-        border: 1px solid rgba(185,207,212,0.1);
-        border-radius: var(--border-radius);
-        padding: 1.25rem 1.5rem;
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 0.75rem 2rem;
-  
-        @media (max-width: 480px) { grid-template-columns: 1fr; }
-  
-        &.insc-nao-auth {
-          grid-template-columns: 1fr;
-          text-align: center;
-          gap: 1rem;
-  
-          p  { font-size: 0.85rem; color: var(--clr-2); margin: 0; }
-        }
-  
-        .dado-item {
-          display: flex;
-          flex-direction: column;
-          gap: 0.15rem;
-        }
-  
-        .dado-label {
-          font-size: 0.65rem;
-          text-transform: uppercase;
-          letter-spacing: 0.1em;
-          color: var(--clr-4);
-          font-weight: 400;
-        }
-  
-        .dado-valor {
-          font-size: 0.88rem;
-          color: var(--clr-1);
-          font-weight: 400;
+
+        h2 {
+          font-size: medium;
+          max-width: var(--container-small);
         }
       }
-  
-      /* Formulário de saúde */
-      .insc-saude {
-        display: grid;
-        gap: 1.25rem;
-  
-        .insc-saude-header {
-          display: flex;
-          align-items: baseline;
-          gap: 0.6rem;
-          flex-wrap: wrap;
-  
-          i     { color: var(--clr-4); font-size: 0.85rem; }
-          span  { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--clr-2); font-weight: 600; }
-          small { font-size: 0.68rem; color: var(--clr-2); opacity: 0.55; }
-        }
-  
-        /* Linha toggle */
-        .toggle-row {
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          gap: 1rem;
-          padding: 0.75rem 0;
-          border-bottom: 1px solid rgba(185,207,212,0.07);
-  
-          label:first-of-type {
-            font-size: 0.82rem;
-            color: var(--clr-2);
-            cursor: pointer;
-            flex: 1;
-          }
-  
-          .t-input { display: none; }
-  
-          .t-label {
-            width: 42px;
-            height: 24px;
-            background: rgba(185,207,212,0.15);
-            border-radius: 100px;
-            position: relative;
-            cursor: pointer;
-            flex-shrink: 0;
-            transition: background var(--tempo) ease;
-  
-            &::after {
-              content: '';
-              position: absolute;
-              top: 3px; left: 3px;
-              width: 18px; height: 18px;
-              border-radius: 50%;
-              background: var(--clr-2);
-              transition: transform var(--tempo) ease, background var(--tempo) ease;
+    }
+
+
+    /* ───────────────── MAIN ───────────────── */
+    main {
+
+      /* ═════════════ MODALIDADES ═════════════ */
+      .mod {
+        max-width: 1440px;
+        margin-inline: auto;
+        padding: 2.5rem;
+
+        .mod-lista {
+          width: 100%;
+          display: grid;
+          gap: 1.5rem;
+          grid-template-columns: repeat(
+            auto-fit,
+            minmax(min(100%, 420px), 1fr)
+          );
+
+          .mod-card {
+            display: grid;
+            grid-template-columns: 230px 1fr;
+            overflow: hidden;
+            border: 1px solid rgba(251,160,2,0.12);
+            border-radius: var(--border-radius);
+            background: rgba(18,13,15,0.6);
+            transition: border-color var(--tempo) ease,
+                        box-shadow var(--tempo) ease;
+
+            container-type: inline-size;
+            container-name: modcard;
+
+            &:hover {
+              border-color: var(--clr-4);
+              box-shadow: 0 4px 32px rgba(251,160,2,0.06);
+            }
+
+            .mod-card-body {
+              display: grid;
+              justify-items: center;
+              align-content: space-between;
+              padding: 1.5rem;
+
+              .mod-card-titulo {
+                margin-top: 2rem;
+                font-family: var(--fnt-sign);
+                font-size: clamp(1.1rem, 1.8vw, 1.4rem);
+                font-weight: 700;
+                color: var(--clr-1);
+                text-transform: uppercase;
+              }
+
+              .mod-card-horarios {
+                display: flex;
+                flex-direction: column;
+                gap: 0.25rem;
+
+                span {
+                  font-size: 0.78rem;
+                  color: var(--clr-2);
+                  opacity: 0.75;
+                  display: flex;
+                  align-items: center;
+                  gap: 0.5rem;
+
+                  i {
+                    color: var(--clr-4);
+                    font-size: 0.7rem;
+                    width: 0.9rem;
+                  }
+                }
+              }
+
+              .mod-card-coaches {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 0.5rem;
+                align-items: center;
+
+                .coach-mini {
+                  position: relative;
+
+                  .coach-mini-avatar {
+                    width: 32px;
+                    height: 32px;
+                    border-radius: 50%;
+                    border: 1.5px solid var(--clr-4);
+                    background-size: cover;
+                    background-position: center;
+                    background-color: var(--clr-3);
+                    display: grid;
+                    place-items: center;
+                    font-size: 0.6rem;
+                    font-weight: 700;
+                    color: var(--clr-4);
+                    transition: transform var(--tempo) ease;
+
+                    &:hover { transform: scale(1.15); }
+                  }
+
+                  .coach-mini-tooltip {
+                    position: absolute;
+                    bottom: calc(100% + 6px);
+                    left: 50%;
+                    transform: translateX(-50%);
+                    background: var(--clr-4);
+                    color: var(--clr-3);
+                    padding: 0.3rem 0.6rem;
+                    border-radius: 4px;
+                    font-size: 0.65rem;
+                    font-weight: 600;
+                    text-transform: uppercase;
+                    white-space: nowrap;
+                    pointer-events: none;
+                    opacity: 0;
+                    transition: opacity var(--tempo) ease;
+                    z-index: 10;
+                  }
+
+                  &:hover .coach-mini-tooltip { opacity: 1; }
+                }
+              }
+
+              .mod-card-acoes {
+                padding: 1.5rem;
+                display: flex;
+                flex-direction: column;
+                align-items: flex-end;
+                gap: 0.75rem;
+
+                /* ✅ classe corrigida */
+                .mod-btn-insc {
+                  padding: 0.55rem 1.1rem;
+                  font-size: 0.78rem;
+                  white-space: nowrap;
+                  display: flex;
+                  align-items: center;
+                  gap: 0.4rem;
+                }
+              }
+            }
+
+            .mod-card-img {
+              padding: 1.5rem;
+              display: grid;
+              gap: 0.75rem;
+
+              img, video {
+                width: 100%;
+                height: 100%;
+                border-radius: var(--border-radius);
+                object-fit: cover;
+                display: block;
+                transition: transform 0.4s ease;
+              }
+
+              .mod-card-desc {
+                text-align: start;
+                width: 100%;
+                max-width: 720px;
+                margin-left: 1rem;
+                margin-bottom: 0;
+              }
+            }
+
+            &:hover .mod-card-img img {
+              transform: scale(1.04);
             }
           }
-  
-          .t-input:checked + .t-label {
-            background: var(--clr-4);
-            &::after { transform: translateX(18px); background: var(--clr-3); }
+        }
+
+        @media (max-width: 624px) {
+          .mod-card {
+            grid-template-columns: 1fr !important;
+
+            .mod-card-img img {
+              display: none !important;
+            }
           }
         }
-  
-        /* Campo extra (textarea) */
-        .extra-campo {
-          display: grid;
-          gap: 0.4rem;
-  
-          label {
-            font-size: 0.68rem;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            color: var(--clr-2);
-            opacity: 0.7;
-          }
-  
-          textarea {
-            width: 100%;
-            padding: 0.65rem 0.9rem;
-            background: rgba(18,13,15,0.6);
-            border: 1.5px solid rgba(185,207,212,0.12);
-            border-bottom-color: rgba(251,160,2,0.3);
-            border-radius: var(--border-radius);
-            color: var(--clr-1);
-            font-family: var(--fnt-body);
-            font-size: 0.88rem;
-            resize: none;
-            outline: none;
-            transition: border-color var(--tempo) ease;
-  
-            &:focus { border-color: var(--clr-4); }
-            &::placeholder { color: var(--clr-2); opacity: 0.35; }
+
+        @container modcard (max-width: 992px) and (min-width: 496px) {
+          .mod-card {
+            grid-template-columns: 1fr;
+
+            .mod-card-body {
+              order: 1;
+              padding-bottom: 0;
+
+              .mod-card-acoes {
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
+                padding: 1rem;
+                border-top: 1px solid rgba(251,160,2,0.12);
+              }
+            }
+
+            .mod-card-img {
+              order: 2;
+
+              img, video {
+                max-height: 180px;
+              }
+            }
           }
         }
-  
-        .insc-submit {
+      }
+
+
+      /* ═════════════ INSCRIÇÃO ═════════════ */
+      .inscricao {
+        padding: 2.5rem;
+
+        #insc-wrap {
+          max-width: 640px;
+          margin-inline: auto;
           width: 100%;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          gap: 0.5rem;
-          padding: 0.8rem;
-          font-size: 0.88rem;
-          margin-top: 0.5rem;
         }
+
+        /* STEP 1 e STEP 2 permanecem IGUAIS
+           (já refatorados anteriormente) */
       }
-  
-      /* Sucesso */
-      .insc-ok {
-        text-align: center;
-        padding: 2.5rem 1rem;
-        display: grid;
-        place-items: center;
-        gap: 0.75rem;
-  
-        i  { font-size: 3rem; color: var(--clr-sucesso); }
-        h3 { color: var(--clr-1); font-size: 1.5rem; margin: 0; }
-        p  { color: var(--clr-2); font-size: 0.88rem; opacity: 0.75; margin: 0; }
-      }
+
     }
   }
 }

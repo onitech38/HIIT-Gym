@@ -32,6 +32,26 @@ function fecharWelcome() {
   if (welcome) welcome.classList.remove('visible');
 }
 
+
+// ── AUTO-OPEN LOGIN / SIGNUP VIA URL ─────────
+document.addEventListener('DOMContentLoaded', () => {
+  const params = new URLSearchParams(window.location.search);
+  const auth = params.get('auth');
+
+  if (!auth) return;
+
+  if (auth === 'login') {
+    document.getElementById('mode-login')?.click();
+    mostrarWelcome();
+  }
+
+  if (auth === 'signup') {
+    document.getElementById('mode-signup')?.click();
+    mostrarWelcome();
+  }
+});
+
+
 /** Formulário de LOGIN */
 function bindLoginForm() {
   const form = document.getElementById('form-login');
@@ -44,7 +64,7 @@ function bindLoginForm() {
     const erro  = document.getElementById('login-error');
 
     try {
-      const { error } = await window.supabase.auth.signInWithPassword({ email, password: pass });
+      const { error } = await window.supabaseClient.auth.signInWithPassword({ email, password: pass });
       if (!error) {
         erro?.classList.add('hidden');
         fecharWelcome();
@@ -85,7 +105,7 @@ function bindSignupForm() {
 
     try {
       // 1. Criar conta no Supabase Auth
-      const { data, error: signupError } = await window.supabase.auth.signUp({
+      const { data, error: signupError } = await window.supabaseClient.auth.signUp({
         email,
         password: pass,
         options: {
@@ -101,7 +121,7 @@ function bindSignupForm() {
       //    mas upsert garante mesmo que o trigger falhe)
       if (userId) {
         try {
-          await window.supabase.from('profiles').upsert({
+          await window.supabaseClient.from('profiles').upsert({
             id:         userId,
             first_name: firstName,
             last_name:  lastName,
@@ -159,13 +179,26 @@ window.addEventListener('load', async () => {
   bindSignupForm();
   bindWelcomeClose();
 
-  const { data: { session } } = await window.supabase.auth.getSession()
+  const { data: { session } } = await window.supabaseClient.auth.getSession()
     .catch(() => ({ data: { session: null } }));
 
-  if (!session) {
+  
+  const params = new URLSearchParams(window.location.search);
+  const auth = params.get('auth');
+
+  if (!session && !auth) {
     setTimeout(mostrarWelcome, 1000);
   }
+
 });
+
+
+window.supabaseClient.auth.onAuthStateChange((event) => {  
+  if (event === 'SIGNED_IN' || event === 'INITIAL_SESSION') {
+    fecharWelcome();
+  }
+});
+
 
 
 
@@ -401,7 +434,7 @@ window.addEventListener('load', () => {
 // Se não está autenticado → abre form de signup
 // ============================================
 document.getElementById('btn-membro')?.addEventListener('click', async e => {
-  const { data: { session } } = await window.supabase.auth.getSession()
+  const { data: { session } } = await window.supabaseClient.auth.getSession()
     .catch(() => ({ data: { session: null } }));
   if (!session) {
     e.preventDefault();
