@@ -3,22 +3,22 @@
 // Depende de data.js (artigosData)
 // ============================================
 
+
 // ── AUTH GATE ─────────────────────────────────
-// Espera até o global.js definir o estado de auth
+// Espera o Supabase restaurar a sessão ANTES de decidir
 (function waitForAuth() {
+  // 아직 a inicializar (global.js ainda não terminou)
   if (window.currentUser === undefined) {
     requestAnimationFrame(waitForAuth);
     return;
   }
 
-  if (!window.currentUser) {
+  // sessão confirmada como inexistente
+  if (window.currentUser === null) {
     window.location.href = '../index.html';
     return;
   }
 
-  // Autenticado → inicializar blog
-  initBlog();
-})();
 
 
 // ── HELPERS ──────────────────────────────────
