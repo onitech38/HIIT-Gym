@@ -287,11 +287,6 @@ function renderInscricaoStep1() {
       });
     });
   }
-
-  // ── Animação stagger (SEMPRE aqui) ────────
-  wrap.querySelectorAll('.step1-item').forEach((el, i) => {
-    el.style.animationDelay = `${i * 60}ms`;
-  });
 }
 
 
