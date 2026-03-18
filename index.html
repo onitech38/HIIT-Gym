@@ -523,11 +523,22 @@
     </defs>
   </svg>
 
-  <!-- SCRIPTS -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.4/dist/umd/supabase.js"></script>
-  <script src="/supabase.js"></script>
-  <script src="/js/global.js"></script>
-  <script src="/script.js?v=1.1.0" defer></script>
+  
+    <!-- SUPABASE PRIMEIRO -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.4/dist/umd/supabase.js"></script>
+    <script src="/supabase.js"></script>
+
+    <!-- DADOS GLOBAIS (ANTES DO JS DA PÁGINA) -->
+    <script src="/js/coaches.js"></script>
+    <script src="/js/modalidadesData.js"></script>
+    <script src="/js/artigosData.js"></script>
+
+    <!-- GLOBAL -->
+    <script src="/js/global.js"></script>
+
+    <!-- JS DA PÁGINA -->
+    <script src="/js/script.js"></script>
+
 
   <!-- CHAT (mantido, análise depois) -->
   <script src="/chat.js" defer></script>
