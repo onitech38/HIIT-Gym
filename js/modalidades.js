@@ -290,6 +290,8 @@ function renderInscricaoStep1() {
 }
 
 
+
+
 function fadeOutAnd(callback) {
   const wrap = document.getElementById('insc-wrap');
   if (!wrap) return callback();
