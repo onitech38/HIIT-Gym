@@ -16,7 +16,7 @@ let selectedModality   = null;
 // ============================================
 // INIT
 // ============================================
-window.addEventListener('load', init);
+document.addEventListener('app:ready', init, { once: true });
 
 async function init() {
   const { data: { session } } =

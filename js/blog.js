@@ -6,21 +6,13 @@
 
 // ── AUTH GATE ─────────────────────────────────
 // Espera o Supabase restaurar a sessão ANTES de decidir
-(function waitForAuth() {
-  // 아직 a inicializar (global.js ainda não terminou)
-  if (window.currentUser === undefined) {
-    requestAnimationFrame(waitForAuth);
+document.addEventListener('app:ready', () => {
+  if (!window.currentUser) {
+    window.location.href = '../index.html?auth=login';
     return;
   }
-
-  // sessão confirmada como inexistente
-  if (window.currentUser === null) {
-    window.location.href = '../index.html';
-    return;
-  }
-
-
-
+  initBlog();
+}, { once: true });
 // ── HELPERS ──────────────────────────────────
 
 const meses = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];

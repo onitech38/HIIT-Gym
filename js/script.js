@@ -22,6 +22,25 @@
 // O JS só trata de: timer, guardar dados, fechar.
 // ============================================
 
+
+// ============================================
+// HOME SCRIPT
+// ============================================
+
+function initHome() {
+  bindLoginForm();
+  bindSignupForm();
+  bindWelcomeClose();
+
+  if (!window.currentUser) {
+    setTimeout(mostrarWelcome, 1000);
+  }
+}
+
+document.addEventListener('app:ready', initHome, { once: true });
+
+
+
 function mostrarWelcome() {
   const welcome = document.getElementById('welcome');
   if (welcome) welcome.classList.add('visible');
