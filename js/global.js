@@ -1,203 +1,141 @@
-/* ============================================
-   GLOBAL.JS — Componentes partilhados (FINAL)
-
-   Mantém:
-   ▸ ini()
-   ▸ actualizarNav()
-   ▸ bindNavAuthLinks()
-   ▸ bindMobileNav()
-   ▸ bindToTop()
-
-   Integra:
-   ▸ nav.html + nav.js
-   ▸ footer.html + footer.js
-   ============================================ */
+// ============================================
+// GLOBAL.JS — HIIT-GYM
+// Responsável por:
+//  - Injectar NAV dentro do <header>
+//  - Injectar FOOTER no fim da página
+//  - Gerir estado de autenticação no nav
+// ============================================
 
 
-// ─────────────────────────────────────────────
-// Helper: iniciais
-// ─────────────────────────────────────────────
-function ini(str = '') {
-  return str
-    .split(' ')
-    .filter(Boolean)
-    .slice(0, 2)
-    .map(w => w[0])
-    .join('')
-    .toUpperCase();
+// ============================================
+// UTIL
+// ============================================
+async function loadPartial(url) {
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`Erro ao carregar ${url}`);
+  return res.text();
 }
-window.ini = ini;
 
 
-// ─────────────────────────────────────────────
-// Loader de partials (nav / footer)
-// ─────────────────────────────────────────────
-async function loadPartial(targetId, url) {
-  const el = document.getElementById(targetId);
-  if (!el) return;
+// ============================================
+// NAV
+// ============================================
+async function loadNav() {
+  const header = document.querySelector('header');
+  if (!header) return;
+
+  const slot = header.querySelector('#site-nav');
+  if (!slot) return;
 
   try {
-    const res = await fetch(url);
-    if (!res.ok) throw new Error(url);
-    el.innerHTML = await res.text();
+    const html = await loadPartial('/partials/nav.html');
+    slot.innerHTML = html;
+
+    bindMobileNav();
+    await syncNavAuth();
   } catch (err) {
-    console.error('[global] erro ao carregar', url, err);
+    console.error('Erro ao carregar nav:', err);
   }
 }
-window.loadPartial = loadPartial;
 
 
-// ─────────────────────────────────────────────
-// NAV — auth (igual ao teu, só adaptado)
-// ─────────────────────────────────────────────
-async function actualizarNav() {
-  const navLogin  = document.getElementById('nav-login');
-  const navSignup = document.getElementById('nav-signup');
-  const navAvatar = document.getElementById('nav-avatar');
-  const navImg    = document.getElementById('nav-avatar-img');
+// MOBILE NAV (details / summary)
+function bindMobileNav() {
+  const details = document.querySelector('.mobile-nav');
+  if (!details) return;
 
-  if (!navLogin) return;
+  // Fecha ao clicar num link
+  details.querySelectorAll('a').forEach(a => {
+    a.addEventListener('click', () => {
+      details.removeAttribute('open');
+    });
+  });
+
+  // Fecha ao clicar fora
+  document.addEventListener('click', e => {
+    if (!details.contains(e.target)) {
+      details.removeAttribute('open');
+    }
+  });
+}
+
+
+// ============================================
+// NAV AUTH (login / avatar)
+// ============================================
+async function syncNavAuth() {
+  if (!window.supabaseClient) return;
 
   const { data: { session } } =
-    await window.supabaseClient.auth.getSession();
+    await window.supabaseClient.auth.getSession()
+      .catch(() => ({ data: { session: null } }));
 
-  if (!session) {
-    navLogin.classList.remove('hidden');
-    navSignup.classList.remove('hidden');
-    navAvatar?.classList.add('hidden');
-    return;
-  }
+  const btnLogin  = document.getElementById('nav-login');
+  const btnSignup = document.getElementById('nav-signup');
+  const avatar    = document.getElementById('nav-avatar');
+  const avatarImg = document.getElementById('nav-avatar-img');
 
-  navLogin.classList.add('hidden');
-  navSignup.classList.add('hidden');
-  navAvatar?.classList.remove('hidden');
+  if (session) {
+    btnLogin?.classList.add('hidden');
+    btnSignup?.classList.add('hidden');
+    avatar?.classList.remove('hidden');
 
-  if (navImg) {
-    const { data: profile } = await window.supabaseClient
-      .from('profiles')
-      .select('first_name,last_name,avatar_url')
-      .eq('id', session.user.id)
-      .single();
+    // Inicial do nome ou avatar
+    try {
+      const { data } = await window.supabaseClient
+        .from('profiles')
+        .select('first_name, last_name, avatar')
+        .eq('id', session.user.id)
+        .single();
 
-    const applyAvatar = el => {
-      if (!el) return;
-      if (profile?.avatar_url) {
-        el.style.backgroundImage = `url('${profile.avatar_url}')`;
-        el.textContent = '';
-      } else {
-        el.style.backgroundImage = '';
-        el.textContent = ini(
-          `${profile?.first_name || ''} ${profile?.last_name || ''}`.trim()
-          || session.user.email
-        );
+      if (data?.avatar && avatarImg) {
+        avatarImg.style.backgroundImage = `url('${data.avatar}')`;
+        avatarImg.textContent = '';
+      } else if (data && avatarImg) {
+        const ini =
+          (data.first_name?.[0] || '') +
+          (data.last_name?.[0] || '');
+        avatarImg.textContent = ini.toUpperCase();
       }
-    };
+    } catch (err) {
+      console.warn('Não foi possível carregar perfil:', err);
+    }
 
-    applyAvatar(navImg);
-    applyAvatar(document.getElementById('nav-avatar-img-2'));
+  } else {
+    btnLogin?.classList.remove('hidden');
+    btnSignup?.classList.remove('hidden');
+    avatar?.classList.add('hidden');
   }
 }
-window.actualizarNav = actualizarNav;
 
 
-// ─────────────────────────────────────────────
-// NAV — login / signup (igual ao teu)
-// ─────────────────────────────────────────────
-function bindNavAuthLinks() {
-  const navLogin  = document.getElementById('nav-login');
-  const navSignup = document.getElementById('nav-signup');
+// ============================================
+// FOOTER
+// ============================================
+async function loadFooter() {
+  const slot = document.getElementById('site-footer');
+  if (!slot) return;
 
-  const pathToIndex = `${window.location.origin}/index.html`;
-
-  navLogin?.addEventListener('click', e => {
-    e.preventDefault();
-    window.location.href = `${pathToIndex}?auth=login`;
-  });
-
-  navSignup?.addEventListener('click', e => {
-    e.preventDefault();
-    window.location.href = `${pathToIndex}?auth=signup`;
-  });
+  try {
+    const html = await loadPartial('/partials/footer.html');
+    slot.innerHTML = html;
+  } catch (err) {
+    console.error('Erro ao carregar footer:', err);
+  }
 }
-window.bindNavAuthLinks = bindNavAuthLinks;
 
 
-// ─────────────────────────────────────────────
-// Mobile nav (igual ao teu)
-// ─────────────────────────────────────────────
-function bindMobileNav() {
-  const mobileNav = document.querySelector('.mobile-nav');
-  if (!mobileNav) return;
+// ============================================
+// INIT GLOBAL
+// ============================================
+window.addEventListener('DOMContentLoaded', async () => {
+  await loadNav();
+  await loadFooter();
 
-  document.querySelectorAll('.nav-content .link-btn')
-    .forEach(link => {
-      link.addEventListener('click', () => {
-        mobileNav.removeAttribute('open');
-      });
+  // Reagir a login/logout
+  if (window.supabaseClient) {
+    window.supabaseClient.auth.onAuthStateChange(() => {
+      syncNavAuth();
     });
-}
-window.bindMobileNav = bindMobileNav;
-
-
-// ─────────────────────────────────────────────
-// Botão "to top" (igual ao teu)
-// ─────────────────────────────────────────────
-function bindToTop() {
-  const tryBind = () => {
-    const btn = document.querySelector('.q_a .to_top');
-    if (!btn) return false;
-
-    window.addEventListener('scroll', () => {
-      btn.classList.toggle('visivel', window.scrollY > 300);
-    }, { passive: true });
-
-    return true;
-  };
-
-  if (tryBind()) return;
-
-  const obs = new MutationObserver(() => {
-    if (tryBind()) obs.disconnect();
-  });
-
-  obs.observe(document.body, { childList: true, subtree: true });
-}
-window.bindToTop = bindToTop;
-
-
-// ─────────────────────────────────────────────
-// INIT GLOBAL (NOVO BLOCO)
-// ─────────────────────────────────────────────
-async function initGlobal() {
-
-  const isAppMode =
-    window.config?.appMode ||
-    window.matchMedia('(display-mode: standalone)').matches;
-
-  // ── NAV ───────────────────────────────────
-  if (!isAppMode) {
-    await loadPartial('site-nav', '/partials/nav.html');
-    window.initNav?.();          // nav.js
-    actualizarNav();
-    bindNavAuthLinks();
-    bindMobileNav();
-  } else {
-    document.getElementById('site-nav')?.remove();
   }
-
-  // ── FOOTER ────────────────────────────────
-  if (!isAppMode) {
-    await loadPartial('site-footer', '/partials/footer.html');
-    window.initFooter?.();       // footer.js
-  } else {
-    document.getElementById('site-footer')?.remove();
-  }
-
-  bindToTop();
-}
-
-
-// ─────────────────────────────────────────────
-// ARRANQUE
-// ─────────────────────────────────────────────
-window.addEventListener('DOMContentLoaded', initGlobal);
+});
