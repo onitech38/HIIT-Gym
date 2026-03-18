@@ -70,3 +70,57 @@ async function syncNavAuth() {
   const btnLogin   = document.getElementById('nav-login');
   const btnSignup  = document.getElementById('nav-signup');
   const avatarLink = document.getElementById('nav-avatar');
+  const avatarImg  = document.getElementById('nav-avatar-img');
+
+  if (!btnLogin || !btnSignup || !avatarLink) return;
+
+  if (session) {
+    // esconder login/signup
+    btnLogin.classList.add('hidden');
+    btnSignup.classList.add('hidden');
+    avatarLink.classList.remove('hidden');
+
+    // carregar perfil (iniciais ou avatar)
+    try {
+      const { data } = await window.supabaseClient
+        .from('profiles')
+        .select('firstName, lastName, avatar')
+        .eq('id', session.user.id)
+        .single();
+
+      if (avatarImg) {
+        if (data?.avatar) {
+          avatarImg.style.backgroundImage = `url('${data.avatar}')`;
+          avatarImg.textContent = '';
+        } else {
+          const ini =
+            (data?.firstName?.[0] || '') +
+            (data?.lastName?.[0] || '');
+          avatarImg.textContent = ini.toUpperCase();
+        }
+      }
+    } catch (err) {
+      console.warn('Perfil não carregado:', err);
+    }
+
+  } else {
+    // mostrar login/signup
+    btnLogin.classList.remove('hidden');
+    btnSignup.classList.remove('hidden');
+    avatarLink.classList.add('hidden');
+  }
+}
+
+
+// -------------------------------
+// INIT GLOBAL (seguro)
+// -------------------------------
+injectNav();
+injectFooter();
+
+// atualizar nav quando há login/logout
+if (window.supabaseClient) {
+  window.supabaseClient.auth.onAuthStateChange(() => {
+    syncNavAuth();
+  });
+}
