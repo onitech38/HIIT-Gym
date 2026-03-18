@@ -305,7 +305,6 @@ function fadeOutAnd(callback) {
     callback();
   }, 150);
 }
-fadeOutAnd(() => renderInscricaoStep2(li.dataset.key));
 
 
 // ============================================
