@@ -1,47 +1,24 @@
 // ============================================
-// GLOBAL.JS — versão segura (rollback)
+// GLOBAL.JS
+// Injeta APENAS NAV e FOOTER
+// NÃO interfere com JS das páginas
 // ============================================
 
-async function loadPartial(selector, url) {
-  const el = document.querySelector(selector);
-  if (!el) return;
+async function injectPartial(selector, url) {
+  const target = document.querySelector(selector);
+  if (!target) return;
 
   try {
     const res = await fetch(url);
     if (!res.ok) throw new Error(url);
-    el.innerHTML = await res.text();
-  } catch (e) {
-    console.warn('Partial não carregado:', url);
+    target.innerHTML = await res.text();
+  } catch (err) {
+    console.warn('Falha ao carregar:', url);
   }
 }
 
-// Carregar nav e footer SEM mexer no lifecycle
-loadPartial('#site-nav', '/partials/nav.html');
-loadPartial('#site-footer', '/partials/footer.html');
+// Injetar NAV dentro do HEADER
+injectPartial('#site-nav', '/partials/nav.html');
 
-// Sync auth no nav (se existir)
-async function syncNavAuth() {
-  if (!window.supabaseClient) return;
-
-  const { data: { session } } =
-    await window.supabaseClient.auth.getSession()
-      .catch(() => ({ data: { session: null } }));
-
-  const login  = document.getElementById('nav-login');
-  const signup = document.getElementById('nav-signup');
-  const avatar = document.getElementById('nav-avatar');
-
-  if (session) {
-    login?.classList.add('hidden');
-    signup?.classList.add('hidden');
-    avatar?.classList.remove('hidden');
-  } else {
-    login?.classList.remove('hidden');
-    signup?.classList.remove('hidden');
-    avatar?.classList.add('hidden');
-  }
-}
-
-// correr uma vez, sem listeners globais
-syncNavAuth();
-``
+// Injetar FOOTER no fim da página
+injectPartial('#site-footer', '/partials/footer.html');
