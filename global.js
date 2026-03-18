@@ -1,9 +1,9 @@
 // ============================================
-// GLOBAL.JS — FASE A (estabilização)
-// Injeta NAV e FOOTER e sinaliza quando pronto
+// GLOBAL.JS — FONTE ÚNICA DE AUTH + ARRANQUE
 // ============================================
 
-window.__APP_READY__ = false;
+window.currentUser = undefined;
+window.currentSession = null;
 
 async function loadPartial(url) {
   const res = await fetch(url);
@@ -11,31 +11,91 @@ async function loadPartial(url) {
   return res.text();
 }
 
+// ---------- NAV ----------
 async function injectNav() {
   const header = document.querySelector('header');
-  if (!header) return;
-
-  if (header.querySelector('nav')) return;
-
+  if (!header || header.querySelector('nav')) return;
   const html = await loadPartial('/partials/nav.html');
   header.insertAdjacentHTML('afterbegin', html);
 }
 
+// ---------- FOOTER ----------
 async function injectFooter() {
   if (document.querySelector('footer')) return;
-
   const html = await loadPartial('/partials/footer.html');
   document.body.insertAdjacentHTML('beforeend', html);
 }
 
-(async function initGlobal() {
-  try {
-    await injectNav();
-    await injectFooter();
-  } catch (e) {
-    console.warn('Erro ao injetar layout global', e);
-  } finally {
-    window.__APP_READY__ = true;
-    document.dispatchEvent(new Event('app:ready'));
+// ---------- AUTH ----------
+async function initAuth() {
+  if (!window.supabaseClient) {
+    window.currentUser = null;
+    return;
   }
+
+  const { data: { session } } =
+    await window.supabaseClient.auth.getSession()
+      .catch(() => ({ data: { session: null } }));
+
+  window.currentSession = session;
+  window.currentUser = session?.user || null;
+}
+
+// ---------- NAV AUTH ----------
+async function actualizarNav() {
+  const login  = document.getElementById('nav-login');
+  const signup = document.getElementById('nav-signup');
+  const avatar = document.getElementById('nav-avatar');
+  const img    = document.getElementById('nav-avatar-img');
+
+  if (!login || !signup || !avatar) return;
+
+  if (window.currentUser) {
+    login.classList.add('hidden');
+    signup.classList.add('hidden');
+    avatar.classList.remove('hidden');
+
+    try {
+      const { data } = await window.supabaseClient
+        .from('profiles')
+        .select('first_name,last_name,avatar_url')
+        .eq('id', window.currentUser.id)
+        .single();
+
+      if (img) {
+        if (data?.avatar_url) {
+          img.style.backgroundImage = `url('${data.avatar_url}')`;
+          img.textContent = '';
+        } else {
+          img.textContent =
+            ((data?.first_name?.[0] || '') +
+             (data?.last_name?.[0] || '')).toUpperCase();
+        }
+      }
+    } catch {}
+  } else {
+    login.classList.remove('hidden');
+    signup.classList.remove('hidden');
+    avatar.classList.add('hidden');
+  }
+}
+
+// ---------- INIT GLOBAL ----------
+(async function boot() {
+  await injectNav();
+  await injectFooter();
+  await initAuth();
+  await actualizarNav();
+
+  document.dispatchEvent(new Event('app:ready'));
 })();
+
+// Atualizar ao login/logout
+if (window.supabaseClient) {
+  window.supabaseClient.auth.onAuthStateChange(async (_, session) => {
+    window.currentSession = session;
+    window.currentUser = session?.user || null;
+    await actualizarNav();
+  });
+}
+``
