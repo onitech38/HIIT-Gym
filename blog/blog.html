@@ -87,11 +87,23 @@
     </div>
   </div>
 
-  <!-- data.js (CMS) carregado ANTES de blog.js -->
+  <!-- SCRIPTS -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.4/dist/umd/supabase.js"></script>
   <script src="/supabase.js"></script>
-  <script src="/data.js"></script>
-  <script src="/global.js"></script>
-  <script src="blog.js"></script>
+  <script src="/js/global.js"></script>
+  <script src="/js/blog.js"></script>
+<script src="/script.js?v=1.1.0" defer></script>
+
+  <!-- CHAT (mantido, análise depois) -->
+  <script src="/chat.js" defer></script>
+
+  <!-- SERVICE WORKER -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js');
+      });
+    }
+  </script>
 </body>
 </html>

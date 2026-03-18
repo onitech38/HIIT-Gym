@@ -83,15 +83,23 @@
     </defs>
   </svg>
 
-  <!-- SCRIPTS -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.4/dist/umd/supabase.js"></script>
-  <script src="/supabase.js"></script>
+    <!-- SCRIPTS -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.4/dist/umd/supabase.js"></script>
+    <script src="/supabase.js"></script>
+    <script src="/js/global.js"></script>
+    <script src="/js/modalidades.js"></script>
+    <script src="/script.js?v=1.1.0" defer></script>
 
-  <script src="/js/data/data-gym.js"></script>
-  <script src="/js/data/data-atividades.js"></script>
+    <!-- CHAT (mantido, análise depois) -->
+    <script src="/chat.js" defer></script>
 
-  <script src="/global.js"></script>
-  <script src="/modalidades/modalidades.js"></script>
-
+    <!-- SERVICE WORKER -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js');
+        });
+      }
+    </script>
 </body>
 </html>
