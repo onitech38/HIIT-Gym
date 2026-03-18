@@ -8,7 +8,7 @@
 
 // ── Estado ───────────────────────────────────
 let currentUser        = null;
-let currentProfile     = null;
+let currentProfile     = {};
 let currentEnrollments = [];
 let selectedModality   = null;
 
@@ -190,8 +190,78 @@ function renderInscricaoStep1() {
   const wrap = document.getElementById('insc-wrap');
   if (!wrap) return;
 
-  const active = Object.entries(modalidadesData).filter(([,m]) => m.active);
+  const activas = Object.entries(modalidadesData).filter(([, m]) => m.active);
 
+  const disponiveis = currentUser
+    ? activas.filter(([key]) => getStatus(key) === 'disponivel')
+    : activas;
+
+  const jaInscritas = currentUser
+    ? activas.filter(([key]) => getStatus(key) !== 'disponivel')
+    : [];
+
+  // ── Lista principal ───────────────────────
+  let listaHtml = '';
+
+  if (!currentUser) {
+    // Não autenticado
+    listaHtml = activas.map(([key, m]) => `
+      <li class="step1-item step1-item--lock" data-key="${key}">
+        <span class="step1-nome">${m.titulo}</span>
+        <span class="step1-horario">${m.dias} · ${m.horas}</span>
+        <span class="step1-cta"><i class="fa-solid fa-lock"></i></span>
+      </li>
+    `).join('');
+
+  } else if (disponiveis.length === 0) {
+    // Tudo inscrito
+    listaHtml = `
+      <li class="step1-vazio">
+        <i class="fa-solid fa-circle-check"></i>
+        Estás inscrito em todas as modalidades disponíveis!
+      </li>
+    `;
+
+  } else {
+    // Disponíveis
+    listaHtml = disponiveis.map(([key, m]) => `
+      <li class="step1-item" data-key="${key}">
+        <span class="step1-nome">${m.titulo}</span>
+        <span class="step1-horario">${m.dias} · ${m.horas}</span>
+        <span class="step1-cta">
+          Inscrever <i class="fa-solid fa-arrow-right"></i>
+        </span>
+      </li>
+    `).join('');
+  }
+
+  // ── Bloco "Já inscrito" ───────────────────
+  const inscritasHtml = jaInscritas.length ? `
+    <div class="step1-inscritas">
+      <span class="step1-inscritas-label">Já inscrito:</span>
+      ${jaInscritas.map(([key, m]) => {
+        const s = getStatus(key);
+        return `
+          <span class="mod-badge ${s}">
+            ${m.titulo} ${s === 'pendente' ? '⏳' : '✓'}
+          </span>
+        `;
+      }).join('')}
+    </div>
+  ` : '';
+
+  // ── Aviso de login ────────────────────────
+  const loginAviso = !currentUser ? `
+    <div class="step1-login-aviso">
+      <p>Precisas de conta para te inscreveres.</p>
+      <a href="../index.html" class="btn glass">
+        <i class="fa-solid fa-arrow-right-to-bracket"></i>
+        Login / Criar Conta
+      </a>
+    </div>
+  ` : '';
+
+  // ── Render final ──────────────────────────
   wrap.innerHTML = `
     <div id="insc-step1">
       <p class="step1-intro">
@@ -201,31 +271,44 @@ function renderInscricaoStep1() {
       </p>
 
       <ul class="step1-lista">
-        ${active.map(([key,m]) => {
-          const locked = !currentUser;
-          return `
-            <li class="step1-item ${locked?'step1-item--lock':''}"
-                data-key="${key}">
-              <span class="step1-nome">${m.titulo}</span>
-              <span class="step1-horario">${m.dias} · ${m.horas}</span>
-              <span class="step1-cta">
-                ${locked
-                  ? '<i class="fa-solid fa-lock"></i>'
-                  : 'Inscrever <i class="fa-solid fa-arrow-right"></i>'}
-              </span>
-            </li>`;
-        }).join('')}
+        ${listaHtml}
       </ul>
-    </div>`;
 
+      ${inscritasHtml}
+      ${loginAviso}
+    </div>
+  `;
+
+  // ── Bind clicks ───────────────────────────
   if (currentUser) {
-    wrap.querySelectorAll('.step1-item').forEach(li => {
+    wrap.querySelectorAll('.step1-item[data-key]').forEach(li => {
       li.addEventListener('click', () =>
         renderInscricaoStep2(li.dataset.key)
       );
     });
   }
 }
+
+wrap.querySelectorAll('.step1-item').forEach((el, i) => {
+  el.style.animationDelay = `${i * 60}ms`;
+});
+
+function fadeOutAnd(callback) {
+  const wrap = document.getElementById('insc-wrap');
+  if (!wrap) return callback();
+
+  wrap.style.opacity = '0';
+  wrap.style.transform = 'translateY(8px)';
+  wrap.style.transition = 'opacity 0.15s ease, transform 0.15s ease';
+
+  setTimeout(() => {
+    wrap.style.opacity = '';
+    wrap.style.transform = '';
+    wrap.style.transition = '';
+    callback();
+  }, 150);
+}
+fadeOutAnd(() => renderInscricaoStep2(li.dataset.key));
 
 
 // ============================================

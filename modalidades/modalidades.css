@@ -343,6 +343,7 @@
           #insc-step1 {
             display: grid;
             gap: 1.25rem;
+            animation: fadeSlideUp 0.35s ease-out both;
   
             .step1-intro {
               font-size: 0.82rem;
@@ -366,7 +367,22 @@
               border-radius: var(--border-radius);
               border: 1px solid rgba(185,207,212,0.08);
               cursor: pointer;
-              transition: background var(--tempo) ease, border-color var(--tempo) ease;
+              opacity: 0;
+              animation: fadeSlideUp 0.3s ease-out forwards;
+              transition: background var(--tempo) ease, border-color var(--tempo) ease, transform var(--tempo) ease, box-shadow var(--tempo) ease;
+
+              
+              &:nth-child(1) { animation-delay: 0.05s; }
+              &:nth-child(2) { animation-delay: 0.10s; }
+              &:nth-child(3) { animation-delay: 0.15s; }
+              &:nth-child(4) { animation-delay: 0.20s; }
+              &:nth-child(5) { animation-delay: 0.25s; }
+              &:nth-child(6) { animation-delay: 0.30s; }
+
+              &:not(.step1-item--lock):hover {
+                transform: translateY(-2px);
+                box-shadow: 0 6px 20px rgba(251, 160, 2, 0.15);
+              }
   
               &:hover {
                 background: rgba(251,160,2,0.06);
@@ -435,6 +451,9 @@
               gap: 0.5rem;
               padding-top: 0.5rem;
               border-top: 1px solid rgba(185,207,212,0.08);
+              opacity: 0;
+              animation: fadeSlideUp 0.3s ease-out forwards;
+              animation-delay: 0.2s;
   
               .step1-inscritas-label {
                 font-size: 0.65rem;
@@ -897,6 +916,19 @@
         }
       }
     }
+  }
+}
+
+
+/* ── Animação base ───────────────────────── */
+@keyframes fadeSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
