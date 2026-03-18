@@ -1527,12 +1527,11 @@ footer {
 
 
 /* =====================================================
-   NAV — CORREÇÃO DEFINITIVA
-   Aplica o CSS original do header nav
-   também ao nav injetado (#site-nav)
+   NAV — RESTAURAÇÃO TOTAL DO DESIGN ORIGINAL
+   Funciona IGUAL em home e modalidades
    ===================================================== */
 
-/* O nav injetado deve comportar-se como se estivesse no header */
+/* wrapper */
 #site-nav {
   position: absolute;
   top: 0;
@@ -1541,8 +1540,8 @@ footer {
   z-index: 300;
 }
 
-/* DUPLICAÇÃO DO CONTEXTO ORIGINAL */
-#site-nav nav {
+/* nav base (igual ao header nav original) */
+#site-nav nav.site-nav {
   width: 100%;
   max-width: 1440px;
   margin-inline: auto;
@@ -1556,7 +1555,22 @@ footer {
   position: relative;
 }
 
-/* nav-content EXACTAMENTE IGUAL AO ORIGINAL */
+/* logo — TAMANHO CORRETO */
+#site-nav .logo {
+  height: var(--icon-size-logo);
+  padding: 0;
+  border: none;
+  inline-size: auto;
+}
+
+#site-nav .logo img {
+  height: var(--icon-size-logo);
+  width: auto;
+  object-fit: contain;
+  display: block;
+}
+
+/* nav-content (glass ORIGINAL) */
 #site-nav .nav-content {
   max-width: 1200px;
   padding: 0.5rem 1rem;
@@ -1568,20 +1582,35 @@ footer {
   box-shadow: var(--bx-sdw);
 }
 
-/* separador vertical */
-#site-nav .nav-content > span {
+/* menu */
+#site-nav .menu {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--gap-items);
+}
+
+/* separador ORIGINAL */
+#site-nav .nav-separator {
+  display: block;
+  height: 24px;
   border-left: var(--border-size) var(--clr-4);
   border-right: var(--border-size) var(--clr-4);
 }
 
-/* login / avatar */
+/* login / signup */
 #site-nav .login-sign_up {
   margin-inline: 0.5rem;
   display: flex;
+  gap: 0.5rem;
 }
 
 /* avatar */
-#site-nav .nav-user-avatar .coach-avatar {
+#site-nav .nav-user-avatar {
+  display: inline-flex;
+  align-items: center;
+}
+
+#site-nav .coach-avatar {
   width: var(--size-user-avatar);
   height: var(--size-user-avatar);
   border-radius: 50%;
@@ -1589,14 +1618,16 @@ footer {
   background-size: cover;
   background-position: center;
   background-color: var(--clr-3);
+
   display: grid;
   place-items: center;
+
   font-size: 0.75rem;
   font-weight: 700;
   color: var(--clr-4);
 }
 
-/* MOBILE — igual ao original */
+/* MOBILE — EXACTAMENTE COMO ANTES */
 @media (max-width: 700px) {
   #site-nav .mobile-nav { display: block; }
 
@@ -1632,3 +1663,4 @@ footer {
     gap: var(--gap-items);
   }
 }
+
