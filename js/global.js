@@ -26,7 +26,7 @@ async function injectFooter() {
   document.body.insertAdjacentHTML('beforeend', html);
 }
 
-// ---------- AUTH ----------
+
 async function initAuth() {
   if (!window.supabaseClient) {
     window.currentUser = null;
@@ -34,12 +34,18 @@ async function initAuth() {
   }
 
   const { data: { session } } =
-    await window.supabaseClient.auth.getSession()
-      .catch(() => ({ data: { session: null } }));
+    await window.supabaseClient.auth.getSession();
 
   window.currentSession = session;
   window.currentUser = session?.user || null;
+
+  // ✅ GARANTIA
+  if (!window.currentUser) {
+    const { data } = await window.supabaseClient.auth.getUser();
+    window.currentUser = data?.user || null;
+  }
 }
+
 
 // ---------- NAV AUTH ----------
 async function actualizarNav() {
@@ -80,15 +86,24 @@ async function actualizarNav() {
   }
 }
 
-// ---------- INIT GLOBAL ----------
-(async function boot() {
-  await injectNav();
-  await injectFooter();
-  await initAuth();
-  await actualizarNav();
 
-  document.dispatchEvent(new Event('app:ready'));
-})();
+// ---------- INIT GLOBAL ----------
+window.addEventListener('DOMContentLoaded', () => {
+  (async function boot() {
+    await injectNav();
+    await injectFooter();
+
+    // ✅ garantir auth restaurada
+    await initAuth();
+
+    // ✅ nav já com user correto
+    await actualizarNav();
+
+    // ✅ só agora acorda a app
+    document.dispatchEvent(new Event('app:ready'));
+  })();
+});
+
 
 // Atualizar ao login/logout
 if (window.supabaseClient) {
@@ -97,5 +112,21 @@ if (window.supabaseClient) {
     window.currentUser = session?.user || null;
     await actualizarNav();
   });
+
+  
+  if (img) {
+    if (data?.avatar_url) {
+      img.style.backgroundImage = `url('${data.avatar_url}')`;
+      img.textContent = '';
+    } else if (data?.first_name || data?.last_name) {
+      img.textContent =
+        ((data.first_name?.[0] || '') +
+        (data.last_name?.[0] || '')).toUpperCase();
+    } else {
+      // ✅ FALLBACK CRÍTICO
+      img.textContent = window.currentUser.email[0].toUpperCase();
+    }
+  }
+
 }
 ``

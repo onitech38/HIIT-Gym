@@ -10,6 +10,8 @@
 //   7. Logout / eliminar conta
 //============================================
 
+const supabase = window.supabaseClient;
+
 const MODALIDADES = {
   musculacao:   { titulo: 'Musculação',             icon: 'fa-dumbbell',        dias: 'Todos os dias',      horas: '06h00 – 22h00' },
   cardio:       { titulo: 'Cardio',                 icon: 'fa-heart-pulse',     dias: 'Todos os dias',      horas: '07h00 – 21h00' },
@@ -562,6 +564,4 @@ document.getElementById('btn-delete-account')?.addEventListener('click', async (
   }
 });
 
-
-// ── ARRANQUE ──────────────────────────────────
-init();
+document.addEventListener('app:ready', init, { once: true });
