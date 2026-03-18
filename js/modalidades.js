@@ -282,16 +282,18 @@ function renderInscricaoStep1() {
   // ── Bind clicks ───────────────────────────
   if (currentUser) {
     wrap.querySelectorAll('.step1-item[data-key]').forEach(li => {
-      li.addEventListener('click', () =>
-        renderInscricaoStep2(li.dataset.key)
-      );
+      li.addEventListener('click', () => {
+        fadeOutAnd(() => renderInscricaoStep2(li.dataset.key));
+      });
     });
   }
+
+  // ── Animação stagger (SEMPRE aqui) ────────
+  wrap.querySelectorAll('.step1-item').forEach((el, i) => {
+    el.style.animationDelay = `${i * 60}ms`;
+  });
 }
 
-wrap.querySelectorAll('.step1-item').forEach((el, i) => {
-  el.style.animationDelay = `${i * 60}ms`;
-});
 
 function fadeOutAnd(callback) {
   const wrap = document.getElementById('insc-wrap');
