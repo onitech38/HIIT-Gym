@@ -54,12 +54,15 @@ let currentEnrollments = [];
 // INIT — verificar auth e carregar tudo
 // ============================================
 async function init() {
-  // 1. Verificar sessão
-  const { data: { user } } = await supabase.auth.getUser();
+
+  // ✅ Fonte única de verdade
+  const user = window.currentUser;
+
   if (!user) {
-    window.location.href = '../index.html';
+    window.location.href = '../index.html?auth=login';
     return;
   }
+
   currentUser = user;
 
   // 2. Carregar perfil

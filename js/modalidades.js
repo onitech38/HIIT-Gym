@@ -289,9 +289,6 @@ function renderInscricaoStep1() {
   }
 }
 
-
-
-
 function fadeOutAnd(callback) {
   const wrap = document.getElementById('insc-wrap');
   if (!wrap) return callback();
@@ -307,7 +304,6 @@ function fadeOutAnd(callback) {
     callback();
   }, 150);
 }
-
 
 // ============================================
 // INSCRIÇÃO — STEP 2
