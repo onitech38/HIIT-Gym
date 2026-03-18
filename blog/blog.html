@@ -38,42 +38,7 @@
 </head>
 <body id="blog-page">
   <header class="blog-header">
-    <nav aria-label="Navegação Principal">
-            <a class="logo btn" href="index.html" aria-label="Logotipo do site">
-                <img src="../src/logo/logo_def1.svg" alt="Hiit-Gym">
-            </a>
-
-            <details class="mobile-nav">
-                <summary class="hamburger btn" aria-label="Abrir menu">
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                </summary>
-            </details>            
-
-            <div class="nav-content glass" aria-label="Conteúdo da navegação">
-                <div class="menu" aria-label="Páginas do site">
-                    <a class="link-btn" href="#sobre">sobre</a>
-                    <a class="link-btn" href="modalidades/modalidades.html">modalidades</a>
-                    <a class="link-btn" href="#planos">planos</a>
-                    <a class="link-btn" href="#equipa">equipa</a>
-                    <a class="link-btn" href="#contactos">contactos</a>
-                    <a class="link-btn" href="blog/blog.html">blog</a>
-                </div>
-                <span></span>
-                <!-- Área de auth: mostra login/signup OU avatar consoante o estado -->
-                <div class="login-sign_up" id="nav-auth" aria-label="Área de Login e Registo">
-                    <!-- Visível quando NÃO está autenticado (JS esconde ao fazer login) -->
-                    <a class="link-btn" id="nav-login"  href="#" aria-label="Login">login</a>
-                    <a class="link-btn" id="nav-signup" href="#" aria-label="Criar conta">signup</a>
-                    <!-- Visível quando ESTÁ autenticado (JS mostra após login) -->
-                    <a class="nav-user-avatar hidden" href="user/user.html"
-                       id="nav-avatar" aria-label="O meu perfil">
-                        <div class="coach-avatar" id="nav-avatar-img"></div>
-                    </a>
-                </div>
-            </div>
-    </nav>
+    <div id="site-nav"></div>
 
     <section class="blog-hero">
       <div class="blog-hero-content">
@@ -124,67 +89,13 @@
     </div>
   </div>
 
-  <footer>
-        <div class="footer-grid">
-
-            <!-- COL 1 — Logo + tagline -->
-            <div class="footer-marca">
-                <a class="logo btn" href="#home" aria-label="Topo da página">
-                    <img src="../src/logo/logo_def1.svg" alt="Hiit-Gym">
-                </a>
-                <p>A academia desportiva completa de Montijo. Treina mais, vive melhor.</p>
-            </div>
-
-            <!-- COL 2 — Navegação rápida -->
-            <nav class="footer-nav" aria-label="Navegação do rodapé">
-                <span class="footer-titulo">Navegação</span>
-                <a class="link-btn" href="#sobre">Sobre nós</a>
-                <a class="link-btn" href="modalidades/modalidades.html">Modalidades</a>
-                <a class="link-btn" href="#planos">Planos</a>
-                <a class="link-btn" href="#equipa">Equipa</a>
-                <a class="link-btn" href="#contactos">Contactos</a>
-            </nav>
-
-            <!-- COL 3 — Horário + Redes -->
-            <div class="footer-extra">
-                <span class="footer-titulo">Horário</span>
-                <p><strong>Seg – Sex:</strong> 06h00 – 22h00</p>
-                <p><strong>Sáb – Dom:</strong> 08h00 – 20h00</p>
-
-                <span class="footer-titulo" style="margin-top: 1.5rem;">Redes Sociais</span>
-                <div class="footer-sociais">
-                    <a href="https://wa.me/351912345678" target="_blank" rel="noopener" aria-label="WhatsApp">
-                        <i class="fa-brands fa-whatsapp"></i>
-                    </a>
-                    <a href="https://instagram.com/hiitgym" target="_blank" rel="noopener" aria-label="Instagram">
-                        <i class="fa-brands fa-instagram"></i>
-                    </a>
-                    <a href="https://facebook.com/hiitgym" target="_blank" rel="noopener" aria-label="Facebook">
-                        <i class="fa-brands fa-facebook-f"></i>
-                    </a>
-                    <a href="https://tiktok.com/@hiitgym" target="_blank" rel="noopener" aria-label="TikTok">
-                        <i class="fa-brands fa-tiktok"></i>
-                    </a>
-                </div>
-            </div>
-
-        </div>
-
-        <div class="footer-bar">
-            <span>© 2025 HIIT-Gym · Todos os direitos reservados.</span>
-            <div>
-                <a href="#">Política de Privacidade</a>
-                <span>·</span>
-                <a href="#">Termos e Condições</a>
-            </div>
-        </div>
-    </footer>
+  <div id="site-footer"></div>
 
   <!-- data.js (CMS) carregado ANTES de blog.js -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.4/dist/umd/supabase.js"></script>
-    <script src="../supabase.js"></script>
-    <script src="../data.js"></script>
-    <script src="../global.js"></script>
+    <script src="/supabase.js"></script>
+    <script src="/data.js"></script>
+    <script src="/global.js"></script>
     <script src="blog.js"></script>
 </body>
 </html>
