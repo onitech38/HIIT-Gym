@@ -37,7 +37,7 @@ function initHome() {
   }
 }
 
-document.addEventListener('app:ready', initHome, { once: true });
+document.addEventListener('DOMContentLoaded', initHome, { once: true });
 
 
 
