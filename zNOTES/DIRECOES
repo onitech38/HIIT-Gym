@@ -5,36 +5,49 @@ HIIT Gym/(RAIZ)
 |__ blog
 |   |__ blog.css
 |   |__ blog.html
-|   |__ blog.js
 |
 |
 |__ functions
-|   |__ api.css
-|         |__ chat.js
+|   |__ api
+|       |__ chat.js
 |
+|
+|__ js
+|   |__ data
+|   |   |__ config.js
+|   |   |__ data-atividades.js
+|   |   |__ data-blog.js
+|   |   |__ data-gym.js
+|   |
+|   |
+|   |__ blog.js
+|   |__ global.js
+|   |__ modalidades.js
+|   |__ script.js
+|   |__ user.js
+|   
 |
 |__ modalidades
 |   |__ modalidades.css
 |   |__ modalidades.html
-|   |__ modalidades.js
+|
+|
+|__ partials
+|   |__ footer.html
+|   |__ nav.html
 |
 |
 |__ src
 |__ user
 |   |__ user.css
 |   |__ user.html
-|   |__ user.js
 |
 |
 |__ _headers
-|__ chat.js
 |__ chat.css
-|__ data.js
-|__ global.js
+|__ chat.js
 |__ index.html
 |__ manifest.json
-|__ package.json
-|__ script.js
 |__ style.css
 |__ supabase.js
 |__ sw.js
@@ -93,3 +106,142 @@ Checkout pronto, seguro e certificado (PCI)
 Suporta MB Way, cartão, Apple Pay, Google Pay
 Dashboard de gestão completo
 Webhooks para atualizar Supabase automaticamente
+
+
+
+---------------------------------------
+========  TESTES A SEREM FEITOS =======
+---------------------------------------
+
+
+✅ 1️⃣ INDEX — WELCOME + AUTH
+🔹 Teste 1.1 — visitante (logout / incógnito)
+
+Abrir /index.html
+Esperar ~1 segundo
+
+✅ Resultado esperado
+
+Welcome modal abre automaticamente
+Botões login / signup visíveis
+Nav mostra login / signup, não avatar
+
+
+🔹 Teste 1.2 — fechar welcome
+
+Clicar no backdrop OU no botão fechar
+
+✅ Welcome fecha
+✅ Página continua funcional
+
+🔹 Teste 1.3 — login
+
+Abrir welcome
+Fazer login com conta válida
+
+✅ Welcome fecha
+✅ Nav atualiza para avatar
+✅ Redireciona para /user/user.html
+⚠️ Se não redirecionar → reporta “login não redireciona”
+
+✅ 2️⃣ NAV — ESTADO GLOBAL
+🔹 Teste 2.1 — persistência
+
+Já logado
+Navegar para:
+
+/modalidades/modalidades.html
+/blog/blog.html
+
+
+
+✅ Avatar aparece em TODAS
+✅ Login/signup não aparecem
+✅ Avatar mostra:
+
+imagem ou
+iniciais
+
+
+🔹 Teste 2.2 — clique no avatar
+
+Clicar no avatar no nav
+
+✅ Abre /user/user.html
+❌ Não fica página preta
+❌ Não dá erro no console
+
+✅ 3️⃣ USER — ÁREA DE MEMBRO
+🔹 Teste 3.1 — acesso direto
+
+Abrir /user/user.html já logado
+
+✅ Página carrega conteúdo
+✅ Sidebar aparece
+✅ Nome / email corretos
+✅ Avatar aparece
+
+🔹 Teste 3.2 — logout
+
+Clicar em Logout
+
+✅ Confirmação aparece
+✅ Redireciona para index
+✅ Nav volta a login/signup
+✅ Welcome volta a abrir após ~1s
+
+✅ 4️⃣ BLOG — GATE DE AUTH
+🔹 Teste 4.1 — visitante
+
+Logout
+Abrir /blog/blog.html
+
+✅ Redireciona para:
+/index.html?auth=login
+
+✅ Welcome abre já em modo login
+
+🔹 Teste 4.2 — logado
+
+Login
+Abrir /blog/blog.html
+
+✅ Página do blog carrega
+✅ Destaque aparece (se existir)
+✅ Grelha aparece
+✅ Clicar num artigo abre artigo
+✅ Botão “Voltar” funciona
+
+✅ 5️⃣ MODALIDADES — LISTA + INSCRIÇÃO
+🔹 Teste 5.1 — visitante
+
+Logout
+Abrir /modalidades/modalidades.html
+
+✅ Lista de modalidades aparece
+✅ Botões de inscrição bloqueados
+✅ Não há erros no console
+
+🔹 Teste 5.2 — logado
+
+Login
+Abrir /modalidades/modalidades.html
+
+✅ Modalidades aparecem
+✅ Coaches aparecem (mini‑avatars)
+✅ Clicar “Inscrever”:
+
+muda para step 2
+confirma inscrição
+estado muda para “pendente” ou “inscrito”
+
+
+✅ 6️⃣ CONSOLE (MUITO IMPORTANTE)
+Durante TODOS os testes:
+✅ Console SEM erros vermelhos
+✅ Avisos amarelos (warnings) OK
+❌ Qualquer:
+ReferenceError
+TypeError
+
+→ anotar qual ficheiro + linha
