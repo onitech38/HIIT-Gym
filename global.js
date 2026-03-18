@@ -1,24 +1,36 @@
 // ============================================
-// GLOBAL.JS
-// Injeta APENAS NAV e FOOTER
-// NÃO interfere com JS das páginas
+// GLOBAL.JS — injeção SEM wrapper
 // ============================================
 
-async function injectPartial(selector, url) {
-  const target = document.querySelector(selector);
-  if (!target) return;
+async function injectNav() {
+  const header = document.querySelector('header');
+  if (!header) return;
 
   try {
-    const res = await fetch(url);
-    if (!res.ok) throw new Error(url);
-    target.innerHTML = await res.text();
-  } catch (err) {
-    console.warn('Falha ao carregar:', url);
+    const res = await fetch('/partials/nav.html');
+    const html = await res.text();
+
+    // inserir o nav como PRIMEIRO FILHO do header
+    header.insertAdjacentHTML('afterbegin', html);
+  } catch (e) {
+    console.warn('Erro ao carregar nav');
   }
 }
 
-// Injetar NAV dentro do HEADER
-injectPartial('#site-nav', '/partials/nav.html');
+async function injectFooter() {
+  const body = document.body;
+  if (!body) return;
 
-// Injetar FOOTER no fim da página
-injectPartial('#site-footer', '/partials/footer.html');
+  try {
+    const res = await fetch('/partials/footer.html');
+    const html = await res.text();
+
+    body.insertAdjacentHTML('beforeend', html);
+  } catch (e) {
+    console.warn('Erro ao carregar footer');
+  }
+}
+
+injectNav();
+injectFooter();
+``
