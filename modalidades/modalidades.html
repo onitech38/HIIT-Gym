@@ -24,14 +24,80 @@
 
 <body id="modalidades-page">
 
-  <!-- NAV INJETADO PELO GLOBAL.JS -->
-  <div id="site-nav"></div>
-
   <!-- HEADER (SEM NAV) -->
   <header>
     <img class="bg" src="/src/BG_hero-home.jpg" alt="Imagem de um ginásio">
+    
+    <!-- NAV INJETADO PELO GLOBAL.JS -->
+    <div id="site-nav"></div>
 
     <div class="hero">
       <span class="page-eyebrow">
         <i class="fa-solid fa-layer-group"></i> hiit-gym montijo
       </span>
+      <h1>As nossas <span>Modalidades</span></h1>
+      <p>
+        Encontra a actividade ideal para os teus objectivos
+        e inscreve-te directamente aqui.
+      </p>
+    </div>
+  </header>
+
+  <main>
+
+    <section class="mod" id="modalidades">
+      <div class="sec-label">
+        <span class="eyebrow" id="modalidades-eyebrow"></span>
+        <h2 id="modalidades-titulo"></h2>
+      </div>
+
+      <div class="mod-lista" id="mod-lista"></div>
+    </section>
+
+    <section class="equipa" id="equipa">
+      <div class="sec-label">
+        <span class="eyebrow" id="equipa-eyebrow"></span>
+        <h2 id="equipa-titulo"></h2>
+      </div>
+
+      <div class="equipa-grid" id="equipa-grid"></div>
+    </section>
+
+    <section class="inscricao golden-border" id="inscricao">
+      <div class="sec-label">
+        <span class="eyebrow" id="inscricao-eyebrow"></span>
+        <h2 id="inscricao-titulo"></h2>
+      </div>
+
+      <div id="insc-wrap"></div>
+    </section>
+
+  </main>
+
+  <!-- FOOTER INJETADO PELO GLOBAL.JS -->
+  <div id="site-footer"></div>
+
+  <!-- SVG Glass Filter -->
+  <svg width="0" height="0" style="position:absolute;pointer-events:none">
+    <defs>
+      <filter id="glass-filter" x="-20%" y="-20%" width="140%" height="140%" color-interpolation-filters="sRGB">
+        <feTurbulence type="fractalNoise" baseFrequency="0.010 0.018" numOctaves="3" seed="2" result="noise"/>
+        <feDisplacementMap in="SourceGraphic" in2="noise" scale="35" xChannelSelector="R" yChannelSelector="G"/>
+        <feColorMatrix type="saturate" values="1.2"/>
+        <feComposite in2="SourceGraphic" operator="in"/>
+      </filter>
+    </defs>
+  </svg>
+
+  <!-- SCRIPTS -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.4/dist/umd/supabase.js"></script>
+  <script src="/supabase.js"></script>
+
+  <script src="/js/data/data-gym.js"></script>
+  <script src="/js/data/data-atividades.js"></script>
+
+  <script src="/js/global.js"></script>
+  <script src="/modalidades/modalidades.js"></script>
+
+</body>
+</html>
