@@ -4,6 +4,7 @@
 
 window.currentUser = undefined;
 window.currentSession = null;
+window.authReady = false;
 
 // ---------- UTILS ----------
 async function loadPartial(url) {
@@ -47,6 +48,9 @@ async function initAuth() {
     const { data } = await window.supabaseClient.auth.getUser();
     window.currentUser = data?.user || null;
   }
+  
+  window.authReady = true;
+  document.dispatchEvent(new Event('auth:ready'));
 }
 
 // ---------- NAV AUTH ----------
@@ -117,10 +121,14 @@ if (window.supabaseClient) {
   window.supabaseClient.auth.onAuthStateChange(
     async (_, session) => {
       window.currentSession = session;
-      window.currentUser = session?.user || null;
+      window.currentUser = session?.user || null;      
+      window.authReady = true;
+      document.dispatchEvent(new Event('auth:ready'));
+
 
       // ✅ Atualiza sempre via função central
       await actualizarNav();
     }
   );
 }
+
