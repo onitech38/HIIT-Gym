@@ -796,8 +796,7 @@ body {
 
 header {
   position: relative; height: var(--container-height);
-  display: grid; align-content: space-between; z-index: 2;
-
+  display: grid;  z-index: 2; justify-items: center;
   .bg {
     position: absolute; height: calc(var(--container-height) - 30px);
     top: 0; left: 0; z-index: -1;
@@ -808,7 +807,7 @@ header {
     position: relative;
     padding: 0px 16px 16px;
     display: flex; flex-direction: column; justify-content: flex-end; align-items: flex-start;
-    gap: 2rem; container-type: inline-size; bottom: 0; transform: translateY(50vh);
+    gap: 2rem; container-type: inline-size; bottom: 20vh; justify-self: stretch; 
     * { padding-inline: 20px; }
     .text_anim {
       width: 100%; padding: 0px; display: flex; flex-wrap: wrap; align-items: flex-start;
@@ -824,7 +823,7 @@ header {
 
   #map {
     position: absolute; width: 100%; padding-inline: 1rem; margin-inline: auto;
-    max-width: var(--container-mid); top: calc(var(--container-height) - 60px);
+    max-width: var(--container-mid); top: calc(var(--container-height) - 68px);
     display: grid; justify-items: stretch; z-index: 10; gap: 1rem; place-self: center;
   
     summary {

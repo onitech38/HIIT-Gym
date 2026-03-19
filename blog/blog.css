@@ -27,7 +27,7 @@ body#blog-page {
     border-bottom: 1.5px solid var(--glass-surface);
 
     .blog-hero {
-      min-height: 45svh;
+      min-height: 75svh;
       display: flex;
       align-items: flex-end;
       padding: 3rem 1rem 4rem;
