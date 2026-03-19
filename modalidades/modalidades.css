@@ -11,6 +11,7 @@
     header {
       .hero {
         gap: 2rem;
+        align-self: self-end;
 
         * {
           text-align: start;
