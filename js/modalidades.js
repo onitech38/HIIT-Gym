@@ -19,6 +19,8 @@ let selectedModality   = null;
 document.addEventListener('app:ready', init, { once: true });
 
 async function init() {
+  console.log('[modalidades] init arrancou | user:', window.currentUser?.email || 'null');
+
   // window.currentUser já foi preenchido pelo global.js (app:ready)
   if (window.currentUser) {
     currentUser = window.currentUser;

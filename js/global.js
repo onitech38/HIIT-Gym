@@ -148,6 +148,7 @@ async function boot() {
   await actualizarNav();
   bindToTop();
   document.dispatchEvent(new Event('app:ready'));
+  console.log('[global] app:ready disparado | user:', window.currentUser?.email || 'null');
 }
 
 window.addEventListener('DOMContentLoaded', boot);
