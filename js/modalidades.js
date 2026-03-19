@@ -19,11 +19,9 @@ let selectedModality   = null;
 document.addEventListener('app:ready', init, { once: true });
 
 async function init() {
-  const { data: { session } } =
-    await window.supabaseClient.auth.getSession().catch(() => ({ data:{ session:null }}));
-
-  if (session) {
-    currentUser = session.user;
+  // window.currentUser já foi preenchido pelo global.js (app:ready)
+  if (window.currentUser) {
+    currentUser = window.currentUser;
     await Promise.all([loadProfile(), loadEnrollments()]);
   }
 
@@ -36,7 +34,7 @@ async function init() {
   // Deep-link ?modal=key
   const key = new URLSearchParams(window.location.search).get('modal');
   if (key && modalidadesData[key]?.active) {
-    inscricaoStep1(key);
+    inscricaoStep2(key);
     scrollToInscricao();
   }
 }
@@ -273,7 +271,7 @@ function inscricaoStep1() {
 
 
 function inscricaoStep2(key) {
-  keySeleccionada = key;
+  selectedModality = key;
   const d    = modalidadesData[key];
   const wrap = document.getElementById('insc-wrap');
   if (!wrap) return;
@@ -414,7 +412,7 @@ async function submeterInscricao(e) {
 
   // Verificar se já existe inscrição activa/pendente
   const existente = currentEnrollments.find(
-    en => en.modality === keySeleccionada && ['active','pending'].includes(en.status)
+    en => en.modality === selectedModality && ['active','pending'].includes(en.status)
   );
   if (existente) {
     erro.textContent = 'Já tens uma inscrição activa ou pendente nesta modalidade.';
@@ -427,7 +425,7 @@ async function submeterInscricao(e) {
   const form    = e.target;
   const payload = {
     user_id      : currentUser.id,
-    modality     : keySeleccionada,
+    modality     : selectedModality,
     status       : 'pending',
     has_health   : form.has_health?.checked   || false,
     health_notes : form.health_notes?.value.trim()  || null,
