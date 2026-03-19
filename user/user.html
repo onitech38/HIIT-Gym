@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#fba002">
     <title>O Meu Perfil — HIIT-Gym</title>
-    <link rel="icon" type="image/svg+xml" href="../src/logo/favicon.svg">
-    <link rel="manifest" href="../manifest.json">
+    <link rel="icon" type="image/svg+xml" href="/src/logo/favicon.svg">
+    <link rel="manifest" href="/manifest.json">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -15,8 +15,8 @@
           integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw=="
           crossorigin="anonymous" referrerpolicy="no-referrer">
 
-    <link rel="stylesheet" href="../style.css">
-    <link rel="stylesheet" href="user.css">
+    <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="/user/user.css">
     <style>body.loading{visibility:hidden}</style>
 </head>
 
@@ -38,8 +38,8 @@
     <!-- NAV -->
     <header class="user-header">
         <nav aria-label="Navegação Principal">
-            <a class="logo btn" href="../index.html" aria-label="Voltar ao início">
-                <img src="../src/logo/logo_def1.svg" alt="Hiit-Gym">
+            <a class="logo btn" href="/index.html" aria-label="Voltar ao início">
+                <img src="/src/logo/logo_def1.svg" alt="Hiit-Gym">
             </a>
             <details class="mobile-nav">
                 <summary class="hamburger btn" aria-label="Abrir menu">
@@ -48,18 +48,18 @@
             </details>
             <div class="nav-content glass">
                 <div class="menu">
-                    <a class="link-btn" href="../index.html#sobre">sobre</a>
-                    <a class="link-btn" href="../index.html#modalidades">modalidades</a>
-                    <a class="link-btn" href="../index.html#planos">planos</a>
-                    <a class="link-btn" href="../index.html#equipa">equipa</a>
-                    <a class="link-btn" href="../index.html#contactos">contactos</a>
-                    <a class="link-btn" href="../blog/blog.html">blog</a>
+                    <a class="link-btn" href="/index.html#sobre">sobre</a>
+                    <a class="link-btn" href="/modalidades/modalidades.html">modalidades</a>
+                    <a class="link-btn" href="/index.html#planos">planos</a>
+                    <a class="link-btn" href="/index.html#equipa">equipa</a>
+                    <a class="link-btn" href="/index.html#contactos">contactos</a>
+                    <a class="link-btn" href="/blog/blog.html">blog</a>
                 </div>
                 <span></span>
                 <div class="login-sign_up" id="nav-auth">
                     <a class="link-btn" id="nav-login"  href="#" aria-label="Login">login</a>
                     <a class="link-btn" id="nav-signup" href="#" aria-label="Criar conta">signup</a>
-                    <a class="nav-user-avatar hidden" href="user.html" id="nav-avatar" aria-label="O meu perfil">
+                    <a class="nav-user-avatar hidden" href="/user/user.html" id="nav-avatar" aria-label="O meu perfil">
                         <div class="coach-avatar" id="nav-avatar-img"></div>
                     </a>
                 </div>
@@ -383,5 +383,14 @@
     <!-- Core -->
     <script src="/js/global.js?v=3"></script>
     <script src="/js/user.js?v=3"></script>
+
+    <!-- Service Worker -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js');
+        });
+      }
+    </script>
 </body>
 </html>
