@@ -3,7 +3,7 @@
 // Seguro para Supabase + PWA
 // ============================================
 
-const CACHE_NAME = 'hiitgym-static-v2';
+const CACHE_NAME = 'hiitgym-static-v3';
 
 // Apenas assets realmente estáticos
 const STATIC_ASSETS = [
