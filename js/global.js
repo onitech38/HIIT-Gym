@@ -2,7 +2,7 @@
 // GLOBAL.JS — FONTE ÚNICA DE AUTH + ARRANQUE
 // ============================================
 
-window.currentUser = null;
+window.currentUser    = null;
 window.currentSession = null;
 
 
@@ -22,23 +22,19 @@ async function loadPartial(url) {
 
 
 // ---------- NAV ----------
-// Se o partial não existir (404), falha silenciosamente — não crasha o boot
 async function injectNav() {
   const header = document.querySelector('header');
   if (!header || header.querySelector('nav')) return;
-
   try {
     const html = await loadPartial('/partials/nav.html');
     header.insertAdjacentHTML('afterbegin', html);
-  } catch { /* partial não existe nesta página — continua */ }
+  } catch { /* partial não existe — continua */ }
 }
 
 
 // ---------- FOOTER ----------
-// Idem: páginas que já têm <footer> no HTML não tentam o fetch
 async function injectFooter() {
   if (document.querySelector('footer')) return;
-
   try {
     const html = await loadPartial('/partials/footer.html');
     document.body.insertAdjacentHTML('beforeend', html);
@@ -47,23 +43,38 @@ async function injectFooter() {
 
 
 // ---------- AUTH ----------
-async function initAuth() {
-  if (!window.supabaseClient) {
-    window.currentUser = null;
-    return;
-  }
+// Usa onAuthStateChange(INITIAL_SESSION) em vez de getSession() para
+// evitar race condition: getSession() pode retornar null enquanto o
+// Supabase ainda está a restaurar a sessão do localStorage.
+function initAuth() {
+  return new Promise(resolve => {
+    if (!window.supabaseClient) {
+      window.currentUser = null;
+      resolve();
+      return;
+    }
 
-  const { data: { session } } =
-    await window.supabaseClient.auth.getSession();
+    // Timeout de segurança: resolve após 4s se o evento não disparar
+    const timeout = setTimeout(() => {
+      console.warn('[global.js] Auth timeout — a continuar sem sessão.');
+      resolve();
+    }, 4000);
 
-  window.currentSession = session;
-  window.currentUser = session?.user || null;
-
-  // fallback de segurança
-  if (!window.currentUser) {
-    const { data } = await window.supabaseClient.auth.getUser();
-    window.currentUser = data?.user || null;
-  }
+    const { data: { subscription } } =
+      window.supabaseClient.auth.onAuthStateChange((event, session) => {
+        if (
+          event === 'INITIAL_SESSION' ||
+          event === 'SIGNED_IN'       ||
+          event === 'SIGNED_OUT'
+        ) {
+          clearTimeout(timeout);
+          subscription.unsubscribe();
+          window.currentSession = session;
+          window.currentUser    = session?.user || null;
+          resolve();
+        }
+      });
+  });
 }
 
 
@@ -119,20 +130,20 @@ window.addEventListener('DOMContentLoaded', () => {
   (async function boot() {
     await injectNav();
     await injectFooter();
-    await initAuth();
+    await initAuth();   // aguarda INITIAL_SESSION antes de continuar
     await actualizarNav();
-
     document.dispatchEvent(new Event('app:ready'));
   })();
 });
 
 
-// ---------- AUTH STATE CHANGE ----------
+// ---------- AUTH STATE CHANGE (pós-boot) ----------
 if (window.supabaseClient) {
   window.supabaseClient.auth.onAuthStateChange(
-    async (_, session) => {
+    async (event, session) => {
+      if (event === 'INITIAL_SESSION') return; // já tratado no initAuth()
       window.currentSession = session;
-      window.currentUser = session?.user || null;
+      window.currentUser    = session?.user || null;
       await actualizarNav();
     }
   );
