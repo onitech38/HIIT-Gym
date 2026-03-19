@@ -42,49 +42,46 @@ async function injectFooter() {
 
 
 // ---------- AUTH ----------
-// Abordagem dupla: getSession() + onAuthStateChange em corrida.
-// O que resolver primeiro define window.currentUser.
-// Isto elimina a race condition entre as duas APIs do Supabase.
-function initAuth() {
-  return new Promise(resolve => {
-    if (!window.supabaseClient) {
-      window.currentUser = null;
-      resolve();
-      return;
+// Um único listener para tudo.
+//
+// PORQUÊ UM SÓ: onAuthStateChange dispara INITIAL_SESSION apenas uma vez
+// por instância do cliente. Se registarmos dois listeners (um para o boot,
+// outro permanente), o segundo pode apanhar o evento antes do primeiro —
+// ou o evento já disparou quando o primeiro se regista, nunca resolvendo.
+//
+// Solução: registar UM listener imediatamente quando o script carrega
+// (antes do DOMContentLoaded). Ele:
+//   1. Resolve o boot via promise quando INITIAL_SESSION dispara
+//   2. Actualiza o nav em eventos subsequentes (SIGNED_IN, SIGNED_OUT)
+//
+let _authResolve = null;
+const _authReady = new Promise(resolve => { _authResolve = resolve; });
+
+if (window.supabaseClient) {
+  window.supabaseClient.auth.onAuthStateChange(async (event, session) => {
+    window.currentSession = session;
+    window.currentUser    = session?.user || null;
+
+    if (event === 'INITIAL_SESSION') {
+      // Boot: resolve a promise que o initAuth() aguarda
+      _authResolve();
+    } else {
+      // Pós-boot: actualiza o nav (login/logout noutro separador, etc.)
+      await actualizarNav();
     }
-
-    let resolved = false;
-
-    function finish(session) {
-      if (resolved) return;
-      resolved = true;
-      window.currentSession = session;
-      window.currentUser    = session?.user || null;
-      resolve();
-    }
-
-    // Caminho 1: getSession() — resposta imediata se a sessão já está em cache
-    window.supabaseClient.auth.getSession()
-      .then(({ data: { session } }) => finish(session))
-      .catch(() => finish(null));
-
-    // Caminho 2: onAuthStateChange — garante que apanhamos o estado real
-    // mesmo que getSession() retorne null durante a restauração
-    const { data: { subscription } } =
-      window.supabaseClient.auth.onAuthStateChange((event, session) => {
-        if (
-          event === 'INITIAL_SESSION' ||
-          event === 'SIGNED_IN'       ||
-          event === 'SIGNED_OUT'
-        ) {
-          subscription.unsubscribe();
-          finish(session);
-        }
-      });
-
-    // Timeout de segurança: 5s — nunca bloqueia a página
-    setTimeout(() => finish(null), 5000);
   });
+} else {
+  // Supabase não disponível — resolve imediatamente
+  _authResolve();
+}
+
+
+async function initAuth() {
+  // Timeout de segurança: 5s — nunca bloqueia a página
+  await Promise.race([
+    _authReady,
+    new Promise(resolve => setTimeout(resolve, 5000)),
+  ]);
 }
 
 
@@ -140,21 +137,8 @@ window.addEventListener('DOMContentLoaded', () => {
   (async function boot() {
     await injectNav();
     await injectFooter();
-    await initAuth();
+    await initAuth();        // aguarda _authReady (INITIAL_SESSION)
     await actualizarNav();
     document.dispatchEvent(new Event('app:ready'));
   })();
 });
-
-
-// ---------- AUTH STATE CHANGE (pós-boot) ----------
-if (window.supabaseClient) {
-  window.supabaseClient.auth.onAuthStateChange(
-    async (event, session) => {
-      if (event === 'INITIAL_SESSION') return;
-      window.currentSession = session;
-      window.currentUser    = session?.user || null;
-      await actualizarNav();
-    }
-  );
-}
