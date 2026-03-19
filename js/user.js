@@ -20,7 +20,7 @@ const getIniciais = p =>
 
 function formatDate(iso) {
   const meses = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
-  const d = new Date(iso + (iso.includes('T') ? '' : 'T12:00:00'));
+  const d = new Date(iso + 'T12:00:00');
   return `${String(d.getDate()).padStart(2,'0')} ${meses[d.getMonth()]} ${d.getFullYear()}`;
 }
 
@@ -36,70 +36,47 @@ function aplicarAvatar(el, profile) {
 }
 
 // ── ESTADO GLOBAL ─────────────────────────────
-let currentUser        = null;
-let currentProfile     = null;
-let currentTrainings   = [];
+let currentUser = null;
+let currentProfile = null;
+let currentTrainings = [];
 let currentEnrollments = [];
 
-//============================================
-// INIT — ÚNICA FONTE DE VERDADE
-//============================================
+// ── INIT ─────────────────────────────────────
 async function init() {
-  const user = window.currentUser;
-
-  if (!user) {
+  if (!window.currentUser) {
     window.location.href = '../index.html?auth=login';
     return;
   }
 
-  currentUser = user;
+  currentUser = window.currentUser;
 
-  // ── PERFIL ─────────────────────────────────
   const { data: profile } = await supabase
     .from('profiles')
     .select('*')
-    .eq('id', user.id)
+    .eq('id', currentUser.id)
     .single();
 
-  if (!profile) {
-    const meta = user.user_metadata || {};
-    const { data: novo } = await supabase.from('profiles').insert({
-      id: user.id,
-      first_name: meta.firstName || 'Utilizador',
-      last_name: meta.lastName || '',
-      phone: meta.phone || null,
-      age: meta.age || null,
-      weight: meta.weight || null,
-      address: meta.address || null,
-    }).select().single();
-    currentProfile = novo;
-  } else {
-    currentProfile = profile;
-  }
+  currentProfile = profile;
+  currentProfile.email = currentUser.email;
 
-  currentProfile.email = user.email;
-
-  // ── TREINOS ────────────────────────────────
   const { data: treinos } = await supabase
     .from('trainings')
     .select('*')
-    .eq('user_id', user.id)
+    .eq('user_id', currentUser.id)
     .order('date', { ascending: false });
 
   currentTrainings = treinos || [];
 
-  // ── INSCRIÇÕES ─────────────────────────────
   const { data: enrollments } = await supabase
     .from('enrollments')
     .select('*')
-    .eq('user_id', user.id);
+    .eq('user_id', currentUser.id);
 
   currentEnrollments = enrollments || [];
 
-  // ── MOSTRAR UI ─────────────────────────────
   document.body.classList.remove('loading');
 
-  preencherNav();
+  actualizarNav();
   preencherSidebar();
   preencherDashboard();
   preencherTreinos();
@@ -112,11 +89,6 @@ async function init() {
   bindAddTreino();
 }
 
-// ── NAV ──────────────────────────────────────
-function preencherNav() {
-  actualizarNav();
-}
-
 // ── SIDEBAR ───────────────────────────────────
 function preencherSidebar() {
   const p = currentProfile;
@@ -127,16 +99,12 @@ function preencherSidebar() {
 
 // ── DASHBOARD ─────────────────────────────────
 function preencherDashboard() {
-  const treinos = currentTrainings;
+  const totalCal = currentTrainings.reduce((s, t) => s + (t.calories || 0), 0);
+  const totalMin = currentTrainings.reduce((s, t) => s + (t.duration || 0), 0);
 
-  document.getElementById('dash-nome').textContent = currentProfile.first_name;
-
-  const totalCal = treinos.reduce((s, t) => s + (t.calories || 0), 0);
-  const totalMin = treinos.reduce((s, t) => s + (t.duration || 0), 0);
-
-  document.getElementById('stat-calorias').textContent = totalCal.toLocaleString('pt-PT');
+  document.getElementById('stat-calorias').textContent = totalCal;
   document.getElementById('stat-horas').textContent = (totalMin / 60).toFixed(1) + 'h';
-  document.getElementById('stat-sessoes').textContent = treinos.length;
+  document.getElementById('stat-sessoes').textContent = currentTrainings.length;
   document.getElementById('stat-modalidades').textContent =
     currentEnrollments.filter(e => e.status === 'active').length;
 }
@@ -203,14 +171,14 @@ function bindAddTreino() {
 
 // ── SINCRONIZAR SMARTWATCH (SIMULADO) ─────────
 document.getElementById('btn-sync')?.addEventListener('click', async () => {
-  const random = ['musculacao','cardio','natacao'][Math.floor(Math.random()*3)];
+  const random = ['musculacao','cardio','natacao'][Math.floor(Math.random() * 3)];
 
   const treino = {
     user_id: currentUser.id,
     date: new Date().toISOString().split('T')[0],
     modality: random,
-    duration: 30 + Math.floor(Math.random()*45),
-    calories: 200 + Math.floor(Math.random()*300),
+    duration: 30 + Math.floor(Math.random() * 45),
+    calories: 200 + Math.floor(Math.random() * 300),
     source: 'smartwatch',
     notes: '',
   };
@@ -238,19 +206,15 @@ function bindAvatarUpload(id) {
     if (!file) return;
 
     const path = `avatars/${currentUser.id}.jpg`;
-
     await supabase.storage.from('avatars').upload(path, file, { upsert: true });
 
     const { data } = supabase.storage.from('avatars').getPublicUrl(path);
-
     await supabase.from('profiles')
       .update({ avatar_url: data.publicUrl })
       .eq('id', currentUser.id);
 
     currentProfile.avatar_url = data.publicUrl;
     aplicarAvatar(document.getElementById('sidebar-avatar'), currentProfile);
-    aplicarAvatar(document.getElementById('perfil-avatar'), currentProfile);
-    aplicarAvatar(document.getElementById('nav-avatar-img'), currentProfile);
   });
 }
 
@@ -275,5 +239,5 @@ document.getElementById('btn-delete-account')?.addEventListener('click', async (
   window.location.href = '../index.html';
 });
 
-// ── INIT FINAL ────────────────────────────────
+// ── ARRANQUE ──────────────────────────────────
 document.addEventListener('app:ready', init, { once: true });
