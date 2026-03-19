@@ -806,7 +806,7 @@ header {
   
   .hero {
     position: relative;
-    padding: 0px 16px 16px; /*0px 16px 150px 16px*/
+    padding: 0px 16px 16px;
     display: flex; flex-direction: column; justify-content: flex-end; align-items: flex-start;
     gap: 2rem; container-type: inline-size; bottom: 0; transform: translateY(50vh);
     * { padding-inline: 20px; }
