@@ -5,6 +5,7 @@
 window.currentUser = undefined;
 window.currentSession = null;
 
+// ---------- UTILS ----------
 async function loadPartial(url) {
   const res = await fetch(url);
   if (!res.ok) throw new Error(url);
@@ -15,6 +16,7 @@ async function loadPartial(url) {
 async function injectNav() {
   const header = document.querySelector('header');
   if (!header || header.querySelector('nav')) return;
+
   const html = await loadPartial('/partials/nav.html');
   header.insertAdjacentHTML('afterbegin', html);
 }
@@ -22,11 +24,12 @@ async function injectNav() {
 // ---------- FOOTER ----------
 async function injectFooter() {
   if (document.querySelector('footer')) return;
+
   const html = await loadPartial('/partials/footer.html');
   document.body.insertAdjacentHTML('beforeend', html);
 }
 
-
+// ---------- AUTH ----------
 async function initAuth() {
   if (!window.supabaseClient) {
     window.currentUser = null;
@@ -39,13 +42,12 @@ async function initAuth() {
   window.currentSession = session;
   window.currentUser = session?.user || null;
 
-  // ✅ GARANTIA
+  // ✅ Garantia extra (edge cases)
   if (!window.currentUser) {
     const { data } = await window.supabaseClient.auth.getUser();
     window.currentUser = data?.user || null;
   }
 }
-
 
 // ---------- NAV AUTH ----------
 async function actualizarNav() {
@@ -75,9 +77,10 @@ async function actualizarNav() {
         } else if (data?.first_name || data?.last_name) {
           img.textContent =
             ((data.first_name?.[0] || '') +
-            (data.last_name?.[0] || '')).toUpperCase();
+             (data.last_name?.[0] || '')).toUpperCase();
         } else {
-          img.textContent = window.currentUser.email[0].toUpperCase();
+          img.textContent =
+            window.currentUser.email?.[0]?.toUpperCase() || '';
         }
       }
     } catch (e) {
@@ -92,47 +95,32 @@ async function actualizarNav() {
   }
 }
 
-
 // ---------- INIT GLOBAL ----------
 window.addEventListener('DOMContentLoaded', () => {
   (async function boot() {
     await injectNav();
     await injectFooter();
 
-    // ✅ garantir auth restaurada
+    // ✅ auth restaurada antes de tocar no DOM
     await initAuth();
 
-    // ✅ nav já com user correto
+    // ✅ nav renderizada com estado correto
     await actualizarNav();
 
-    // ✅ só agora acorda a app
+    // ✅ app pode arrancar
     document.dispatchEvent(new Event('app:ready'));
   })();
 });
 
-
-// Atualizar ao login/logout
+// ---------- AUTH STATE CHANGE ----------
 if (window.supabaseClient) {
-  window.supabaseClient.auth.onAuthStateChange(async (_, session) => {
-    window.currentSession = session;
-    window.currentUser = session?.user || null;
-    await actualizarNav();
-  });
+  window.supabaseClient.auth.onAuthStateChange(
+    async (_, session) => {
+      window.currentSession = session;
+      window.currentUser = session?.user || null;
 
-  
-  if (img) {
-    if (data?.avatar_url) {
-      img.style.backgroundImage = `url('${data.avatar_url}')`;
-      img.textContent = '';
-    } else if (data?.first_name || data?.last_name) {
-      img.textContent =
-        ((data.first_name?.[0] || '') +
-        (data.last_name?.[0] || '')).toUpperCase();
-    } else {
-      // ✅ FALLBACK CRÍTICO
-      img.textContent = window.currentUser.email[0].toUpperCase();
+      // ✅ Atualiza sempre via função central
+      await actualizarNav();
     }
-  }
-
+  );
 }
-``
