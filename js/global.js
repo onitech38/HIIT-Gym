@@ -42,18 +42,8 @@ async function injectFooter() {
 
 
 // ---------- AUTH ----------
-// Um único listener para tudo.
-//
-// PORQUÊ UM SÓ: onAuthStateChange dispara INITIAL_SESSION apenas uma vez
-// por instância do cliente. Se registarmos dois listeners (um para o boot,
-// outro permanente), o segundo pode apanhar o evento antes do primeiro —
-// ou o evento já disparou quando o primeiro se regista, nunca resolvendo.
-//
-// Solução: registar UM listener imediatamente quando o script carrega
-// (antes do DOMContentLoaded). Ele:
-//   1. Resolve o boot via promise quando INITIAL_SESSION dispara
-//   2. Actualiza o nav em eventos subsequentes (SIGNED_IN, SIGNED_OUT)
-//
+// Um único listener registado imediatamente (antes do DOMContentLoaded)
+// para apanhar INITIAL_SESSION que o Supabase só dispara uma vez.
 let _authResolve = null;
 const _authReady = new Promise(resolve => { _authResolve = resolve; });
 
@@ -63,21 +53,17 @@ if (window.supabaseClient) {
     window.currentUser    = session?.user || null;
 
     if (event === 'INITIAL_SESSION') {
-      // Boot: resolve a promise que o initAuth() aguarda
       _authResolve();
     } else {
-      // Pós-boot: actualiza o nav (login/logout noutro separador, etc.)
+      // Pós-boot: login/logout noutro separador, token refresh, etc.
       await actualizarNav();
     }
   });
 } else {
-  // Supabase não disponível — resolve imediatamente
   _authResolve();
 }
 
-
 async function initAuth() {
-  // Timeout de segurança: 5s — nunca bloqueia a página
   await Promise.race([
     _authReady,
     new Promise(resolve => setTimeout(resolve, 5000)),
@@ -132,13 +118,44 @@ async function actualizarNav() {
 }
 
 
+// ---------- TO-TOP ----------
+// Mostra o botão .to_top após 300px de scroll.
+// Usa MutationObserver para esperar que o chat.js injete o .q_a.
+function bindToTop() {
+  const tryBind = () => {
+    const btn = document.querySelector('.q_a .to_top');
+    if (!btn) return false;
+    window.addEventListener('scroll', () => {
+      btn.classList.toggle('visivel', window.scrollY > 300);
+    }, { passive: true });
+    return true;
+  };
+
+  if (tryBind()) return;
+
+  const obs = new MutationObserver(() => {
+    if (tryBind()) obs.disconnect();
+  });
+  obs.observe(document.body, { childList: true, subtree: true });
+}
+
+
 // ---------- INIT GLOBAL ----------
-window.addEventListener('DOMContentLoaded', () => {
-  (async function boot() {
-    await injectNav();
-    await injectFooter();
-    await initAuth();        // aguarda _authReady (INITIAL_SESSION)
-    await actualizarNav();
-    document.dispatchEvent(new Event('app:ready'));
-  })();
+async function boot() {
+  await injectNav();
+  await injectFooter();
+  await initAuth();
+  await actualizarNav();
+  bindToTop();
+  document.dispatchEvent(new Event('app:ready'));
+}
+
+window.addEventListener('DOMContentLoaded', boot);
+
+// ---------- BFCACHE ----------
+// Quando o utilizador navega com o botão "voltar", o browser pode restaurar
+// a página do bfcache sem re-executar scripts. O evento pageshow com
+// persisted:true detecta isso e re-executa o boot para actualizar o estado.
+window.addEventListener('pageshow', e => {
+  if (e.persisted) boot();
 });
