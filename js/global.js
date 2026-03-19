@@ -5,29 +5,46 @@
 window.currentUser = null;
 window.currentSession = null;
 
+
 // ---------- UTILS ----------
+
+// Iniciais de um nome — usado em modalidades.js e script.js
+function ini(str) {
+  if (!str) return '';
+  return str.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
+}
+
 async function loadPartial(url) {
   const res = await fetch(url);
   if (!res.ok) throw new Error(`Erro ao carregar ${url}`);
   return res.text();
 }
 
+
 // ---------- NAV ----------
+// Se o partial não existir (404), falha silenciosamente — não crasha o boot
 async function injectNav() {
   const header = document.querySelector('header');
   if (!header || header.querySelector('nav')) return;
 
-  const html = await loadPartial('/partials/nav.html');
-  header.insertAdjacentHTML('afterbegin', html);
+  try {
+    const html = await loadPartial('/partials/nav.html');
+    header.insertAdjacentHTML('afterbegin', html);
+  } catch { /* partial não existe nesta página — continua */ }
 }
 
+
 // ---------- FOOTER ----------
+// Idem: páginas que já têm <footer> no HTML não tentam o fetch
 async function injectFooter() {
   if (document.querySelector('footer')) return;
 
-  const html = await loadPartial('/partials/footer.html');
-  document.body.insertAdjacentHTML('beforeend', html);
+  try {
+    const html = await loadPartial('/partials/footer.html');
+    document.body.insertAdjacentHTML('beforeend', html);
+  } catch { /* partial não existe — continua */ }
 }
+
 
 // ---------- AUTH ----------
 async function initAuth() {
@@ -49,7 +66,8 @@ async function initAuth() {
   }
 }
 
-// ---------- NAV AUTH (ROBUSTA) ----------
+
+// ---------- NAV AUTH ----------
 async function actualizarNav() {
   const login  = document.getElementById('nav-login');
   const signup = document.getElementById('nav-signup');
@@ -78,7 +96,7 @@ async function actualizarNav() {
       } else if (data?.first_name || data?.last_name) {
         img.textContent =
           ((data.first_name?.[0] || '') +
-           (data.last_name?.[0] || '')).toUpperCase();
+           (data.last_name?.[0]  || '')).toUpperCase();
       } else {
         img.textContent =
           window.currentUser.email?.[0]?.toUpperCase() || '';
@@ -87,6 +105,7 @@ async function actualizarNav() {
       img.textContent =
         window.currentUser.email?.[0]?.toUpperCase() || '';
     }
+
   } else {
     login.classList.remove('hidden');
     signup.classList.remove('hidden');
@@ -94,23 +113,19 @@ async function actualizarNav() {
   }
 }
 
+
 // ---------- INIT GLOBAL ----------
 window.addEventListener('DOMContentLoaded', () => {
   (async function boot() {
-    // ✅ Nav e footer SEMPRE (index incluído)
     await injectNav();
     await injectFooter();
-
-    // ✅ Auth restaurada
     await initAuth();
-
-    // ✅ Nav sincronizada
     await actualizarNav();
 
-    // ✅ Sinal único para páginas privadas
     document.dispatchEvent(new Event('app:ready'));
   })();
 });
+
 
 // ---------- AUTH STATE CHANGE ----------
 if (window.supabaseClient) {
@@ -122,4 +137,3 @@ if (window.supabaseClient) {
     }
   );
 }
-``
