@@ -15,8 +15,9 @@
 //   7. Logout / eliminar conta
 //============================================
 
-// Alias local para não repetir window.supabaseClient em todo o lado
-const supabase = window.supabaseClient;
+// Alias defensivo — funciona com supabase.js novo (window.supabaseClient)
+// e com o antigo (window.supabase sobrescrito com o cliente)
+const supabase = window.supabaseClient || window.supabase;
 
 const MODALIDADES = {
   musculacao:   { titulo: 'Musculação',             icon: 'fa-dumbbell',        dias: 'Todos os dias',      horas: '06h00 – 22h00' },
@@ -70,47 +71,60 @@ document.addEventListener('app:ready', async () => {
   }
   currentUser = window.currentUser;
 
-  // 2. Carregar perfil
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('*')
-    .eq('id', currentUser.id)
-    .single();
+  // 2–4. Carregar dados do Supabase
+  // try/catch garante que a página NUNCA fica preta mesmo que o Supabase falhe
+  try {
+    // 2. Perfil
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('id', currentUser.id)
+      .single();
 
-  // Se o perfil ainda não existir (trigger atrasado), cria um básico
-  if (!profile) {
-    const meta = currentUser.user_metadata || {};
-    const { data: novo } = await supabase.from('profiles').insert({
-      id:         currentUser.id,
-      first_name: meta.firstName || 'Utilizador',
-      last_name:  meta.lastName  || '',
-      phone:      meta.phone     || null,
-      age:        meta.age       || null,
-      weight:     meta.weight    || null,
-      address:    meta.address   || null,
-    }).select().single();
-    currentProfile = novo || { id: currentUser.id, first_name: 'Utilizador', last_name: '', email: currentUser.email };
-  } else {
-    currentProfile = profile;
+    if (!profile) {
+      const meta = currentUser.user_metadata || {};
+      const { data: novo } = await supabase.from('profiles').insert({
+        id:         currentUser.id,
+        first_name: meta.firstName || 'Utilizador',
+        last_name:  meta.lastName  || '',
+        phone:      meta.phone     || null,
+        age:        meta.age       || null,
+        weight:     meta.weight    || null,
+        address:    meta.address   || null,
+      }).select().single();
+      currentProfile = novo || { id: currentUser.id, first_name: 'Utilizador', last_name: '', email: currentUser.email };
+    } else {
+      currentProfile = profile;
+    }
+    currentProfile.email = currentUser.email;
+
+    // 3. Treinos
+    const { data: treinos } = await supabase
+      .from('trainings')
+      .select('*')
+      .eq('user_id', currentUser.id)
+      .order('date', { ascending: false });
+    currentTrainings = treinos || [];
+
+    // 4. Inscrições
+    const { data: enrollments } = await supabase
+      .from('enrollments')
+      .select('*')
+      .eq('user_id', currentUser.id);
+    currentEnrollments = enrollments || [];
+
+  } catch (err) {
+    // Supabase indisponível ou erro de rede — mostra a página com dados vazios
+    console.warn('[user.js] Erro ao carregar dados:', err);
+    currentProfile = currentProfile || {
+      id: currentUser.id,
+      first_name: currentUser.email?.split('@')[0] || 'Utilizador',
+      last_name: '',
+      email: currentUser.email,
+    };
   }
-  currentProfile.email = currentUser.email; // email vem do auth, não do profile
 
-  // 3. Carregar treinos
-  const { data: treinos } = await supabase
-    .from('trainings')
-    .select('*')
-    .eq('user_id', currentUser.id)
-    .order('date', { ascending: false });
-  currentTrainings = treinos || [];
-
-  // 4. Carregar inscrições
-  const { data: enrollments } = await supabase
-    .from('enrollments')
-    .select('*')
-    .eq('user_id', currentUser.id);
-  currentEnrollments = enrollments || [];
-
-  // 5. Mostrar o body (estava hidden para evitar flash)
+  // 5. Mostrar o body — SEMPRE chega aqui, com ou sem dados
   document.body.classList.remove('loading');
 
   // 6. Preencher UI
