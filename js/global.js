@@ -8,7 +8,6 @@ window.currentSession = null;
 
 // ---------- UTILS ----------
 
-// Iniciais de um nome — usado em modalidades.js e script.js
 function ini(str) {
   if (!str) return '';
   return str.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
@@ -43,9 +42,9 @@ async function injectFooter() {
 
 
 // ---------- AUTH ----------
-// Usa onAuthStateChange(INITIAL_SESSION) em vez de getSession() para
-// evitar race condition: getSession() pode retornar null enquanto o
-// Supabase ainda está a restaurar a sessão do localStorage.
+// Abordagem dupla: getSession() + onAuthStateChange em corrida.
+// O que resolver primeiro define window.currentUser.
+// Isto elimina a race condition entre as duas APIs do Supabase.
 function initAuth() {
   return new Promise(resolve => {
     if (!window.supabaseClient) {
@@ -54,12 +53,23 @@ function initAuth() {
       return;
     }
 
-    // Timeout de segurança: resolve após 4s se o evento não disparar
-    const timeout = setTimeout(() => {
-      console.warn('[global.js] Auth timeout — a continuar sem sessão.');
-      resolve();
-    }, 4000);
+    let resolved = false;
 
+    function finish(session) {
+      if (resolved) return;
+      resolved = true;
+      window.currentSession = session;
+      window.currentUser    = session?.user || null;
+      resolve();
+    }
+
+    // Caminho 1: getSession() — resposta imediata se a sessão já está em cache
+    window.supabaseClient.auth.getSession()
+      .then(({ data: { session } }) => finish(session))
+      .catch(() => finish(null));
+
+    // Caminho 2: onAuthStateChange — garante que apanhamos o estado real
+    // mesmo que getSession() retorne null durante a restauração
     const { data: { subscription } } =
       window.supabaseClient.auth.onAuthStateChange((event, session) => {
         if (
@@ -67,13 +77,13 @@ function initAuth() {
           event === 'SIGNED_IN'       ||
           event === 'SIGNED_OUT'
         ) {
-          clearTimeout(timeout);
           subscription.unsubscribe();
-          window.currentSession = session;
-          window.currentUser    = session?.user || null;
-          resolve();
+          finish(session);
         }
       });
+
+    // Timeout de segurança: 5s — nunca bloqueia a página
+    setTimeout(() => finish(null), 5000);
   });
 }
 
@@ -130,7 +140,7 @@ window.addEventListener('DOMContentLoaded', () => {
   (async function boot() {
     await injectNav();
     await injectFooter();
-    await initAuth();   // aguarda INITIAL_SESSION antes de continuar
+    await initAuth();
     await actualizarNav();
     document.dispatchEvent(new Event('app:ready'));
   })();
@@ -141,7 +151,7 @@ window.addEventListener('DOMContentLoaded', () => {
 if (window.supabaseClient) {
   window.supabaseClient.auth.onAuthStateChange(
     async (event, session) => {
-      if (event === 'INITIAL_SESSION') return; // já tratado no initAuth()
+      if (event === 'INITIAL_SESSION') return;
       window.currentSession = session;
       window.currentUser    = session?.user || null;
       await actualizarNav();
