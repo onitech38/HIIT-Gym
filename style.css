@@ -371,8 +371,9 @@ body {
         .nav-content {
           max-width: 670px; padding: 0.5rem 1rem;
           display: inline-flex; box-shadow: var(--bx-sdw); justify-content: space-around;
-          .menu { display: inline-flex; }
-          span { border-left: var(--border-size) var(--clr-4); border-right: var(--border-size) var(--clr-4); } /*.nav-separator*/
+          .menu { display: inline-flex; align-items: center; }
+          
+          span { border-left: var(--border-size) var(--clr-4); border-right: var(--border-size) var(--clr-4); align-self: stretch;} /*.nav-separator*/
         }
     
         /* avatar */
@@ -508,11 +509,16 @@ body {
             opacity: 0.7;
             text-decoration: none;
             transition: color var(--tempo) ease, opacity var(--tempo) ease;
-    
-            &:hover { color: var(--clr-4); opacity: 1; text-decoration: none; }
+
+            &:hover { opacity: 1; text-decoration: none; }
+            &:nth-child(1):hover { color: var(--clr-social_wa); opacity: 1; text-decoration: none; }
+            &:nth-child(2):hover { color: var(--clr-social_ig); opacity: 1; text-decoration: none; }
+            &:nth-child(3):hover { color: var(--clr-social_fb); opacity: 1; text-decoration: none; }
+            &:nth-child(4):hover { color: var(--clr-social_tt); opacity: 1; text-decoration: none; }
           }
         }
       }
+
     
       .footer-bar {
         max-width: var(--container-max);
@@ -788,8 +794,6 @@ body {
   border-radius: 4px;
   margin: 0;
 }
-
-
 
 header {
   position: relative; height: var(--container-height);

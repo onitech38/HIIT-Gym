@@ -37,7 +37,9 @@ HIIT Gym/(RAIZ)
 |   |__ nav.html
 |
 |
-|__ src
+|__ src ( Conteúdo multimédia )
+|
+|
 |__ user
 |   |__ user.css
 |   |__ user.html
@@ -78,10 +80,20 @@ Pretendo que:
 <!-- =========================================
 O QUE FALTA:
 ========================================== -->
-1. Blog
-Não estar a ter acesso ao blog, depois de estar logged
+1º USER(PERFIL)
+tentei simular uma inscrição diretamente e deu numa janela pop-up:
+"Erro ao inscrever. Tenta novamente." 
 
-2. Chat
+2º todas as páginas
+existe sempre um "frame flicker" quando, ou clico num link para, dentro da página, fazer scroll para o #local tipo que está a fazer refresh (parece que o nav esta a reentrar e a janela do chat abre e volta a fechar)
+
+3º to_top
+o botão do to_top não aparece ( ele tem uma animação que só aparece depois de o nav não estar visível )
+
+4º MODALIDADES(PÁGINA)
+o wizard da .inscricao, falta conteúdo/mas coisas no step 2 ( fui buscar uma versão do site [ onde tem como estava de meu agrado ] nos deploys do cloudflare ).
+
+5º Chat
 Não consigo colocar a funcionar o chat
 Erro que dá na consola:
 "chat.js:1 Uncaught SyntaxError: Identifier 'CHAT_LS_KEY' has already been declared (at chat.js:1:1)"
@@ -90,7 +102,7 @@ Erro que dá na consola:
     at async HTMLButtonElement.enviarMensagem (chat.js:236:22)
 enviarMensagem	@	chat.js:244"
 
-3. Email
+6º Email
 Resend — 3.000 emails/mês grátis:
 
 Integra diretamente com Supabase
@@ -98,7 +110,7 @@ Templates HTML bonitos
 API simples
 Para confirmações, notificações de inscrição, etc.
 
-4. Pagamentos
+7º Pagamentos
 Stripe — o melhor, sem mensalidade:
 
 Só cobras quando recebes (2.9% + 30¢ por transação)
