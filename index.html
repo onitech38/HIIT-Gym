@@ -511,43 +511,43 @@
         </section>
     </main>
 
-  <!-- SVG GLASS FILTER -->
-  <svg width="0" height="0" style="position:absolute;pointer-events:none">
-    <defs>
-      <filter id="glass-filter" x="-20%" y="-20%" width="140%" height="140%">
-        <feTurbulence type="fractalNoise" baseFrequency="0.010 0.018" numOctaves="3" seed="2" result="noise"/>
-        <feDisplacementMap in="SourceGraphic" in2="noise" scale="35" xChannelSelector="R" yChannelSelector="G"/>
-        <feColorMatrix type="saturate" values="1.2"/>
-        <feComposite in2="SourceGraphic" operator="in"/>
-      </filter>
-    </defs>
-  </svg>
+    <!-- SVG GLASS FILTER -->
+    <svg width="0" height="0" style="position:absolute;pointer-events:none">
+        <defs>
+        <filter id="glass-filter" x="-20%" y="-20%" width="140%" height="140%">
+            <feTurbulence type="fractalNoise" baseFrequency="0.010 0.018" numOctaves="3" seed="2" result="noise"/>
+            <feDisplacementMap in="SourceGraphic" in2="noise" scale="35" xChannelSelector="R" yChannelSelector="G"/>
+            <feColorMatrix type="saturate" values="1.2"/>
+            <feComposite in2="SourceGraphic" operator="in"/>
+        </filter>
+        </defs>
+    </svg>
 
   
-  <!-- Supabase -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.4/dist/umd/supabase.js"></script>
-  <script src="/supabase.js"></script>
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.4/dist/umd/supabase.js"></script>
+    <script src="/supabase.js"></script>
 
-  <!-- Dados -->
-  <script src="/js/data/config.js"></script>
-  <script src="/js/data/data-gym.js"></script>
-  <script src="/js/data/data-actividades.js"></script>
-  <script src="/js/data/data-blog.js"></script>
+    <!-- Dados -->
+    <script src="/js/data/config.js?v=2"></script>
+    <script src="/js/data/data-gym.js?v=2"></script>
+    <script src="/js/data/data-actividades.js?v=2"></script>
+    <script src="/js/data/data-blog.js?v=2"></script>
 
-  <!-- Core -->
-  <script src="/js/global.js?v=2"></script>
-  <script src="/js/script.js"></script>
+    <!-- Core -->
+    <script src="/js/global.js?v=2"></script>
+    <script src="/js/script.js?v=2"></script>
 
-  <script src="/chat.js"></script>
+    <script src="/chat.js"></script>
 
-  <!-- SERVICE WORKER -->
-  <script>
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/sw.js');
-      });
-    }
-  </script>
+    <!-- SERVICE WORKER -->
+    <script>
+        if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('/sw.js');
+        });
+        }
+    </script>
 
 </body>
 </html>
