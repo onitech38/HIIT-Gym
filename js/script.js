@@ -22,25 +22,6 @@
 // O JS só trata de: timer, guardar dados, fechar.
 // ============================================
 
-
-// ============================================
-// HOME SCRIPT
-// ============================================
-
-function initHome() {
-  bindLoginForm();
-  bindSignupForm();
-  bindWelcomeClose();
-
-  if (!window.currentUser) {
-    setTimeout(mostrarWelcome, 1000);
-  }
-}
-
-document.addEventListener('DOMContentLoaded', initHome, { once: true });
-
-
-
 function mostrarWelcome() {
   const welcome = document.getElementById('welcome');
   if (welcome) welcome.classList.add('visible');
@@ -50,26 +31,6 @@ function fecharWelcome() {
   const welcome = document.getElementById('welcome');
   if (welcome) welcome.classList.remove('visible');
 }
-
-
-// ── AUTO-OPEN LOGIN / SIGNUP VIA URL ─────────
-document.addEventListener('DOMContentLoaded', () => {
-  const params = new URLSearchParams(window.location.search);
-  const auth = params.get('auth');
-
-  if (!auth) return;
-
-  if (auth === 'login') {
-    document.getElementById('mode-login')?.click();
-    mostrarWelcome();
-  }
-
-  if (auth === 'signup') {
-    document.getElementById('mode-signup')?.click();
-    mostrarWelcome();
-  }
-});
-
 
 /** Formulário de LOGIN */
 function bindLoginForm() {
@@ -192,32 +153,33 @@ function bindWelcomeClose() {
   });
 }
 
-/** Timer de 1s — mostra o welcome se não estiver autenticado */
-window.addEventListener('load', async () => {
+/** Timer de 1s — mostra o welcome se não estiver autenticado.
+ *  Usa app:ready (global.js) para garantir que a sessão Supabase
+ *  já foi restaurada antes de decidir mostrar o modal.
+ */
+document.addEventListener('app:ready', () => {
   bindLoginForm();
   bindSignupForm();
   bindWelcomeClose();
 
-  const { data: { session } } = await window.supabaseClient.auth.getSession()
-    .catch(() => ({ data: { session: null } }));
+  // Auto-open via URL param (?auth=login ou ?auth=signup)
+  const auth = new URLSearchParams(window.location.search).get('auth');
+  if (auth === 'login') {
+    document.getElementById('mode-login')?.click();
+    mostrarWelcome();
+    return;
+  }
+  if (auth === 'signup') {
+    document.getElementById('mode-signup')?.click();
+    mostrarWelcome();
+    return;
+  }
 
-  
-  const params = new URLSearchParams(window.location.search);
-  const auth = params.get('auth');
-
-  if (!session && !auth) {
+  // Sem sessão → welcome após 1s
+  if (!window.currentUser) {
     setTimeout(mostrarWelcome, 1000);
   }
-
-});
-
-
-window.supabaseClient.auth.onAuthStateChange((event) => {  
-  if (event === 'SIGNED_IN' || event === 'INITIAL_SESSION') {
-    fecharWelcome();
-  }
-});
-
+}, { once: true });
 
 
 
@@ -452,10 +414,9 @@ window.addEventListener('load', () => {
 // BOTÃO "Área de Membro"
 // Se não está autenticado → abre form de signup
 // ============================================
-document.getElementById('btn-membro')?.addEventListener('click', async e => {
-  const { data: { session } } = await window.supabaseClient.auth.getSession()
-    .catch(() => ({ data: { session: null } }));
-  if (!session) {
+document.getElementById('btn-membro')?.addEventListener('click', e => {
+  // window.currentUser já está preenchido pelo global.js (app:ready)
+  if (!window.currentUser) {
     e.preventDefault();
     document.getElementById('mode-signup')?.click();
     mostrarWelcome();
