@@ -19,9 +19,7 @@ let selectedModality   = null;
 document.addEventListener('app:ready', init, { once: true });
 
 async function init() {
-  console.log('[modalidades] init arrancou | user:', window.currentUser?.email || 'null');
-
-  // window.currentUser já foi preenchido pelo global.js (app:ready)
+  // window.currentUser já resolvido pelo global.js antes de app:ready
   if (window.currentUser) {
     currentUser = window.currentUser;
     await Promise.all([loadProfile(), loadEnrollments()]);
@@ -436,7 +434,7 @@ async function submeterInscricao(e) {
     medical_notes: form.medical_notes?.value.trim() || null,
   };
 
-  const { error } = await window.supabase.from('enrollments').insert(payload);
+  const { error } = await window.supabaseClient.from('enrollments').insert(payload);
 
   btn.disabled = false;
   btn.innerHTML = 'Confirmar Inscrição <i class="fa-solid fa-check"></i>';
