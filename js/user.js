@@ -1,18 +1,28 @@
-// ============================================
-// USER.JS — TESTE DE VIDA
-// ============================================
+//============================================
+//   HIIT-GYM — USER.JS (RECUPERAÇÃO SEGURA)
+//============================================
 
 function init() {
-  console.log('[USER] init() chamado');
+  // ✅ prova absoluta de vida
+  console.log('[USER] init arrancou');
 
+  // ✅ revelar página
   document.body.classList.remove('loading');
 
-  const el = document.getElementById('app');
-  if (el) {
-    el.innerHTML = '<h1>✅ USER.JS ESTÁ A FUNCIONAR</h1>';
-  } else {
-    document.body.innerHTML = '<h1>✅ USER.JS ESTÁ A FUNCIONAR</h1>';
+  // ✅ escrever algo visível
+  let app = document.getElementById('app');
+  if (!app) {
+    app = document.createElement('div');
+    app.id = 'app';
+    app.style.padding = '2rem';
+    document.body.appendChild(app);
   }
+
+  app.innerHTML = `
+    <h1 style="color:#fba002">✅ USER.JS ESTÁ A FUNCIONAR</h1>
+    <p>O arranque da página privada foi restaurado.</p>
+  `;
 }
 
+// ✅ ÚNICO ponto de arranque
 document.addEventListener('app:ready', init, { once: true });
