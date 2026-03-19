@@ -72,13 +72,19 @@ async function actualizarNav() {
         if (data?.avatar_url) {
           img.style.backgroundImage = `url('${data.avatar_url}')`;
           img.textContent = '';
-        } else {
+        } else if (data?.first_name || data?.last_name) {
           img.textContent =
-            ((data?.first_name?.[0] || '') +
-             (data?.last_name?.[0] || '')).toUpperCase();
+            ((data.first_name?.[0] || '') +
+            (data.last_name?.[0] || '')).toUpperCase();
+        } else {
+          img.textContent = window.currentUser.email[0].toUpperCase();
         }
       }
-    } catch {}
+    } catch (e) {
+      if (img && window.currentUser?.email) {
+        img.textContent = window.currentUser.email[0].toUpperCase();
+      }
+    }
   } else {
     login.classList.remove('hidden');
     signup.classList.remove('hidden');
