@@ -36,7 +36,7 @@ async function init() {
   // Deep-link ?modal=key
   const key = new URLSearchParams(window.location.search).get('modal');
   if (key && modalidadesData[key]?.active) {
-    renderInscricaoStep2(key);
+    renderInscricaoStep1(key);
     scrollToInscricao();
   }
 }
