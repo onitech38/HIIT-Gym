@@ -370,7 +370,7 @@ body {
     
         .nav-content {
           max-width: 670px; padding: 0.5rem 1rem;
-          display: inline-flex; box-shadow: var(--bx-sdw); justify-content: space-around;
+          display: inline-flex; box-shadow: var(--bx-sdw); justify-content: space-around; gap: 1rem;
           .menu { display: inline-flex; align-items: center; }
           
           span { border-left: var(--border-size) var(--clr-4); border-right: var(--border-size) var(--clr-4); align-self: stretch;} /*.nav-separator*/
@@ -378,7 +378,6 @@ body {
     
         /* avatar */
         .nav-user-avatar {
-          display: inline-flex;
           align-items: center;
         }
         
@@ -410,7 +409,7 @@ body {
           .menu { flex-direction: column; align-items: center; gap: var(--gap-items); }
           &:has(.mobile-nav[open]) .nav-content {
             display: flex; margin-inline: auto;
-            span { width: 200px; border: var(--border-size) var(--clr-4); }
+            span { width: 200px; border: var(--border-size) var(--clr-4); place-self: center; }
           }
           
           .mobile-nav[open] > summary span:nth-child(1) { transform: translateY(8px) rotate(45deg); }
