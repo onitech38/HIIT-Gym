@@ -19,6 +19,82 @@ async function loadPartial(url) {
 }
 
 
+
+// ── SPLASH SCREEN ─────────────────────────────
+// Injectado imediatamente — cobre o conteúdo enquanto
+// a auth carrega. Removido no fim do boot().
+(function injectSplash() {
+  if (document.getElementById('hiit-splash')) return;
+
+  const style = document.createElement('style');
+  style.textContent = `
+    #hiit-splash {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      background: #120D0F;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 1.5rem;
+      transition: opacity 0.4s ease, visibility 0.4s ease;
+    }
+    #hiit-splash.fade-out {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+    #hiit-splash img {
+      width: 80px;
+      height: auto;
+      animation: splash-pulse 1.5s ease-in-out infinite;
+    }
+    #hiit-splash .splash-bar {
+      width: 120px;
+      height: 2px;
+      background: rgba(251,160,2,0.2);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+    #hiit-splash .splash-bar::after {
+      content: '';
+      display: block;
+      height: 100%;
+      width: 40%;
+      background: #fba002;
+      border-radius: 2px;
+      animation: splash-slide 1.2s ease-in-out infinite;
+    }
+    @keyframes splash-pulse {
+      0%, 100% { opacity: 0.7; transform: scale(1); }
+      50% { opacity: 1; transform: scale(1.05); }
+    }
+    @keyframes splash-slide {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(350%); }
+    }
+  `;
+  document.head.appendChild(style);
+
+  const splash = document.createElement('div');
+  splash.id = 'hiit-splash';
+  splash.innerHTML = `
+    <img src="/src/logo/logo_def1.svg" alt="HIIT-Gym">
+    <div class="splash-bar"></div>
+  `;
+
+  // Inserir antes de qualquer outro elemento do body
+  // Se o body ainda não existe, aguarda
+  if (document.body) {
+    document.body.prepend(splash);
+  } else {
+    document.addEventListener('DOMContentLoaded', () => {
+      document.body.prepend(splash);
+    });
+  }
+})();
+
 // ---------- NAV ----------
 async function injectNav() {
   const header = document.querySelector('header');
@@ -156,6 +232,16 @@ async function boot() {
   await initAuth();
   await actualizarNav();
   bindToTop();
+  // Remove splash com fade out
+  const splash = document.getElementById('hiit-splash');
+  if (splash) {
+    splash.classList.add('fade-out');
+    setTimeout(() => splash.remove(), 450);
+  }
+
+  // Remove body.loading (para páginas que ainda o usam)
+  document.body.classList.remove('loading');
+
   document.dispatchEvent(new Event('app:ready'));
 }
 

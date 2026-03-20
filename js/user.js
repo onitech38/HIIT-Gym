@@ -64,9 +64,11 @@ let currentEnrollments = [];
 // ============================================
 document.addEventListener('app:ready', async () => {
 
+  // Remove loading imediatamente — a página nunca fica preta
+  document.body.classList.remove('loading');
+
   // Verificar sessão — window.currentUser preenchido pelo global.js
-  // Se for null, tenta getSession() directamente antes de redirecionar
-  // (global.js pode ter disparado app:ready antes de getSession() terminar)
+  // Se null, tenta getSession() antes de redirecionar (race condition)
   if (!window.currentUser) {
     try {
       const { data: { session } } = await supabase.auth.getSession();
@@ -136,8 +138,7 @@ document.addEventListener('app:ready', async () => {
     };
   }
 
-  // 5. Mostrar o body — SEMPRE chega aqui, com ou sem dados
-  document.body.classList.remove('loading');
+  // 5. Body já visível (foi removido no início do handler)
 
   // 6. Preencher UI
   preencherNav();
@@ -617,6 +618,9 @@ document.getElementById('btn-delete-account')?.addEventListener('click', async (
 // ============================================
 window.addEventListener('pageshow', async (e) => {
   if (!e.persisted) return;
+
+  // Remove loading imediatamente (pode ter ficado activo do bfcache)
+  document.body.classList.remove('loading');
 
   try {
     const { data: { session } } =
