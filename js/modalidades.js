@@ -479,12 +479,17 @@ async function submeterInscricao(e) {
 // detecta isso e recarrega sempre as inscrições.
 // ============================================
 window.addEventListener('pageshow', async (e) => {
-  if (!e.persisted) return;         // navegação normal — já tratada
-  if (!currentUser && window.currentUser) {
-    currentUser = window.currentUser;
-  }
-  if (!currentUser) return;         // não autenticado — nada a fazer
-  await loadEnrollments();
-  renderModalidades();
-  inscricaoStep1();
+  if (!e.persisted) return; // navegação normal — já tratada
+
+  // Não depende de window.currentUser (pode estar null no bfcache restore)
+  // Lê directamente a sessão do Supabase
+  try {
+    const { data: { session } } = await window.supabaseClient.auth.getSession();
+    if (!session?.user) return; // não autenticado
+
+    currentUser = session.user;
+    await loadEnrollments();
+    renderModalidades();
+    inscricaoStep1();
+  } catch { /* Supabase indisponível — ignora */ }
 });
