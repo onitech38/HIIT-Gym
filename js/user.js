@@ -67,23 +67,21 @@ document.addEventListener('app:ready', async () => {
   // Remove loading imediatamente — a página nunca fica preta
   document.body.classList.remove('loading');
 
-  // Verificar sessão — window.currentUser preenchido pelo global.js
-  // Se null, tenta getSession() antes de redirecionar (race condition)
-  if (!window.currentUser) {
-    try {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session?.user) {
-        window.currentUser = session.user;
-      } else {
-        window.location.href = '/index.html';
-        return;
-      }
-    } catch {
-      window.location.href = '/index.html';
-      return;
-    }
+  // Verificar sessão SEMPRE via getSession() — não depende de window.currentUser
+  // Elimina a race condition entre global.js e user.js
+  let session = null;
+  try {
+    const { data } = await supabase.auth.getSession();
+    session = data?.session;
+  } catch { /* rede indisponível */ }
+
+  if (!session?.user) {
+    window.location.href = '/index.html';
+    return;
   }
-  currentUser = window.currentUser;
+
+  currentUser = session.user;
+  window.currentUser = session.user; // sincroniza com global.js
 
   // 2–4. Carregar dados do Supabase
   // try/catch garante que a página NUNCA fica preta mesmo que o Supabase falhe
