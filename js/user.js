@@ -63,25 +63,12 @@ let currentEnrollments = [];
 // INIT — aguarda app:ready do global.js
 // ============================================
 document.addEventListener('app:ready', async () => {
-
-  // Remove loading imediatamente — a página nunca fica preta
-  document.body.classList.remove('loading');
-
-  // Verificar sessão SEMPRE via getSession() — não depende de window.currentUser
-  // Elimina a race condition entre global.js e user.js
-  let session = null;
-  try {
-    const { data } = await supabase.auth.getSession();
-    session = data?.session;
-  } catch { /* rede indisponível */ }
-
-  if (!session?.user) {
+  // window.currentUser garantido pelo global.js antes de app:ready disparar
+  if (!window.currentUser) {
     window.location.href = '/index.html';
     return;
   }
-
-  currentUser = session.user;
-  window.currentUser = session.user; // sincroniza com global.js
+  currentUser = window.currentUser;
 
   // 2–4. Carregar dados do Supabase
   // try/catch garante que a página NUNCA fica preta mesmo que o Supabase falhe
@@ -139,7 +126,6 @@ document.addEventListener('app:ready', async () => {
   // 5. Body já visível (foi removido no início do handler)
 
   // 6. Preencher UI
-  preencherNav();
   preencherSidebar();
   preencherDashboard();
   preencherTreinos();
@@ -152,11 +138,6 @@ document.addEventListener('app:ready', async () => {
 
 });
 
-
-// ── NAV ──────────────────────────────────────
-function preencherNav() {
-  actualizarNav(); // global.js
-}
 
 
 // ── SIDEBAR ───────────────────────────────────
@@ -394,8 +375,7 @@ function preencherFormPerfil() {
     } else {
       Object.assign(currentProfile, updates);
       preencherSidebar();
-      preencherNav();
-      erro.classList.add('hidden');
+          erro.classList.add('hidden');
       sucesso.classList.remove('hidden');
       setTimeout(() => sucesso.classList.add('hidden'), 3000);
     }
@@ -610,52 +590,3 @@ document.getElementById('btn-delete-account')?.addEventListener('click', async (
   }
 });
 
-
-// ============================================
-// BFCACHE — forçar reload do perfil em mobile
-// ============================================
-window.addEventListener('pageshow', async (e) => {
-  if (!e.persisted) return;
-
-  // Remove loading imediatamente (pode ter ficado activo do bfcache)
-  document.body.classList.remove('loading');
-
-  try {
-    const { data: { session } } =
-      await supabase.auth.getSession();
-    if (!session?.user) {
-      window.location.href = '/index.html';
-      return;
-    }
-    // Actualiza dados e re-renderiza
-    currentUser = session.user;
-    const { data: profile } = await supabase
-      .from('profiles').select('*')
-      .eq('id', currentUser.id).single();
-    if (profile) {
-      currentProfile = profile;
-      currentProfile.email = currentUser.email;
-    }
-    const { data: treinos } = await supabase
-      .from('trainings').select('*')
-      .eq('user_id', currentUser.id)
-      .order('date', { ascending: false });
-    currentTrainings = treinos || [];
-
-    const { data: enrollments } = await supabase
-      .from('enrollments').select('*')
-      .eq('user_id', currentUser.id);
-    currentEnrollments = enrollments || [];
-
-    document.body.classList.remove('loading');
-    preencherSidebar();
-    preencherDashboard();
-    preencherTreinos();
-    preencherModalidades();
-    preencherFormPerfil();
-    preencherQR();
-    actualizarNav();
-  } catch (err) {
-    console.warn('[user] pageshow error:', err);
-  }
-});

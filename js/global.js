@@ -1,51 +1,106 @@
 // ============================================
-// GLOBAL.JS — FONTE ÚNICA DE AUTH + ARRANQUE
+// GLOBAL.JS — fonte única de auth, arranque,
+// splash e nav. Todas as páginas dependem disto.
+//
+// CONTRATO:
+//   • window.currentUser  → null | User (após boot)
+//   • window.supabaseClient → cliente Supabase
+//   • app:ready → dispara quando auth está resolvida
+//     e nav/footer já estão no DOM
+//   • actualizarNav() → exportada para page scripts
+//   • ini(str) → exportada para page scripts
 // ============================================
 
+
+// ── 1. ANTI-FLASH ─────────────────────────────
+// Esconde o HTML imediatamente via JS se o inline
+// CSS do <head> não estiver presente (fallback).
+// O reveal é feito em removeSplash().
+if (!document.documentElement.style.visibility) {
+  document.documentElement.style.visibility = 'hidden';
+}
+
+
+// ── 2. ESTADO GLOBAL ──────────────────────────
 window.currentUser    = null;
 window.currentSession = null;
 
 
-// ---------- SPLASH ----------
-// Injectado imediatamente quando o script carrega
-// Cobre o conteúdo enquanto a auth resolve
+// ── 3. SPLASH ─────────────────────────────────
 (function injectSplash() {
   if (document.getElementById('hiit-splash')) return;
 
   const style = document.createElement('style');
+  style.id = 'hiit-splash-style';
   style.textContent = `
+    html { background: #120D0F; }
     #hiit-splash {
       position: fixed; inset: 0; z-index: 9999;
       background: #120D0F;
       display: flex; flex-direction: column;
       align-items: center; justify-content: center; gap: 1.5rem;
-      transition: opacity 0.4s ease, visibility 0.4s ease;
     }
-    #hiit-splash.fade-out { opacity: 0; visibility: hidden; pointer-events: none; }
-    #hiit-splash img { width: 80px; height: auto; animation: sp-pulse 1.5s ease-in-out infinite; }
-    #hiit-splash .sp-bar { width: 120px; height: 2px; background: rgba(251,160,2,0.2); border-radius: 2px; overflow: hidden; }
-    #hiit-splash .sp-bar::after { content: ''; display: block; height: 100%; width: 40%; background: #fba002; border-radius: 2px; animation: sp-slide 1.2s ease-in-out infinite; }
-    @keyframes sp-pulse { 0%,100%{opacity:.7;transform:scale(1)} 50%{opacity:1;transform:scale(1.05)} }
-    @keyframes sp-slide  { 0%{transform:translateX(-100%)} 100%{transform:translateX(350%)} }
+    #hiit-splash img {
+      width: 72px; height: auto;
+      animation: sp-pulse 1.4s ease-in-out infinite;
+    }
+    #hiit-splash .sp-bar {
+      width: 100px; height: 2px;
+      background: rgba(251,160,2,0.15);
+      border-radius: 2px; overflow: hidden;
+    }
+    #hiit-splash .sp-bar::after {
+      content: ''; display: block;
+      height: 100%; width: 35%; background: #fba002;
+      border-radius: 2px;
+      animation: sp-slide 1.1s ease-in-out infinite;
+    }
+    @keyframes sp-pulse {
+      0%,100% { opacity:.6; transform:scale(1); }
+      50%     { opacity:1;  transform:scale(1.06); }
+    }
+    @keyframes sp-slide {
+      0%   { transform:translateX(-100%); }
+      100% { transform:translateX(370%); }
+    }
   `;
   document.head.appendChild(style);
 
-  const el = document.createElement('div');
-  el.id = 'hiit-splash';
-  el.innerHTML = `<img src="/src/logo/logo_def1.svg" alt="HIIT-Gym"><div class="sp-bar"></div>`;
+  function mountSplash() {
+    if (document.getElementById('hiit-splash')) return;
+    const el = document.createElement('div');
+    el.id = 'hiit-splash';
+    el.innerHTML = `
+      <img src="/src/logo/logo_def1.svg" alt="HIIT-Gym">
+      <div class="sp-bar"></div>
+    `;
+    document.body.prepend(el);
+  }
 
-  const attach = () => document.body?.prepend(el);
-  document.body ? attach() : document.addEventListener('DOMContentLoaded', attach);
+  document.body ? mountSplash()
+    : document.addEventListener('DOMContentLoaded', mountSplash);
 })();
 
 function removeSplash() {
-  const el = document.getElementById('hiit-splash');
-  if (el) { el.classList.add('fade-out'); setTimeout(() => el.remove(), 450); }
+  // Revela o HTML com transição suave
+  document.documentElement.style.transition = 'opacity 0.35s ease';
+  document.documentElement.style.opacity    = '1';
+  document.documentElement.style.visibility = 'visible';
   document.body.classList.remove('loading');
+
+  // Remove o overlay
+  const el = document.getElementById('hiit-splash');
+  if (!el) return;
+  el.style.transition = 'opacity 0.35s ease';
+  el.style.opacity    = '0';
+  setTimeout(() => {
+    el.remove();
+    document.getElementById('hiit-splash-style')?.remove();
+  }, 380);
 }
 
 
-// ---------- UTILS ----------
+// ── 4. UTILS ──────────────────────────────────
 function ini(str) {
   if (!str) return '';
   return str.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
@@ -58,40 +113,43 @@ async function loadPartial(url) {
 }
 
 
-// ---------- NAV ----------
+// ── 5. NAV / FOOTER ───────────────────────────
 async function injectNav() {
   const header = document.querySelector('header');
   if (!header || header.querySelector('nav')) return;
   try {
     const html = await loadPartial('/partials/nav.html');
     header.insertAdjacentHTML('afterbegin', html);
-  } catch { /* partial não existe nesta página */ }
+  } catch { /* página tem nav próprio */ }
 }
 
-
-// ---------- FOOTER ----------
 async function injectFooter() {
   if (document.querySelector('footer')) return;
   try {
     const html = await loadPartial('/partials/footer.html');
     document.body.insertAdjacentHTML('beforeend', html);
-  } catch { /* partial não existe nesta página */ }
+  } catch { /* página tem footer próprio */ }
 }
 
 
-// ---------- AUTH ----------
+// ── 6. AUTH ───────────────────────────────────
+// getSession() é chamado UMA vez por boot().
+// Todas as páginas lêem window.currentUser — nunca
+// chamam getSession() directamente.
 async function initAuth() {
   if (!window.supabaseClient) return;
   try {
-    const { data: { session } } = await window.supabaseClient.auth.getSession();
-    window.currentSession = session;
+    const { data: { session } } =
+      await window.supabaseClient.auth.getSession();
+    window.currentSession = session || null;
     window.currentUser    = session?.user || null;
   } catch {
     window.currentUser = null;
   }
 }
 
-// Listener permanente — actualiza nav em SIGNED_IN/OUT após boot
+// Listener permanente — reage a eventos pós-boot
+// (login no welcome, logout, token refresh)
 if (window.supabaseClient) {
   window.supabaseClient.auth.onAuthStateChange(async (event, session) => {
     if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
@@ -103,11 +161,12 @@ if (window.supabaseClient) {
       window.currentUser    = null;
       await actualizarNav();
     }
+    // INITIAL_SESSION ignorado — initAuth() já tratou disso
   });
 }
 
 
-// ---------- NAV AUTH ----------
+// ── 7. NAV AUTH ───────────────────────────────
 async function actualizarNav() {
   const login  = document.getElementById('nav-login');
   const signup = document.getElementById('nav-signup');
@@ -124,16 +183,18 @@ async function actualizarNav() {
     if (!img) return;
     try {
       const { data } = await window.supabaseClient
-        .from('profiles').select('first_name,last_name,avatar_url')
-        .eq('id', window.currentUser.id).single();
+        .from('profiles')
+        .select('first_name,last_name,avatar_url')
+        .eq('id', window.currentUser.id)
+        .single();
 
       if (data?.avatar_url) {
         img.style.backgroundImage = `url('${data.avatar_url}')`;
         img.textContent = '';
       } else {
-        img.textContent = ((data?.first_name?.[0] || '') + (data?.last_name?.[0] || '')).toUpperCase()
-          || window.currentUser.email?.[0]?.toUpperCase() || '';
         img.style.backgroundImage = '';
+        img.textContent = ini(`${data?.first_name || ''} ${data?.last_name || ''}`.trim())
+          || window.currentUser.email?.[0]?.toUpperCase() || '';
       }
     } catch {
       img.textContent = window.currentUser.email?.[0]?.toUpperCase() || '';
@@ -146,7 +207,7 @@ async function actualizarNav() {
 }
 
 
-// ---------- TO-TOP ----------
+// ── 8. TO-TOP ─────────────────────────────────
 function bindToTop() {
   const tryBind = () => {
     const btn = document.querySelector('.q_a .to_top');
@@ -157,12 +218,14 @@ function bindToTop() {
     return true;
   };
   if (tryBind()) return;
-  const obs = new MutationObserver(() => { if (tryBind()) obs.disconnect(); });
+  const obs = new MutationObserver(() => {
+    if (tryBind()) obs.disconnect();
+  });
   obs.observe(document.body, { childList: true, subtree: true });
 }
 
 
-// ---------- ANCHOR LINKS ----------
+// ── 9. ANCHOR LINKS ───────────────────────────
 function bindAnchorLinks() {
   document.querySelectorAll('a[href*="#"]').forEach(a => {
     try {
@@ -170,7 +233,8 @@ function bindAnchorLinks() {
       if (url.pathname === location.pathname && url.hash) {
         a.addEventListener('click', e => {
           e.preventDefault();
-          document.querySelector(url.hash)?.scrollIntoView({ behavior: 'smooth' });
+          document.querySelector(url.hash)
+            ?.scrollIntoView({ behavior: 'smooth' });
         });
       }
     } catch { /* href inválido */ }
@@ -178,43 +242,50 @@ function bindAnchorLinks() {
 }
 
 
-// ---------- BOOT ----------
+// ── 10. BOOT ──────────────────────────────────
+// Ponto de entrada único. Corre no DOMContentLoaded
+// e em cada bfcache restore (pageshow.persisted).
+//
+// Garante SEMPRE:
+//   • splash visível durante o carregamento
+//   • window.currentUser definido antes de app:ready
+//   • splash removido antes de app:ready
+//   • página nunca fica preta (safetyTimer)
 let _booted = false;
 
 async function boot() {
-  // Timeout de segurança — splash desaparece sempre após 6s
-  const safetyTimer = setTimeout(removeSplash, 6000);
+  const safetyTimer = setTimeout(removeSplash, 4000);
 
   try {
-    if (_booted) {
-      // Bfcache restore: não re-injeta, só actualiza auth e nav
-      await initAuth();
-      await actualizarNav();
-      document.dispatchEvent(new Event('app:ready'));
-      return;
+    if (!_booted) {
+      _booted = true;
+      await injectNav();
+      await injectFooter();
+      bindAnchorLinks();
+      bindToTop();
     }
-    _booted = true;
 
-    await injectNav();
-    await injectFooter();
-    bindAnchorLinks();
-    await initAuth();
-    await actualizarNav();
-    bindToTop();
+    await initAuth();      // define window.currentUser
+    await actualizarNav(); // actualiza nav com estado real
+
+    clearTimeout(safetyTimer);
+    removeSplash(); // revela página ANTES de app:ready
+
     document.dispatchEvent(new Event('app:ready'));
 
   } catch (err) {
     console.error('[global] boot error:', err);
-  } finally {
-    // Sempre remove o splash — com ou sem erro
     clearTimeout(safetyTimer);
     removeSplash();
+    document.dispatchEvent(new Event('app:ready'));
   }
 }
 
 window.addEventListener('DOMContentLoaded', boot);
 
-// Bfcache restore (botão "voltar" do browser)
+// Bfcache restore — re-corre boot() completo
+// Garante que todas as páginas actualizam o estado
+// sem reload manual, em todos os browsers e mobile
 window.addEventListener('pageshow', e => {
   if (e.persisted) boot();
 });

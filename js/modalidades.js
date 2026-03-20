@@ -20,6 +20,7 @@ let selectedModality   = null;
 document.addEventListener('app:ready', () => { init(); });
 
 async function init() {
+  // window.currentUser garantido pelo global.js antes de app:ready
   if (window.currentUser) {
     currentUser = window.currentUser;
     await Promise.all([loadProfile(), loadEnrollments()]);
@@ -28,8 +29,6 @@ async function init() {
   renderModalidades();
   renderEquipa();
   inscricaoStep1();
-
-  document.body.classList.remove('loading');
 
   // Deep-link ?modal=key
   const key = new URLSearchParams(window.location.search).get('modal');
@@ -456,25 +455,3 @@ async function submeterInscricao(e) {
 }
 
 
-// ============================================
-// BFCACHE — forçar reload de inscrições
-// Em mobile, o browser pode restaurar a página
-// do bfcache sem re-executar scripts nem disparar
-// app:ready. O evento pageshow com persisted:true
-// detecta isso e recarrega sempre as inscrições.
-// ============================================
-window.addEventListener('pageshow', async (e) => {
-  if (!e.persisted) return; // navegação normal — já tratada
-
-  // Não depende de window.currentUser (pode estar null no bfcache restore)
-  // Lê directamente a sessão do Supabase
-  try {
-    const { data: { session } } = await window.supabaseClient.auth.getSession();
-    if (!session?.user) return; // não autenticado
-
-    currentUser = session.user;
-    await loadEnrollments();
-    renderModalidades();
-    inscricaoStep1();
-  } catch { /* Supabase indisponível — ignora */ }
-});

@@ -1,161 +1,163 @@
 <!DOCTYPE html>
 <html lang="pt-PT">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>html{visibility:hidden;background:#120D0F}</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <!-- SEO / Social -->
-  <meta name="description" content="Uma academia desportiva à disposição de todos completa com diversas modalidades">
-  <meta property="og:title" content="HIIT-Gym Montijo">
-  <meta property="og:description" content="O teu ginásio HIIT em Montijo.">
-  <meta property="og:image" content="/src/og-image.jpg">
-  <meta property="og:type" content="website">
+    <!-- SEO / Social -->
+    <meta name="description" content="Uma academia desportiva à disposição de todos completa com diversas modalidades">
+    <meta property="og:title" content="HIIT-Gym Montijo">
+    <meta property="og:description" content="O teu ginásio HIIT em Montijo.">
+    <meta property="og:image" content="/src/og-image.jpg">
+    <meta property="og:type" content="website">
 
-  <title>HIIT-Gym · A academia desportiva completa</title>
+    <title>HIIT-Gym · A academia desportiva completa</title>
 
-  <!-- PWA -->
-  <link rel="manifest" href="/manifest.json">
-  <meta name="theme-color" content="#fba002">
+    <!-- PWA -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#fba002">
+    
 
-  <!-- Favicon -->
-  <link rel="icon" type="image/svg+xml" href="/src/logo/favicon.svg">
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/src/logo/favicon.svg">
 
-  <!-- Preloads -->
-  <link rel="preload" href="/style.css?v=1.0.0" as="style">
-  <link rel="preload" href="/src/modalidades/pexels-dimkidama-6796964.webp" as="image">
+    <!-- Preloads -->
+    <link rel="preload" href="/style.css?v=1.0.0" as="style">
+    <link rel="preload" href="/src/modalidades/pexels-dimkidama-6796964.webp" as="image">
 
-  <!-- Fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Jost:ital,wght@0,100..900;1,100..900&family=Saira:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Jost:ital,wght@0,100..900;1,100..900&family=Saira:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
 
-  <!-- Icons -->
-  <link rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
-        crossorigin="anonymous"
-        referrerpolicy="no-referrer">
+    <!-- Icons -->
+    <link rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
+            crossorigin="anonymous"
+            referrerpolicy="no-referrer">
 
-  <!-- Global CSS -->
-  <link rel="stylesheet" href="/style.css?v=1.0.0">
+    <!-- Global CSS -->
+    <link rel="stylesheet" href="/style.css?v=1.0.0">
 </head>
 
 <body id="home">
-  <!-- AUTH / WELCOME MODAL -->
-  <aside class="welcome" id="welcome" role="dialog" aria-modal="true" aria-label="Login ou Criar Conta">
-    <input type="radio" name="auth-mode" id="mode-login" checked hidden>
-    <input type="radio" name="auth-mode" id="mode-signup" hidden>
+    <!-- AUTH / WELCOME MODAL -->
+    <aside class="welcome" id="welcome" role="dialog" aria-modal="true" aria-label="Login ou Criar Conta">
+        <input type="radio" name="auth-mode" id="mode-login" checked hidden>
+        <input type="radio" name="auth-mode" id="mode-signup" hidden>
 
-    <div class="welcome-backdrop" id="welcome-backdrop" aria-hidden="true"></div>
+        <div class="welcome-backdrop" id="welcome-backdrop" aria-hidden="true"></div>
 
-    <div class="welcome-panel glass">
+        <div class="welcome-panel glass">
 
-      <div class="welcome-header">
-        <a href="/index.html">
-          <img src="/src/logo/logo_def1.svg" alt="Hiit-Gym" class="welcome-logo">
-        </a>
-        <button class="btn icon glass" id="welcome-skip" aria-label="Fechar e continuar sem conta">
-          <i class="fa-solid fa-xmark"></i>
-        </button>
-      </div>
-
-      <div class="welcome-hero">
-        <h2>Get ready to <span>HIIT</span> your body</h2>
-      </div>
-
-      <div class="auth-tabs" role="tablist">
-        <label for="mode-login" class="auth-tab">Login</label>
-        <label for="mode-signup" class="auth-tab">Criar Conta</label>
-      </div>
-
-      <!-- Login -->
-      <form class="auth-form login-form" id="form-login" novalidate>
-        <div class="campo">
-          <label for="l-email">Email</label>
-          <input id="l-email" type="email" name="email" required autocomplete="email">
+        <div class="welcome-header">
+            <a href="/index.html">
+            <img src="/src/logo/logo_def1.svg" alt="Hiit-Gym" class="welcome-logo">
+            </a>
+            <button class="btn icon glass" id="welcome-skip" aria-label="Fechar e continuar sem conta">
+            <i class="fa-solid fa-xmark"></i>
+            </button>
         </div>
-        <div class="campo">
-          <label for="l-pass">Password</label>
-          <input id="l-pass" type="password" name="password" required autocomplete="current-password">
-        </div>
-        <p class="form-error hidden" id="login-error" role="alert">Email ou password incorretos.</p>
-        <button type="submit" class="btn glass">Entrar <i class="fa-solid fa-arrow-right"></i></button>
-      </form>
 
-      <!-- Signup -->
-      <form class="auth-form signup-form" id="form-signup" novalidate>
-        <div class="campos-row">
-          <div class="campo">
-            <label for="s-fname">Primeiro Nome</label>
-            <input id="s-fname" type="text" name="firstName" required autocomplete="given-name">
-          </div>
-          <div class="campo">
-            <label for="s-lname">Último Nome</label>
-            <input id="s-lname" type="text" name="lastName" required autocomplete="family-name">
-          </div>
+        <div class="welcome-hero">
+            <h2>Get ready to <span>HIIT</span> your body</h2>
         </div>
-        <div class="campo">
-          <label for="s-email">Email</label>
-          <input id="s-email" type="email" name="email" required autocomplete="email">
+
+        <div class="auth-tabs" role="tablist">
+            <label for="mode-login" class="auth-tab">Login</label>
+            <label for="mode-signup" class="auth-tab">Criar Conta</label>
         </div>
-        <div class="campo">
-          <label for="s-pass">Password</label>
-          <input id="s-pass" type="password" name="password" minlength="6" required autocomplete="new-password">
-        </div>
-        <p class="form-error hidden" id="signup-error" role="alert"></p>
-        <button type="submit" class="btn glass">Criar Conta <i class="fa-solid fa-arrow-right"></i></button>
-      </form>
 
-    </div>
-  </aside>
-
-  <!-- TO TOP / CHAT -->
-  <aside class="q_a">
-    <a class="btn to_top icon-small glass" href="#home">
-      <i class="fa-solid fa-arrow-up-from-bracket"></i>
-    </a>
-    <button class="chat icon glass">
-      <i class="fa-regular fa-comment-dots fa-flip-horizontal"></i>
-    </button>
-  </aside>
-
-  <header>
-    <img class="bg" src="/src/BG_hero-home.jpg" alt="Imagem de um ginásio">
-
-    <div class="hero">
-      <div class="text_anim">
-        <h1 class="hiit">hiit</h1>
-        <div class="list_text">
-          <h1 class="text">the floor</h1>
-          <h1 class="text">the pool</h1>
-          <h1 class="text">the road</h1>
-          <h1 class="text">until you fall</h1>
-          <h1 class="text">the gym</h1>
-        </div>
-      </div>
-      <button class="btn_large glass">free visit now</button>
-    </div>
-    
-        
-    <details name="map" id="map">
-        <summary class="btn icon glass" aria-label="Botão para abrir o mapa">
-            <i class="fa-solid fa-arrows-split-up-and-left" ></i>
-        </summary>
-    
-        <section class="local">
-            <iframe 
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3111.123!2d-9.123!3d38.123!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMzjCsDA3JzIzLjQiTiA5wrAwNycyMy40Ilc!5e0!3m2!1spt-PT!2spt!4v1234567890"
-                style="border:0;" allowfullscreen="" loading="lazy">
-            </iframe>
-            <div class="local-info">
-                <div class="info">
-                    <p>Morada: Rua Exemplo, 123, Montijo</p>
-                    <p>Horário: Seg-Sex 6h-22h | Sáb-Dom 8h-20h</p>
-                </div>
-                <a class="link-btn" href="/" aria-label="Link para agendar visita a academia">FREE VISIT NOW</a>
+        <!-- Login -->
+        <form class="auth-form login-form" id="form-login" novalidate>
+            <div class="campo">
+            <label for="l-email">Email</label>
+            <input id="l-email" type="email" name="email" required autocomplete="email">
             </div>
-        </section>
-    </details>
-  </header>
+            <div class="campo">
+            <label for="l-pass">Password</label>
+            <input id="l-pass" type="password" name="password" required autocomplete="current-password">
+            </div>
+            <p class="form-error hidden" id="login-error" role="alert">Email ou password incorretos.</p>
+            <button type="submit" class="btn glass">Entrar <i class="fa-solid fa-arrow-right"></i></button>
+        </form>
+
+        <!-- Signup -->
+        <form class="auth-form signup-form" id="form-signup" novalidate>
+            <div class="campos-row">
+            <div class="campo">
+                <label for="s-fname">Primeiro Nome</label>
+                <input id="s-fname" type="text" name="firstName" required autocomplete="given-name">
+            </div>
+            <div class="campo">
+                <label for="s-lname">Último Nome</label>
+                <input id="s-lname" type="text" name="lastName" required autocomplete="family-name">
+            </div>
+            </div>
+            <div class="campo">
+            <label for="s-email">Email</label>
+            <input id="s-email" type="email" name="email" required autocomplete="email">
+            </div>
+            <div class="campo">
+            <label for="s-pass">Password</label>
+            <input id="s-pass" type="password" name="password" minlength="6" required autocomplete="new-password">
+            </div>
+            <p class="form-error hidden" id="signup-error" role="alert"></p>
+            <button type="submit" class="btn glass">Criar Conta <i class="fa-solid fa-arrow-right"></i></button>
+        </form>
+
+        </div>
+    </aside>
+
+    <!-- TO TOP / CHAT -->
+    <aside class="q_a">
+        <a class="btn to_top icon-small glass" href="#home">
+        <i class="fa-solid fa-arrow-up-from-bracket"></i>
+        </a>
+        <button class="chat icon glass">
+        <i class="fa-regular fa-comment-dots fa-flip-horizontal"></i>
+        </button>
+    </aside>
+
+    <header>
+        <img class="bg" src="/src/BG_hero-home.jpg" alt="Imagem de um ginásio">
+
+        <div class="hero">
+        <div class="text_anim">
+            <h1 class="hiit">hiit</h1>
+            <div class="list_text">
+            <h1 class="text">the floor</h1>
+            <h1 class="text">the pool</h1>
+            <h1 class="text">the road</h1>
+            <h1 class="text">until you fall</h1>
+            <h1 class="text">the gym</h1>
+            </div>
+        </div>
+        <button class="btn_large glass">free visit now</button>
+        </div>
+        
+            
+        <details name="map" id="map">
+            <summary class="btn icon glass" aria-label="Botão para abrir o mapa">
+                <i class="fa-solid fa-arrows-split-up-and-left" ></i>
+            </summary>
+        
+            <section class="local">
+                <iframe 
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3111.123!2d-9.123!3d38.123!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMzjCsDA3JzIzLjQiTiA5wrAwNycyMy40Ilc!5e0!3m2!1spt-PT!2spt!4v1234567890"
+                    style="border:0;" allowfullscreen="" loading="lazy">
+                </iframe>
+                <div class="local-info">
+                    <div class="info">
+                        <p>Morada: Rua Exemplo, 123, Montijo</p>
+                        <p>Horário: Seg-Sex 6h-22h | Sáb-Dom 8h-20h</p>
+                    </div>
+                    <a class="link-btn" href="/" aria-label="Link para agendar visita a academia">FREE VISIT NOW</a>
+                </div>
+            </section>
+        </details>
+    </header>
   
     
     <main>
@@ -528,14 +530,14 @@
     <script src="/supabase.js"></script>
 
     <!-- Dados -->
-    <script src="/js/data/config.js?v=7"></script>
-    <script src="/js/data/data-gym.js?v=7"></script>
-    <script src="/js/data/data-actividades.js?v=7"></script>
-    <script src="/js/data/data-blog.js?v=7"></script>
+    <script src="/js/data/config.js?v=8"></script>
+    <script src="/js/data/data-gym.js?v=8"></script>
+    <script src="/js/data/data-actividades.js?v=8"></script>
+    <script src="/js/data/data-blog.js?v=8"></script>
 
     <!-- Core -->
-    <script src="/js/global.js?v=7"></script>
-    <script src="/js/script.js?v=7"></script>
+    <script src="/js/global.js?v=8"></script>
+    <script src="/js/script.js?v=8"></script>
 
     <script src="/chat.js"></script>
 
