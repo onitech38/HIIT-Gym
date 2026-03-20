@@ -19,7 +19,6 @@ let selectedModality   = null;
 document.addEventListener('app:ready', init, { once: true });
 
 async function init() {
-  // window.currentUser já resolvido pelo global.js antes de app:ready
   if (window.currentUser) {
     currentUser = window.currentUser;
     await Promise.all([loadProfile(), loadEnrollments()]);
@@ -447,7 +446,7 @@ async function submeterInscricao(e) {
   }
 
   // Actualiza estado local e re-renderiza cards
-  await carregarInscricoes();
+  await loadEnrollments();
   renderModalidades();
 
   // Mostra mensagem de sucesso (esconde form)
