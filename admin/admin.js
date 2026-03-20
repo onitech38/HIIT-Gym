@@ -1,548 +1,391 @@
-/* ============================================
-   ADMIN.CSS — Painel de Administração HIIT-Gym
-   Nested dentro de body#admin-page
-   ============================================ */
+// ============================================
+// ADMIN.JS — Painel de Administração HIIT-Gym
+//
+// Depende de:
+//   • supabase.js  → window.supabaseClient
+//   • global.js    → window.currentUser, app:ready
+//
+// SEGURANÇA:
+//   • Verifica sessão Supabase
+//   • Verifica profiles.is_admin = true
+//   • Sem is_admin → redireciona para index
+// ============================================
 
-body#admin-page {
-  min-height: 100svh;
-  display: flex;
-  flex-direction: column;
-  background: var(--clr-3);
+const sb = window.supabaseClient;
 
-  & section {
-    animation: none !important;
-    opacity: 1 !important;
-    transform: none !important;
+const PLANOS = ['none', 'basico', 'standard', 'premium'];
+
+const MODALIDADES_LABEL = {
+  musculacao:   'Musculação',
+  cardio:       'Cardio',
+  yoga_pilates: 'Yoga & Pilates',
+  lutas:        'Lutas e Artes Marciais',
+  zumba_danca:  'Zumba e Danças',
+  natacao:      'Natação',
+};
+
+// ── Estado ────────────────────────────────────
+let todosMembros = [];
+
+
+// ============================================
+// INIT
+// ============================================
+document.addEventListener('app:ready', async () => {
+
+  // 1. Verificar autenticação
+  if (!window.currentUser) {
+    window.location.href = '/index.html';
+    return;
   }
 
-  /* ── HEADER ─────────────────────────────── */
-  & .admin-header {
-    height: auto !important;  /* override style.css header { height: 100svh } */
-    position: sticky;
-    top: 0;
-    z-index: 50;
-    background: var(--clr-3);
-    border-bottom: 1px solid rgba(251,160,2,0.2);
+  // 2. Verificar flag admin na base de dados
+  const { data: profile } = await sb
+    .from('profiles')
+    .select('is_admin, first_name, last_name')
+    .eq('id', window.currentUser.id)
+    .single();
 
-    & nav {
-      max-width: var(--container-max);
-      margin-inline: auto;
-      padding: 0.75rem 1.5rem;
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      flex-wrap: wrap;
-
-      & .admin-badge {
-        display: flex;
-        align-items: center;
-        gap: 0.4rem;
-        font-size: 0.72rem;
-        font-weight: 600;
-        letter-spacing: 0.14em;
-        text-transform: uppercase;
-        color: var(--clr-4);
-        padding: 0.3rem 0.75rem;
-        border: 1px solid rgba(251,160,2,0.3);
-        border-radius: 100px;
-
-        & i { font-size: 0.65rem; }
-      }
-
-      & #btn-logout-admin {
-        margin-left: auto;
-        font-size: 0.75rem;
-        color: var(--clr-2);
-        opacity: 0.6;
-        &:hover { opacity: 1; }
-      }
-    }
+  if (!profile?.is_admin) {
+    window.location.href = '/index.html';
+    return;
   }
 
-  /* ── TABS ────────────────────────────────── */
-  & .admin-tabs {
-    display: flex;
-    gap: 0;
-    border-bottom: 1px solid rgba(251,160,2,0.15);
-    max-width: var(--container-max);
-    margin-inline: auto;
-    width: 100%;
-    padding-inline: 1.5rem;
+  // 3. Mostrar página
+  document.body.classList.remove('loading');
 
-    & .admin-tab {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      padding: 0.85rem 1.25rem;
-      font-size: 0.78rem;
-      font-weight: 500;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: var(--clr-2);
-      opacity: 0.5;
-      background: none;
-      border: none;
-      border-bottom: 2px solid transparent;
-      cursor: pointer;
-      font-family: var(--fnt-body);
-      position: relative;
-      bottom: -1px;
-      transition: color var(--tempo) ease, opacity var(--tempo) ease, border-color var(--tempo) ease;
+  // 4. Carregar dados
+  await Promise.all([
+    carregarInscricoes(),
+    carregarMembros(),
+  ]);
 
-      &:hover { opacity: 0.85; color: var(--clr-1); }
+  // 5. Binds
+  bindTabs();
+  bindLogout();
+  bindSearchMembros();
+  document.getElementById('btn-refresh-insc')
+    ?.addEventListener('click', carregarInscricoes);
 
-      &.active {
-        color: var(--clr-4);
-        opacity: 1;
-        border-bottom-color: var(--clr-4);
-      }
+});
 
-      & .badge {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        min-width: 1.25rem;
-        height: 1.25rem;
-        padding: 0 0.35rem;
-        background: var(--clr-4);
-        color: var(--clr-3);
-        font-size: 0.6rem;
-        font-weight: 700;
-        border-radius: 100px;
 
-        &:empty, &[data-count="0"] { display: none; }
-      }
-    }
-  }
-
-  /* ── MAIN ────────────────────────────────── */
-  & .admin-main {
-    flex: 1;
-    max-width: var(--container-max);
-    margin-inline: auto;
-    width: 100%;
-    padding: 2rem 1.5rem;
-  }
-
-  & .admin-section {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-    width: 100%;
-
-    &.hidden { display: none; }
-
-    & .section-header {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      flex-wrap: wrap;
-
-      & h2 {
-        font-size: clamp(1.1rem, 2vw, 1.5rem);
-        color: var(--clr-1);
-        text-align: start;
-        letter-spacing: 0.08em;
-        margin: 0;
-        flex: 1;
-      }
-
-      & .section-desc {
-        width: 100%;
-        font-size: 0.8rem;
-        color: var(--clr-2);
-        opacity: 0.6;
-        margin: 0;
-        text-align: start;
-      }
-    }
-  }
-
-  /* ── SEARCH ─────────────────────────────── */
-  & .search-wrap {
-    position: relative;
-    display: flex;
-    align-items: center;
-
-    & i {
-      position: absolute;
-      left: 0.75rem;
-      color: var(--clr-2);
-      opacity: 0.4;
-      font-size: 0.78rem;
-      pointer-events: none;
-    }
-
-    & input {
-      padding: 0.5rem 0.85rem 0.5rem 2.2rem;
-      background: rgba(18,13,15,0.6);
-      border: 1.5px solid rgba(185,207,212,0.1);
-      border-bottom-color: rgba(251,160,2,0.3);
-      border-radius: var(--border-radius);
-      color: var(--clr-1);
-      font-family: var(--fnt-body);
-      font-size: 0.82rem;
-      outline: none;
-      width: 240px;
-      transition: border-color var(--tempo) ease;
-
-      &:focus { border-color: var(--clr-4); }
-      &::placeholder { color: var(--clr-2); opacity: 0.35; }
-    }
-  }
-
-  /* ── LISTA ADMIN ─────────────────────────── */
-  & .admin-lista {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-
-    & .empty-state {
-      padding: 3rem 1rem;
-      text-align: center;
-      color: var(--clr-2);
-      opacity: 0.4;
-      font-size: 0.85rem;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 0.75rem;
-
-      & i { font-size: 2rem; color: var(--clr-4); }
-    }
-
-    & .loading-state {
-      padding: 2rem;
-      text-align: center;
-      color: var(--clr-2);
-      opacity: 0.5;
-      font-size: 0.82rem;
-    }
-  }
-
-  /* ── CARD DE INSCRIÇÃO ───────────────────── */
-  & .insc-card {
-    display: grid;
-    grid-template-columns: 1fr auto;
-    align-items: center;
-    gap: 1.5rem;
-    padding: 1.25rem 1.5rem;
-    border: 1px solid rgba(251,160,2,0.1);
-    border-radius: var(--border-radius);
-    background: rgba(18,13,15,0.5);
-    transition: border-color var(--tempo) ease;
-
-    &:hover { border-color: rgba(251,160,2,0.25); }
-
-    & .insc-info {
-      display: flex;
-      flex-direction: column;
-      gap: 0.35rem;
-    }
-
-    & .insc-nome {
-      font-family: var(--fnt-sign);
-      font-size: 0.95rem;
-      font-weight: 600;
-      color: var(--clr-1);
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-    }
-
-    & .insc-email {
-      font-size: 0.72rem;
-      color: var(--clr-2);
-      opacity: 0.55;
-      letter-spacing: 0.02em;
-    }
-
-    & .insc-meta {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      flex-wrap: wrap;
-      margin-top: 0.25rem;
-    }
-
-    & .insc-modalidade {
-      font-size: 0.7rem;
-      font-weight: 600;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: var(--clr-4);
-      padding: 0.2rem 0.65rem;
-      border: 1px solid rgba(251,160,2,0.3);
-      border-radius: 100px;
-    }
-
-    & .insc-data {
-      font-size: 0.68rem;
-      color: var(--clr-2);
-      opacity: 0.5;
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
-    }
-
-    & .insc-saude-info {
-      font-size: 0.68rem;
-      color: var(--clr-aviso);
-      display: flex;
-      align-items: center;
-      gap: 0.3rem;
-      & i { font-size: 0.65rem; }
-    }
-
-    & .insc-acoes {
-      display: flex;
-      gap: 0.5rem;
-      flex-shrink: 0;
-
-      & .btn-confirmar {
-        padding: 0.5rem 1rem;
-        font-size: 0.72rem;
-        letter-spacing: 0.08em;
-        text-transform: uppercase;
-        color: var(--clr-sucesso);
-        border: 1px solid rgba(100,200,120,0.3);
-        border-radius: var(--border-radius);
-        background: rgba(100,200,120,0.08);
-        cursor: pointer;
-        font-family: var(--fnt-body);
-        display: flex;
-        align-items: center;
-        gap: 0.4rem;
-        transition: background var(--tempo) ease, border-color var(--tempo) ease;
-
-        &:hover { background: rgba(100,200,120,0.15); border-color: rgba(100,200,120,0.5); }
-        &:disabled { opacity: 0.4; cursor: default; }
-      }
-
-      & .btn-rejeitar {
-        padding: 0.5rem 1rem;
-        font-size: 0.72rem;
-        letter-spacing: 0.08em;
-        text-transform: uppercase;
-        color: var(--clr-aviso);
-        border: 1px solid var(--clr-aviso-brdr);
-        border-radius: var(--border-radius);
-        background: transparent;
-        cursor: pointer;
-        font-family: var(--fnt-body);
-        display: flex;
-        align-items: center;
-        gap: 0.4rem;
-        transition: background var(--tempo) ease;
-
-        &:hover { background: var(--clr-aviso-bg); }
-        &:disabled { opacity: 0.4; cursor: default; }
-      }
-    }
-
-    @media (max-width: 600px) {
-      grid-template-columns: 1fr;
-
-      & .insc-acoes { justify-content: flex-end; }
-    }
-  }
-
-  /* ── CARD DE MEMBRO ──────────────────────── */
-  & .membro-card {
-    display: grid;
-    grid-template-columns: auto 1fr auto;
-    align-items: center;
-    gap: 1rem;
-    padding: 1rem 1.5rem;
-    border: 1px solid rgba(185,207,212,0.08);
-    border-radius: var(--border-radius);
-    background: rgba(18,13,15,0.4);
-    transition: border-color var(--tempo) ease, background var(--tempo) ease;
-
-    &:hover { border-color: rgba(251,160,2,0.15); background: rgba(18,13,15,0.6); }
-
-    & .membro-avatar {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      border: 1.5px solid var(--clr-4);
-      background-size: cover;
-      background-position: center;
-      background-color: var(--clr-transp);
-      display: grid;
-      place-items: center;
-      font-family: var(--fnt-sign);
-      font-size: 0.85rem;
-      font-weight: 700;
-      color: var(--clr-4);
-      flex-shrink: 0;
-    }
-
-    & .membro-info {
-      display: flex;
-      flex-direction: column;
-      gap: 0.15rem;
-      min-width: 0;
-
-      & .membro-nome {
-        font-size: 0.88rem;
-        color: var(--clr-1);
-        font-weight: 500;
-        letter-spacing: 0.02em;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-      }
-
-      & .membro-email {
-        font-size: 0.68rem;
-        color: var(--clr-2);
-        opacity: 0.5;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-      }
-    }
-
-    & .membro-plano {
-      font-size: 0.65rem;
-      font-weight: 600;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      padding: 0.25rem 0.65rem;
-      border-radius: 100px;
-      flex-shrink: 0;
-
-      &.basico   { background: rgba(185,207,212,0.1); color: var(--clr-2); border: 1px solid rgba(185,207,212,0.2); }
-      &.standard { background: rgba(251,160,2,0.12);  color: var(--clr-4); border: 1px solid rgba(251,160,2,0.25); }
-      &.premium  { background: rgba(255,215,0,0.1);   color: #ffd700;      border: 1px solid rgba(255,215,0,0.25); }
-      &.none     { background: rgba(185,207,212,0.06); color: var(--clr-2); opacity: 0.5; border: 1px solid rgba(185,207,212,0.1); }
-    }
-  }
-
-  /* ── CARD DE PLANO ───────────────────────── */
-  & .plano-card {
-    display: grid;
-    grid-template-columns: auto 1fr auto;
-    align-items: center;
-    gap: 1rem;
-    padding: 1rem 1.5rem;
-    border: 1px solid rgba(185,207,212,0.08);
-    border-radius: var(--border-radius);
-    background: rgba(18,13,15,0.4);
-
-    & .plano-avatar {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      border: 1.5px solid var(--clr-4);
-      background-size: cover;
-      background-position: center;
-      background-color: var(--clr-transp);
-      display: grid;
-      place-items: center;
-      font-family: var(--fnt-sign);
-      font-size: 0.85rem;
-      font-weight: 700;
-      color: var(--clr-4);
-    }
-
-    & .plano-info {
-      display: flex;
-      flex-direction: column;
-      gap: 0.15rem;
-      min-width: 0;
-
-      & .plano-nome {
-        font-size: 0.88rem;
-        color: var(--clr-1);
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-      }
-
-      & .plano-email {
-        font-size: 0.68rem;
-        color: var(--clr-2);
-        opacity: 0.5;
-      }
-    }
-
-    & .plano-selector {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-
-      & select {
-        padding: 0.45rem 0.75rem;
-        background: rgba(18,13,15,0.8);
-        border: 1.5px solid rgba(185,207,212,0.1);
-        border-bottom-color: rgba(251,160,2,0.3);
-        border-radius: var(--border-radius);
-        color: var(--clr-1);
-        font-family: var(--fnt-body);
-        font-size: 0.78rem;
-        outline: none;
-        cursor: pointer;
-
-        &:focus { border-color: var(--clr-4); }
-        & option { background: var(--clr-3); }
-      }
-
-      & .btn-save-plano {
-        padding: 0.45rem 0.85rem;
-        font-size: 0.72rem;
-        letter-spacing: 0.06em;
-        text-transform: uppercase;
-        color: var(--clr-4);
-        border: 1px solid rgba(251,160,2,0.3);
-        border-radius: var(--border-radius);
-        background: rgba(251,160,2,0.08);
-        cursor: pointer;
-        font-family: var(--fnt-body);
-        transition: background var(--tempo) ease;
-        white-space: nowrap;
-
-        &:hover { background: rgba(251,160,2,0.15); }
-        &:disabled { opacity: 0.4; cursor: default; }
-      }
-    }
-
-    @media (max-width: 560px) {
-      grid-template-columns: auto 1fr;
-
-      & .plano-selector {
-        grid-column: 1 / -1;
-        justify-content: flex-end;
-      }
-    }
-  }
-
-  /* ── TOAST ───────────────────────────────── */
-  & .admin-toast {
-    position: fixed;
-    bottom: 1.5rem;
-    right: 1.5rem;
-    z-index: 500;
-    padding: 0.75rem 1.25rem;
-    border-radius: var(--border-radius);
-    font-size: 0.82rem;
-    font-family: var(--fnt-body);
-    color: var(--clr-1);
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    box-shadow: 0 4px 24px rgba(0,0,0,0.4);
-    animation: toast-in 0.3s cubic-bezier(0.34,1.56,0.64,1) both;
-
-    &.toast-ok    { background: rgba(100,200,120,0.15); border: 1px solid rgba(100,200,120,0.4); }
-    &.toast-erro  { background: rgba(255,107,107,0.15); border: 1px solid rgba(255,107,107,0.4); }
-    &.hidden { display: none; }
-  }
+// ============================================
+// TABS
+// ============================================
+function bindTabs() {
+  document.querySelectorAll('.admin-tab').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.admin-tab').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.admin-section').forEach(s => s.classList.add('hidden'));
+      btn.classList.add('active');
+      document.getElementById(`tab-${btn.dataset.tab}`)?.classList.remove('hidden');
+    });
+  });
 }
 
-/* ── Animações ─────────────────────────────── */
-@layer animations {
-  @keyframes toast-in {
-    from { opacity: 0; transform: translateY(8px) scale(0.96); }
-    to   { opacity: 1; transform: translateY(0) scale(1); }
+
+// ============================================
+// LOGOUT
+// ============================================
+function bindLogout() {
+  document.getElementById('btn-logout-admin')?.addEventListener('click', async () => {
+    await sb.auth.signOut();
+    window.location.href = '/index.html';
+  });
+}
+
+
+// ============================================
+// INSCRIÇÕES
+// ============================================
+async function carregarInscricoes() {
+  const lista = document.getElementById('inscricoes-lista');
+  lista.innerHTML = `<div class="loading-state"><i class="fa-solid fa-rotate fa-spin"></i> A carregar…</div>`;
+
+  const { data, error } = await sb
+    .from('enrollments')
+    .select(`
+      id,
+      modality,
+      status,
+      has_health,
+      health_notes,
+      physio,
+      medical_ref,
+      medical_notes,
+      created_at,
+      user_id,
+      profiles:user_id (
+        id,
+        first_name,
+        last_name,
+        avatar_url
+      )
+    `)
+    .eq('status', 'pending')
+    .order('created_at', { ascending: true });
+
+  if (error) {
+    lista.innerHTML = `<div class="empty-state"><i class="fa-solid fa-triangle-exclamation"></i> Erro ao carregar inscrições.</div>`;
+    console.error('Erro inscrições:', error);
+    return;
   }
+
+  // Email não está no profile (está no auth) — usamos o UUID abreviado
+  const enriched = (data || []).map(enr => ({
+    ...enr,
+    email: enr.user_id ? enr.user_id.slice(0, 8) + '…' : '—'
+  }));
+
+  // Actualizar badge
+  const badge = document.getElementById('badge-pendentes');
+  if (badge) badge.textContent = enriched.length || '';
+
+  if (enriched.length === 0) {
+    lista.innerHTML = `
+      <div class="empty-state">
+        <i class="fa-solid fa-circle-check"></i>
+        Sem inscrições pendentes.
+      </div>`;
+    return;
+  }
+
+  lista.innerHTML = enriched.map(enr => {
+    const p      = enr.profiles || {};
+    const nome   = [p.first_name, p.last_name].filter(Boolean).join(' ') || '—';
+    const mod    = MODALIDADES_LABEL[enr.modality] || enr.modality;
+    const data   = new Date(enr.created_at).toLocaleDateString('pt-PT');
+    const temSaude = enr.has_health || enr.physio || enr.medical_ref;
+
+    return `
+      <div class="insc-card" data-id="${enr.id}">
+        <div class="insc-info">
+          <span class="insc-nome">${nome}</span>
+          <span class="insc-email">${enr.email}</span>
+          <div class="insc-meta">
+            <span class="insc-modalidade">${mod}</span>
+            <span class="insc-data"><i class="fa-regular fa-clock"></i> ${data}</span>
+            ${temSaude ? `<span class="insc-saude-info"><i class="fa-solid fa-heart-pulse"></i> Info de saúde</span>` : ''}
+          </div>
+          ${enr.health_notes ? `<div style="font-size:.72rem;color:var(--clr-2);opacity:.7;margin-top:.35rem;font-style:italic">"${enr.health_notes}"</div>` : ''}
+        </div>
+        <div class="insc-acoes">
+          <button class="btn-confirmar" data-id="${enr.id}">
+            <i class="fa-solid fa-check"></i> Confirmar
+          </button>
+          <button class="btn-rejeitar" data-id="${enr.id}">
+            <i class="fa-solid fa-xmark"></i> Rejeitar
+          </button>
+        </div>
+      </div>`;
+  }).join('');
+
+  // Binds
+  lista.querySelectorAll('.btn-confirmar').forEach(btn => {
+    btn.addEventListener('click', () => accionarInscricao(btn.dataset.id, 'active'));
+  });
+  lista.querySelectorAll('.btn-rejeitar').forEach(btn => {
+    btn.addEventListener('click', () => accionarInscricao(btn.dataset.id, 'rejected'));
+  });
+}
+
+async function accionarInscricao(id, novoStatus) {
+  const card = document.querySelector(`.insc-card[data-id="${id}"]`);
+  const btns = card?.querySelectorAll('button');
+  btns?.forEach(b => { b.disabled = true; });
+
+  const { error } = await sb
+    .from('enrollments')
+    .update({ status: novoStatus })
+    .eq('id', id);
+
+  if (error) {
+    toast('Erro ao actualizar inscrição.', 'erro');
+    btns?.forEach(b => { b.disabled = false; });
+    return;
+  }
+
+  const msg = novoStatus === 'active' ? '✓ Inscrição confirmada!' : '✗ Inscrição rejeitada.';
+  toast(msg, novoStatus === 'active' ? 'ok' : 'erro');
+
+  // Remover card com animação
+  card.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+  card.style.opacity = '0';
+  card.style.transform = 'translateX(20px)';
+  setTimeout(() => {
+    card.remove();
+    // Actualizar badge
+    const restantes = document.querySelectorAll('.insc-card').length;
+    const badge = document.getElementById('badge-pendentes');
+    if (badge) badge.textContent = restantes || '';
+    if (restantes === 0) {
+      document.getElementById('inscricoes-lista').innerHTML = `
+        <div class="empty-state">
+          <i class="fa-solid fa-circle-check"></i>
+          Sem inscrições pendentes.
+        </div>`;
+    }
+  }, 300);
+}
+
+
+// ============================================
+// MEMBROS
+// ============================================
+async function carregarMembros() {
+  const listaM = document.getElementById('membros-lista');
+  const listaP = document.getElementById('planos-lista');
+
+  listaM.innerHTML = `<div class="loading-state"><i class="fa-solid fa-rotate fa-spin"></i> A carregar…</div>`;
+
+  const { data, error } = await sb
+    .from('profiles')
+    .select('id, first_name, last_name, avatar_url, plan, is_admin')
+    .order('first_name', { ascending: true });
+
+  if (error) {
+    listaM.innerHTML = `<div class="empty-state"><i class="fa-solid fa-triangle-exclamation"></i> Erro ao carregar membros.</div>`;
+    return;
+  }
+
+  todosMembros = data || [];
+  renderMembros(todosMembros);
+  renderPlanos(todosMembros);
+}
+
+function iniciais(p) {
+  return ((p.first_name?.[0] || '') + (p.last_name?.[0] || '')).toUpperCase()
+    || '?';
+}
+
+function renderMembros(lista) {
+  const listaEl = document.getElementById('membros-lista');
+  if (lista.length === 0) {
+    listaEl.innerHTML = `<div class="empty-state"><i class="fa-solid fa-users"></i> Sem membros.</div>`;
+    return;
+  }
+
+  listaEl.innerHTML = lista.map(p => {
+    const nome  = [p.first_name, p.last_name].filter(Boolean).join(' ') || 'Sem nome';
+    const plano = p.plan || 'none';
+    const avatarStyle = p.avatar_url
+      ? `style="background-image:url('${p.avatar_url}')"`
+      : '';
+
+    return `
+      <div class="membro-card">
+        <div class="membro-avatar" ${avatarStyle}>${p.avatar_url ? '' : iniciais(p)}</div>
+        <div class="membro-info">
+          <span class="membro-nome">${nome}${p.is_admin ? ' <span style="color:var(--clr-4);font-size:.6rem">ADMIN</span>' : ''}</span>
+          <span class="membro-email">${p.id}</span>
+        </div>
+        <span class="membro-plano ${plano}">${plano === 'none' ? 'Sem plano' : plano}</span>
+      </div>`;
+  }).join('');
+}
+
+function renderPlanos(lista) {
+  const listaEl = document.getElementById('planos-lista');
+  if (lista.length === 0) {
+    listaEl.innerHTML = `<div class="empty-state"><i class="fa-solid fa-users"></i> Sem membros.</div>`;
+    return;
+  }
+
+  listaEl.innerHTML = lista.map(p => {
+    const nome  = [p.first_name, p.last_name].filter(Boolean).join(' ') || 'Sem nome';
+    const plano = p.plan || 'none';
+    const avatarStyle = p.avatar_url
+      ? `style="background-image:url('${p.avatar_url}')"`
+      : '';
+
+    const options = PLANOS.map(pl =>
+      `<option value="${pl}" ${pl === plano ? 'selected' : ''}>${pl === 'none' ? 'Sem plano' : pl}</option>`
+    ).join('');
+
+    return `
+      <div class="plano-card" data-userid="${p.id}">
+        <div class="plano-avatar" ${avatarStyle}>${p.avatar_url ? '' : iniciais(p)}</div>
+        <div class="plano-info">
+          <span class="plano-nome">${nome}</span>
+          <span class="plano-email">${p.id.slice(0,8)}…</span>
+        </div>
+        <div class="plano-selector">
+          <select class="plano-select" data-userid="${p.id}" data-plano-atual="${plano}">
+            ${options}
+          </select>
+          <button class="btn-save-plano" data-userid="${p.id}">
+            <i class="fa-solid fa-floppy-disk"></i> Guardar
+          </button>
+        </div>
+      </div>`;
+  }).join('');
+
+  // Binds
+  listaEl.querySelectorAll('.btn-save-plano').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const userId = btn.dataset.userid;
+      const select = listaEl.querySelector(`.plano-select[data-userid="${userId}"]`);
+      guardarPlano(userId, select?.value, btn);
+    });
+  });
+}
+
+async function guardarPlano(userId, novoPlano, btn) {
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
+
+  const { error } = await sb
+    .from('profiles')
+    .update({ plan: novoPlano === 'none' ? null : novoPlano })
+    .eq('id', userId);
+
+  btn.disabled = false;
+  btn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Guardar';
+
+  if (error) {
+    toast('Erro ao actualizar plano.', 'erro');
+    return;
+  }
+
+  toast(`Plano actualizado: ${novoPlano === 'none' ? 'sem plano' : novoPlano}`, 'ok');
+
+  // Actualiza estado local
+  const membro = todosMembros.find(m => m.id === userId);
+  if (membro) membro.plan = novoPlano === 'none' ? null : novoPlano;
+}
+
+
+// ============================================
+// SEARCH MEMBROS
+// ============================================
+function bindSearchMembros() {
+  const input = document.getElementById('search-membros');
+  input?.addEventListener('input', () => {
+    const q = input.value.toLowerCase().trim();
+    if (!q) { renderMembros(todosMembros); return; }
+    const filtrado = todosMembros.filter(p => {
+      const nome = `${p.first_name || ''} ${p.last_name || ''}`.toLowerCase();
+      return nome.includes(q) || p.id.includes(q);
+    });
+    renderMembros(filtrado);
+  });
+}
+
+
+// ============================================
+// TOAST
+// ============================================
+let _toastTimer = null;
+
+function toast(msg, tipo = 'ok') {
+  const el = document.getElementById('admin-toast');
+  if (!el) return;
+  if (_toastTimer) clearTimeout(_toastTimer);
+
+  el.textContent = msg;
+  el.className = `admin-toast toast-${tipo}`;
+  _toastTimer = setTimeout(() => {
+    el.classList.add('hidden');
+  }, 3000);
 }
