@@ -6,6 +6,45 @@ window.currentUser    = null;
 window.currentSession = null;
 
 
+// ---------- SPLASH ----------
+// Injectado imediatamente quando o script carrega
+// Cobre o conteúdo enquanto a auth resolve
+(function injectSplash() {
+  if (document.getElementById('hiit-splash')) return;
+
+  const style = document.createElement('style');
+  style.textContent = `
+    #hiit-splash {
+      position: fixed; inset: 0; z-index: 9999;
+      background: #120D0F;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 1.5rem;
+      transition: opacity 0.4s ease, visibility 0.4s ease;
+    }
+    #hiit-splash.fade-out { opacity: 0; visibility: hidden; pointer-events: none; }
+    #hiit-splash img { width: 80px; height: auto; animation: sp-pulse 1.5s ease-in-out infinite; }
+    #hiit-splash .sp-bar { width: 120px; height: 2px; background: rgba(251,160,2,0.2); border-radius: 2px; overflow: hidden; }
+    #hiit-splash .sp-bar::after { content: ''; display: block; height: 100%; width: 40%; background: #fba002; border-radius: 2px; animation: sp-slide 1.2s ease-in-out infinite; }
+    @keyframes sp-pulse { 0%,100%{opacity:.7;transform:scale(1)} 50%{opacity:1;transform:scale(1.05)} }
+    @keyframes sp-slide  { 0%{transform:translateX(-100%)} 100%{transform:translateX(350%)} }
+  `;
+  document.head.appendChild(style);
+
+  const el = document.createElement('div');
+  el.id = 'hiit-splash';
+  el.innerHTML = `<img src="/src/logo/logo_def1.svg" alt="HIIT-Gym"><div class="sp-bar"></div>`;
+
+  const attach = () => document.body?.prepend(el);
+  document.body ? attach() : document.addEventListener('DOMContentLoaded', attach);
+})();
+
+function removeSplash() {
+  const el = document.getElementById('hiit-splash');
+  if (el) { el.classList.add('fade-out'); setTimeout(() => el.remove(), 450); }
+  document.body.classList.remove('loading');
+}
+
+
 // ---------- UTILS ----------
 function ini(str) {
   if (!str) return '';
@@ -14,86 +53,10 @@ function ini(str) {
 
 async function loadPartial(url) {
   const res = await fetch(url);
-  if (!res.ok) throw new Error(`Erro ao carregar ${url}`);
+  if (!res.ok) throw new Error(`404: ${url}`);
   return res.text();
 }
 
-
-
-// ── SPLASH SCREEN ─────────────────────────────
-// Injectado imediatamente — cobre o conteúdo enquanto
-// a auth carrega. Removido no fim do boot().
-(function injectSplash() {
-  if (document.getElementById('hiit-splash')) return;
-
-  const style = document.createElement('style');
-  style.textContent = `
-    #hiit-splash {
-      position: fixed;
-      inset: 0;
-      z-index: 9999;
-      background: #120D0F;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 1.5rem;
-      transition: opacity 0.4s ease, visibility 0.4s ease;
-    }
-    #hiit-splash.fade-out {
-      opacity: 0;
-      visibility: hidden;
-      pointer-events: none;
-    }
-    #hiit-splash img {
-      width: 80px;
-      height: auto;
-      animation: splash-pulse 1.5s ease-in-out infinite;
-    }
-    #hiit-splash .splash-bar {
-      width: 120px;
-      height: 2px;
-      background: rgba(251,160,2,0.2);
-      border-radius: 2px;
-      overflow: hidden;
-    }
-    #hiit-splash .splash-bar::after {
-      content: '';
-      display: block;
-      height: 100%;
-      width: 40%;
-      background: #fba002;
-      border-radius: 2px;
-      animation: splash-slide 1.2s ease-in-out infinite;
-    }
-    @keyframes splash-pulse {
-      0%, 100% { opacity: 0.7; transform: scale(1); }
-      50% { opacity: 1; transform: scale(1.05); }
-    }
-    @keyframes splash-slide {
-      0% { transform: translateX(-100%); }
-      100% { transform: translateX(350%); }
-    }
-  `;
-  document.head.appendChild(style);
-
-  const splash = document.createElement('div');
-  splash.id = 'hiit-splash';
-  splash.innerHTML = `
-    <img src="/src/logo/logo_def1.svg" alt="HIIT-Gym">
-    <div class="splash-bar"></div>
-  `;
-
-  // Inserir antes de qualquer outro elemento do body
-  // Se o body ainda não existe, aguarda
-  if (document.body) {
-    document.body.prepend(splash);
-  } else {
-    document.addEventListener('DOMContentLoaded', () => {
-      document.body.prepend(splash);
-    });
-  }
-})();
 
 // ---------- NAV ----------
 async function injectNav() {
@@ -102,7 +65,7 @@ async function injectNav() {
   try {
     const html = await loadPartial('/partials/nav.html');
     header.insertAdjacentHTML('afterbegin', html);
-  } catch { /* partial não existe — continua */ }
+  } catch { /* partial não existe nesta página */ }
 }
 
 
@@ -112,19 +75,15 @@ async function injectFooter() {
   try {
     const html = await loadPartial('/partials/footer.html');
     document.body.insertAdjacentHTML('beforeend', html);
-  } catch { /* partial não existe — continua */ }
+  } catch { /* partial não existe nesta página */ }
 }
 
 
 // ---------- AUTH ----------
-// getSession() lê directamente do localStorage — simples e fiável.
-// onAuthStateChange fica permanente para actualizar nav em SIGNED_IN/OUT.
 async function initAuth() {
   if (!window.supabaseClient) return;
-
   try {
-    const { data: { session } } =
-      await window.supabaseClient.auth.getSession();
+    const { data: { session } } = await window.supabaseClient.auth.getSession();
     window.currentSession = session;
     window.currentUser    = session?.user || null;
   } catch {
@@ -132,8 +91,7 @@ async function initAuth() {
   }
 }
 
-
-// Listener permanente — só para eventos pós-boot
+// Listener permanente — actualiza nav em SIGNED_IN/OUT após boot
 if (window.supabaseClient) {
   window.supabaseClient.auth.onAuthStateChange(async (event, session) => {
     if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
@@ -145,7 +103,6 @@ if (window.supabaseClient) {
       window.currentUser    = null;
       await actualizarNav();
     }
-    // INITIAL_SESSION ignorado — getSession() já tratou disso
   });
 }
 
@@ -165,30 +122,22 @@ async function actualizarNav() {
     avatar.classList.remove('hidden');
 
     if (!img) return;
-
     try {
       const { data } = await window.supabaseClient
-        .from('profiles')
-        .select('first_name,last_name,avatar_url')
-        .eq('id', window.currentUser.id)
-        .single();
+        .from('profiles').select('first_name,last_name,avatar_url')
+        .eq('id', window.currentUser.id).single();
 
       if (data?.avatar_url) {
         img.style.backgroundImage = `url('${data.avatar_url}')`;
         img.textContent = '';
-      } else if (data?.first_name || data?.last_name) {
-        img.textContent =
-          ((data.first_name?.[0] || '') +
-           (data.last_name?.[0]  || '')).toUpperCase();
       } else {
-        img.textContent =
-          window.currentUser.email?.[0]?.toUpperCase() || '';
+        img.textContent = ((data?.first_name?.[0] || '') + (data?.last_name?.[0] || '')).toUpperCase()
+          || window.currentUser.email?.[0]?.toUpperCase() || '';
+        img.style.backgroundImage = '';
       }
     } catch {
-      img.textContent =
-        window.currentUser.email?.[0]?.toUpperCase() || '';
+      img.textContent = window.currentUser.email?.[0]?.toUpperCase() || '';
     }
-
   } else {
     login.classList.remove('hidden');
     signup.classList.remove('hidden');
@@ -208,16 +157,12 @@ function bindToTop() {
     return true;
   };
   if (tryBind()) return;
-  const obs = new MutationObserver(() => {
-    if (tryBind()) obs.disconnect();
-  });
+  const obs = new MutationObserver(() => { if (tryBind()) obs.disconnect(); });
   obs.observe(document.body, { childList: true, subtree: true });
 }
 
 
 // ---------- ANCHOR LINKS ----------
-// Links âncora na mesma página — scroll suave em vez de reload
-// Corre após injectNav() para apanhar os links do partial
 function bindAnchorLinks() {
   document.querySelectorAll('a[href*="#"]').forEach(a => {
     try {
@@ -225,49 +170,51 @@ function bindAnchorLinks() {
       if (url.pathname === location.pathname && url.hash) {
         a.addEventListener('click', e => {
           e.preventDefault();
-          document.querySelector(url.hash)
-            ?.scrollIntoView({ behavior: 'smooth' });
+          document.querySelector(url.hash)?.scrollIntoView({ behavior: 'smooth' });
         });
       }
-    } catch { /* href inválido — ignora */ }
+    } catch { /* href inválido */ }
   });
 }
 
 
-// ---------- INIT GLOBAL ----------
+// ---------- BOOT ----------
 let _booted = false;
 
 async function boot() {
-  if (_booted) {
-    // Bfcache restore: auth já está no localStorage, getSession() é rápido
+  // Timeout de segurança — splash desaparece sempre após 6s
+  const safetyTimer = setTimeout(removeSplash, 6000);
+
+  try {
+    if (_booted) {
+      // Bfcache restore: não re-injeta, só actualiza auth e nav
+      await initAuth();
+      await actualizarNav();
+      document.dispatchEvent(new Event('app:ready'));
+      return;
+    }
+    _booted = true;
+
+    await injectNav();
+    await injectFooter();
+    bindAnchorLinks();
     await initAuth();
     await actualizarNav();
+    bindToTop();
     document.dispatchEvent(new Event('app:ready'));
-    return;
-  }
-  _booted = true;
-  await injectNav();
-  await injectFooter();
-  bindAnchorLinks();
-  await initAuth();
-  await actualizarNav();
-  bindToTop();
-  // Remove splash com fade out
-  const splash = document.getElementById('hiit-splash');
-  if (splash) {
-    splash.classList.add('fade-out');
-    setTimeout(() => splash.remove(), 450);
-  }
 
-  // Remove body.loading (para páginas que ainda o usam)
-  document.body.classList.remove('loading');
-
-  document.dispatchEvent(new Event('app:ready'));
+  } catch (err) {
+    console.error('[global] boot error:', err);
+  } finally {
+    // Sempre remove o splash — com ou sem erro
+    clearTimeout(safetyTimer);
+    removeSplash();
+  }
 }
 
 window.addEventListener('DOMContentLoaded', boot);
 
-// Bfcache restore
+// Bfcache restore (botão "voltar" do browser)
 window.addEventListener('pageshow', e => {
   if (e.persisted) boot();
 });
