@@ -62,13 +62,23 @@ let currentEnrollments = [];
 // ============================================
 // INIT — aguarda app:ready do global.js
 // ============================================
+// Flag para evitar re-inicialização duplicada na mesma sessão de página
+let _userInited = false;
+
 document.addEventListener('app:ready', async () => {
+
+  // Bfcache restore: já iniciado, só actualiza nav e avatar
+  if (_userInited) {
+    await actualizarNav();
+    return;
+  }
 
   // 1. Verificar sessão — window.currentUser já foi preenchido pelo global.js
   if (!window.currentUser) {
     window.location.href = '/index.html';
     return;
   }
+  _userInited = true;
   currentUser = window.currentUser;
 
   // 2–4. Carregar dados do Supabase
@@ -139,7 +149,7 @@ document.addEventListener('app:ready', async () => {
   bindAvatarUpload('avatar-upload-perfil');
   bindAddTreino();
 
-}, { once: true });
+});
 
 
 // ── NAV ──────────────────────────────────────
@@ -194,7 +204,7 @@ function preencherDashboard() {
 
   // Badges de modalidades
   const badgesEl = document.getElementById('dash-modalidades');
-  const enrolled = currentEnrollments.filter(e => e.status === 'active').map(e => e.modality_key);
+  const enrolled = currentEnrollments.filter(e => e.status === 'active').map(e => e.modality);
   badgesEl.innerHTML = enrolled.length === 0
     ? `<p style="font-size:.8rem;color:var(--clr-2);opacity:.6;">Nenhuma modalidade inscrita.</p>`
     : enrolled.map(k => {
@@ -249,7 +259,7 @@ function preencherTreinos() {
 function preencherModalidades() {
   const grid = document.getElementById('modalidades-grid');
   if (!grid) return;
-  const activeKeys = currentEnrollments.filter(e => e.status === 'active').map(e => e.modality_key);
+  const activeKeys = currentEnrollments.filter(e => e.status === 'active').map(e => e.modality);
 
   grid.innerHTML = Object.entries(MODALIDADES).map(([key, m]) => {
     const inscrito = activeKeys.includes(key);
@@ -281,7 +291,7 @@ function preencherModalidades() {
       btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
       const { data, error } = await supabase.from('enrollments').insert({
         user_id:      currentUser.id,
-        modality_key: btn.dataset.key,
+        modality: btn.dataset.key,
         status:       'active',
       }).select().single();
       if (!error && data) {
@@ -302,7 +312,7 @@ function preencherModalidades() {
       const key = btn.dataset.key;
       if (!confirm(`Confirmas que queres pedir a desactivação de "${MODALIDADES[key].titulo}"?`)) return;
       btn.disabled = true;
-      const enrollment = currentEnrollments.find(e => e.modality_key === key && e.status === 'active');
+      const enrollment = currentEnrollments.find(e => e.modality === key && e.status === 'active');
       if (enrollment) {
         await supabase.from('enrollments').update({ status: 'cancelled' }).eq('id', enrollment.id);
         enrollment.status = 'cancelled';
