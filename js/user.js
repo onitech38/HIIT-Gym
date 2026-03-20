@@ -181,7 +181,7 @@ function preencherDashboard() {
   document.getElementById('stat-calorias').textContent    = totalCal.toLocaleString('pt-PT');
   document.getElementById('stat-horas').textContent       = totalHoras + 'h';
   document.getElementById('stat-sessoes').textContent     = treinos.length;
-  document.getElementById('stat-modalidades').textContent = currentEnrollments.filter(e => e.status === 'active').length;
+  document.getElementById('stat-modalidades').textContent = currentEnrollments.filter(e => ['active','pending'].includes(e.status)).length;
 
   // Últimos 3 treinos
   const listaEl = document.getElementById('dash-ultimos-treinos');
@@ -259,22 +259,32 @@ function preencherTreinos() {
 function preencherModalidades() {
   const grid = document.getElementById('modalidades-grid');
   if (!grid) return;
-  const activeKeys = currentEnrollments.filter(e => e.status === 'active').map(e => e.modality);
+  // Mostra inscritos (active) e pendentes
+  const enrolledMap = {};
+  currentEnrollments.forEach(e => {
+    if (e.status === 'active' || e.status === 'pending') {
+      enrolledMap[e.modality] = e.status;
+    }
+  });
 
   grid.innerHTML = Object.entries(MODALIDADES).map(([key, m]) => {
-    const inscrito = activeKeys.includes(key);
-    const status = inscrito
+    const estado = enrolledMap[key];
+    const statusHtml = estado === 'active'
       ? `<span class="mod-status inscrito">Inscrito</span>`
+      : estado === 'pending'
+      ? `<span class="mod-status pendente">Pendente</span>`
       : `<span class="mod-status disponivel">Disponível</span>`;
-    const acoes = inscrito
+    const acoes = estado === 'active'
       ? `<button class="btn-desactiv" data-key="${key}"><i class="fa-solid fa-ban"></i> Pedir Desactivação</button>`
+      : estado === 'pending'
+      ? `<button class="btn-desactiv" data-key="${key}" disabled>A aguardar confirmação</button>`
       : `<button class="btn-inscr" data-key="${key}"><i class="fa-solid fa-plus"></i> Inscrever-me</button>`;
 
     return `
       <div class="modalidade-card">
         <div class="mod-header">
           <span class="mod-titulo"><i class="fa-solid ${m.icon}"></i> ${m.titulo}</span>
-          ${status}
+          ${statusHtml}
         </div>
         <div class="mod-body">
           <span class="mod-horario"><i class="fa-solid fa-calendar"></i> ${m.dias}</span>
@@ -292,7 +302,7 @@ function preencherModalidades() {
       const { data, error } = await supabase.from('enrollments').insert({
         user_id:      currentUser.id,
         modality: btn.dataset.key,
-        status:       'active',
+        status:   'pending',
       }).select().single();
       if (!error && data) {
         currentEnrollments.push(data);
