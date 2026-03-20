@@ -215,6 +215,25 @@ function bindToTop() {
 }
 
 
+// ---------- ANCHOR LINKS ----------
+// Links âncora na mesma página — scroll suave em vez de reload
+// Corre após injectNav() para apanhar os links do partial
+function bindAnchorLinks() {
+  document.querySelectorAll('a[href*="#"]').forEach(a => {
+    try {
+      const url = new URL(a.href, location.href);
+      if (url.pathname === location.pathname && url.hash) {
+        a.addEventListener('click', e => {
+          e.preventDefault();
+          document.querySelector(url.hash)
+            ?.scrollIntoView({ behavior: 'smooth' });
+        });
+      }
+    } catch { /* href inválido — ignora */ }
+  });
+}
+
+
 // ---------- INIT GLOBAL ----------
 let _booted = false;
 
@@ -229,6 +248,7 @@ async function boot() {
   _booted = true;
   await injectNav();
   await injectFooter();
+  bindAnchorLinks();
   await initAuth();
   await actualizarNav();
   bindToTop();
@@ -241,19 +261,6 @@ async function boot() {
 
   // Remove body.loading (para páginas que ainda o usam)
   document.body.classList.remove('loading');
-
-  // Links âncora na mesma página — scroll suave em vez de reload
-  document.querySelectorAll('a[href*="#"]').forEach(a => {
-    try {
-      const url = new URL(a.href, location.href);
-      if (url.pathname === location.pathname && url.hash) {
-        a.addEventListener('click', e => {
-          e.preventDefault();
-          document.querySelector(url.hash)?.scrollIntoView({ behavior: 'smooth' });
-        });
-      }
-    } catch { /* href inválido — ignora */ }
-  });
 
   document.dispatchEvent(new Event('app:ready'));
 }
