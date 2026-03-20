@@ -147,6 +147,7 @@ async function boot() {
   await initAuth();
   await actualizarNav();
   bindToTop();
+  console.log('[boot] currentUser:', window.currentUser?.email, '| event fired');
   document.dispatchEvent(new Event('app:ready'));
   console.log('[global] app:ready disparado | user:', window.currentUser?.email || 'null');
 }

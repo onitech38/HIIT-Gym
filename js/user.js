@@ -66,6 +66,7 @@ let currentEnrollments = [];
 let _userInited = false;
 
 document.addEventListener('app:ready', async () => {
+  console.log('[user] app:ready received | currentUser:', window.currentUser?.email);
 
   // Bfcache restore: já iniciado, só actualiza nav e avatar
   if (_userInited) {
