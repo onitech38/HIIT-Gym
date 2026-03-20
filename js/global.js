@@ -242,6 +242,19 @@ async function boot() {
   // Remove body.loading (para páginas que ainda o usam)
   document.body.classList.remove('loading');
 
+  // Links âncora na mesma página — scroll suave em vez de reload
+  document.querySelectorAll('a[href*="#"]').forEach(a => {
+    try {
+      const url = new URL(a.href, location.href);
+      if (url.pathname === location.pathname && url.hash) {
+        a.addEventListener('click', e => {
+          e.preventDefault();
+          document.querySelector(url.hash)?.scrollIntoView({ behavior: 'smooth' });
+        });
+      }
+    } catch { /* href inválido — ignora */ }
+  });
+
   document.dispatchEvent(new Event('app:ready'));
 }
 
