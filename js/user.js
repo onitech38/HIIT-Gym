@@ -65,9 +65,21 @@ let currentEnrollments = [];
 document.addEventListener('app:ready', async () => {
 
   // Verificar sessão — window.currentUser preenchido pelo global.js
+  // Se for null, tenta getSession() directamente antes de redirecionar
+  // (global.js pode ter disparado app:ready antes de getSession() terminar)
   if (!window.currentUser) {
-    window.location.href = '/index.html';
-    return;
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.user) {
+        window.currentUser = session.user;
+      } else {
+        window.location.href = '/index.html';
+        return;
+      }
+    } catch {
+      window.location.href = '/index.html';
+      return;
+    }
   }
   currentUser = window.currentUser;
 
