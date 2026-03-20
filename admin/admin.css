@@ -1,0 +1,547 @@
+/* ============================================
+   ADMIN.CSS — Painel de Administração HIIT-Gym
+   Nested dentro de body#admin-page
+   ============================================ */
+
+body#admin-page {
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  background: var(--clr-3);
+
+  & section {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  /* ── HEADER ─────────────────────────────── */
+  & .admin-header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: var(--clr-3);
+    border-bottom: 1px solid rgba(251,160,2,0.2);
+
+    & nav {
+      max-width: var(--container-max);
+      margin-inline: auto;
+      padding: 0.75rem 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+
+      & .admin-badge {
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        font-size: 0.72rem;
+        font-weight: 600;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--clr-4);
+        padding: 0.3rem 0.75rem;
+        border: 1px solid rgba(251,160,2,0.3);
+        border-radius: 100px;
+
+        & i { font-size: 0.65rem; }
+      }
+
+      & #btn-logout-admin {
+        margin-left: auto;
+        font-size: 0.75rem;
+        color: var(--clr-2);
+        opacity: 0.6;
+        &:hover { opacity: 1; }
+      }
+    }
+  }
+
+  /* ── TABS ────────────────────────────────── */
+  & .admin-tabs {
+    display: flex;
+    gap: 0;
+    border-bottom: 1px solid rgba(251,160,2,0.15);
+    max-width: var(--container-max);
+    margin-inline: auto;
+    width: 100%;
+    padding-inline: 1.5rem;
+
+    & .admin-tab {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.85rem 1.25rem;
+      font-size: 0.78rem;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--clr-2);
+      opacity: 0.5;
+      background: none;
+      border: none;
+      border-bottom: 2px solid transparent;
+      cursor: pointer;
+      font-family: var(--fnt-body);
+      position: relative;
+      bottom: -1px;
+      transition: color var(--tempo) ease, opacity var(--tempo) ease, border-color var(--tempo) ease;
+
+      &:hover { opacity: 0.85; color: var(--clr-1); }
+
+      &.active {
+        color: var(--clr-4);
+        opacity: 1;
+        border-bottom-color: var(--clr-4);
+      }
+
+      & .badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 1.25rem;
+        height: 1.25rem;
+        padding: 0 0.35rem;
+        background: var(--clr-4);
+        color: var(--clr-3);
+        font-size: 0.6rem;
+        font-weight: 700;
+        border-radius: 100px;
+
+        &:empty, &[data-count="0"] { display: none; }
+      }
+    }
+  }
+
+  /* ── MAIN ────────────────────────────────── */
+  & .admin-main {
+    flex: 1;
+    max-width: var(--container-max);
+    margin-inline: auto;
+    width: 100%;
+    padding: 2rem 1.5rem;
+  }
+
+  & .admin-section {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    width: 100%;
+
+    &.hidden { display: none; }
+
+    & .section-header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+
+      & h2 {
+        font-size: clamp(1.1rem, 2vw, 1.5rem);
+        color: var(--clr-1);
+        text-align: start;
+        letter-spacing: 0.08em;
+        margin: 0;
+        flex: 1;
+      }
+
+      & .section-desc {
+        width: 100%;
+        font-size: 0.8rem;
+        color: var(--clr-2);
+        opacity: 0.6;
+        margin: 0;
+        text-align: start;
+      }
+    }
+  }
+
+  /* ── SEARCH ─────────────────────────────── */
+  & .search-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+
+    & i {
+      position: absolute;
+      left: 0.75rem;
+      color: var(--clr-2);
+      opacity: 0.4;
+      font-size: 0.78rem;
+      pointer-events: none;
+    }
+
+    & input {
+      padding: 0.5rem 0.85rem 0.5rem 2.2rem;
+      background: rgba(18,13,15,0.6);
+      border: 1.5px solid rgba(185,207,212,0.1);
+      border-bottom-color: rgba(251,160,2,0.3);
+      border-radius: var(--border-radius);
+      color: var(--clr-1);
+      font-family: var(--fnt-body);
+      font-size: 0.82rem;
+      outline: none;
+      width: 240px;
+      transition: border-color var(--tempo) ease;
+
+      &:focus { border-color: var(--clr-4); }
+      &::placeholder { color: var(--clr-2); opacity: 0.35; }
+    }
+  }
+
+  /* ── LISTA ADMIN ─────────────────────────── */
+  & .admin-lista {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+
+    & .empty-state {
+      padding: 3rem 1rem;
+      text-align: center;
+      color: var(--clr-2);
+      opacity: 0.4;
+      font-size: 0.85rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.75rem;
+
+      & i { font-size: 2rem; color: var(--clr-4); }
+    }
+
+    & .loading-state {
+      padding: 2rem;
+      text-align: center;
+      color: var(--clr-2);
+      opacity: 0.5;
+      font-size: 0.82rem;
+    }
+  }
+
+  /* ── CARD DE INSCRIÇÃO ───────────────────── */
+  & .insc-card {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 1.25rem 1.5rem;
+    border: 1px solid rgba(251,160,2,0.1);
+    border-radius: var(--border-radius);
+    background: rgba(18,13,15,0.5);
+    transition: border-color var(--tempo) ease;
+
+    &:hover { border-color: rgba(251,160,2,0.25); }
+
+    & .insc-info {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+
+    & .insc-nome {
+      font-family: var(--fnt-sign);
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--clr-1);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    & .insc-email {
+      font-size: 0.72rem;
+      color: var(--clr-2);
+      opacity: 0.55;
+      letter-spacing: 0.02em;
+    }
+
+    & .insc-meta {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      margin-top: 0.25rem;
+    }
+
+    & .insc-modalidade {
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--clr-4);
+      padding: 0.2rem 0.65rem;
+      border: 1px solid rgba(251,160,2,0.3);
+      border-radius: 100px;
+    }
+
+    & .insc-data {
+      font-size: 0.68rem;
+      color: var(--clr-2);
+      opacity: 0.5;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    & .insc-saude-info {
+      font-size: 0.68rem;
+      color: var(--clr-aviso);
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+      & i { font-size: 0.65rem; }
+    }
+
+    & .insc-acoes {
+      display: flex;
+      gap: 0.5rem;
+      flex-shrink: 0;
+
+      & .btn-confirmar {
+        padding: 0.5rem 1rem;
+        font-size: 0.72rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--clr-sucesso);
+        border: 1px solid rgba(100,200,120,0.3);
+        border-radius: var(--border-radius);
+        background: rgba(100,200,120,0.08);
+        cursor: pointer;
+        font-family: var(--fnt-body);
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        transition: background var(--tempo) ease, border-color var(--tempo) ease;
+
+        &:hover { background: rgba(100,200,120,0.15); border-color: rgba(100,200,120,0.5); }
+        &:disabled { opacity: 0.4; cursor: default; }
+      }
+
+      & .btn-rejeitar {
+        padding: 0.5rem 1rem;
+        font-size: 0.72rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--clr-aviso);
+        border: 1px solid var(--clr-aviso-brdr);
+        border-radius: var(--border-radius);
+        background: transparent;
+        cursor: pointer;
+        font-family: var(--fnt-body);
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        transition: background var(--tempo) ease;
+
+        &:hover { background: var(--clr-aviso-bg); }
+        &:disabled { opacity: 0.4; cursor: default; }
+      }
+    }
+
+    @media (max-width: 600px) {
+      grid-template-columns: 1fr;
+
+      & .insc-acoes { justify-content: flex-end; }
+    }
+  }
+
+  /* ── CARD DE MEMBRO ──────────────────────── */
+  & .membro-card {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 1.5rem;
+    border: 1px solid rgba(185,207,212,0.08);
+    border-radius: var(--border-radius);
+    background: rgba(18,13,15,0.4);
+    transition: border-color var(--tempo) ease, background var(--tempo) ease;
+
+    &:hover { border-color: rgba(251,160,2,0.15); background: rgba(18,13,15,0.6); }
+
+    & .membro-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: 1.5px solid var(--clr-4);
+      background-size: cover;
+      background-position: center;
+      background-color: var(--clr-transp);
+      display: grid;
+      place-items: center;
+      font-family: var(--fnt-sign);
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--clr-4);
+      flex-shrink: 0;
+    }
+
+    & .membro-info {
+      display: flex;
+      flex-direction: column;
+      gap: 0.15rem;
+      min-width: 0;
+
+      & .membro-nome {
+        font-size: 0.88rem;
+        color: var(--clr-1);
+        font-weight: 500;
+        letter-spacing: 0.02em;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      & .membro-email {
+        font-size: 0.68rem;
+        color: var(--clr-2);
+        opacity: 0.5;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+    }
+
+    & .membro-plano {
+      font-size: 0.65rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 0.25rem 0.65rem;
+      border-radius: 100px;
+      flex-shrink: 0;
+
+      &.basico   { background: rgba(185,207,212,0.1); color: var(--clr-2); border: 1px solid rgba(185,207,212,0.2); }
+      &.standard { background: rgba(251,160,2,0.12);  color: var(--clr-4); border: 1px solid rgba(251,160,2,0.25); }
+      &.premium  { background: rgba(255,215,0,0.1);   color: #ffd700;      border: 1px solid rgba(255,215,0,0.25); }
+      &.none     { background: rgba(185,207,212,0.06); color: var(--clr-2); opacity: 0.5; border: 1px solid rgba(185,207,212,0.1); }
+    }
+  }
+
+  /* ── CARD DE PLANO ───────────────────────── */
+  & .plano-card {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 1.5rem;
+    border: 1px solid rgba(185,207,212,0.08);
+    border-radius: var(--border-radius);
+    background: rgba(18,13,15,0.4);
+
+    & .plano-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: 1.5px solid var(--clr-4);
+      background-size: cover;
+      background-position: center;
+      background-color: var(--clr-transp);
+      display: grid;
+      place-items: center;
+      font-family: var(--fnt-sign);
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--clr-4);
+    }
+
+    & .plano-info {
+      display: flex;
+      flex-direction: column;
+      gap: 0.15rem;
+      min-width: 0;
+
+      & .plano-nome {
+        font-size: 0.88rem;
+        color: var(--clr-1);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      & .plano-email {
+        font-size: 0.68rem;
+        color: var(--clr-2);
+        opacity: 0.5;
+      }
+    }
+
+    & .plano-selector {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+
+      & select {
+        padding: 0.45rem 0.75rem;
+        background: rgba(18,13,15,0.8);
+        border: 1.5px solid rgba(185,207,212,0.1);
+        border-bottom-color: rgba(251,160,2,0.3);
+        border-radius: var(--border-radius);
+        color: var(--clr-1);
+        font-family: var(--fnt-body);
+        font-size: 0.78rem;
+        outline: none;
+        cursor: pointer;
+
+        &:focus { border-color: var(--clr-4); }
+        & option { background: var(--clr-3); }
+      }
+
+      & .btn-save-plano {
+        padding: 0.45rem 0.85rem;
+        font-size: 0.72rem;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--clr-4);
+        border: 1px solid rgba(251,160,2,0.3);
+        border-radius: var(--border-radius);
+        background: rgba(251,160,2,0.08);
+        cursor: pointer;
+        font-family: var(--fnt-body);
+        transition: background var(--tempo) ease;
+        white-space: nowrap;
+
+        &:hover { background: rgba(251,160,2,0.15); }
+        &:disabled { opacity: 0.4; cursor: default; }
+      }
+    }
+
+    @media (max-width: 560px) {
+      grid-template-columns: auto 1fr;
+
+      & .plano-selector {
+        grid-column: 1 / -1;
+        justify-content: flex-end;
+      }
+    }
+  }
+
+  /* ── TOAST ───────────────────────────────── */
+  & .admin-toast {
+    position: fixed;
+    bottom: 1.5rem;
+    right: 1.5rem;
+    z-index: 500;
+    padding: 0.75rem 1.25rem;
+    border-radius: var(--border-radius);
+    font-size: 0.82rem;
+    font-family: var(--fnt-body);
+    color: var(--clr-1);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.4);
+    animation: toast-in 0.3s cubic-bezier(0.34,1.56,0.64,1) both;
+
+    &.toast-ok    { background: rgba(100,200,120,0.15); border: 1px solid rgba(100,200,120,0.4); }
+    &.toast-erro  { background: rgba(255,107,107,0.15); border: 1px solid rgba(255,107,107,0.4); }
+    &.hidden { display: none; }
+  }
+}
+
+/* ── Animações ─────────────────────────────── */
+@layer animations {
+  @keyframes toast-in {
+    from { opacity: 0; transform: translateY(8px) scale(0.96); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+  }
+}
