@@ -157,10 +157,24 @@ function bindWelcomeClose() {
  *  Usa app:ready (global.js) para garantir que a sessão Supabase
  *  já foi restaurada antes de decidir mostrar o modal.
  */
+// Flag para evitar re-bind dos forms em navegações bfcache
+let _scriptInited = false;
+
 document.addEventListener('app:ready', () => {
-  bindLoginForm();
-  bindSignupForm();
-  bindWelcomeClose();
+
+  // Primeira vez: faz bind dos forms e close
+  if (!_scriptInited) {
+    _scriptInited = true;
+    bindLoginForm();
+    bindSignupForm();
+    bindWelcomeClose();
+  }
+
+  // Sempre: fechar o welcome se o utilizador já está autenticado
+  if (window.currentUser) {
+    fecharWelcome();
+    return;
+  }
 
   // Auto-open via URL param (?auth=login ou ?auth=signup)
   const auth = new URLSearchParams(window.location.search).get('auth');
@@ -176,10 +190,19 @@ document.addEventListener('app:ready', () => {
   }
 
   // Sem sessão → welcome após 1s
-  if (!window.currentUser) {
-    setTimeout(mostrarWelcome, 1000);
-  }
-}, { once: true });
+  setTimeout(mostrarWelcome, 1000);
+});
+
+// Fechar o welcome quando o Supabase confirma login (SIGNED_IN)
+// Garante que o welcome fecha mesmo que app:ready tenha disparado
+// antes da sessão ser restaurada (timeout de 5s no initAuth)
+if (window.supabaseClient) {
+  window.supabaseClient.auth.onAuthStateChange((event) => {
+    if (event === 'SIGNED_IN') {
+      fecharWelcome();
+    }
+  });
+}
 
 
 
