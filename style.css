@@ -107,6 +107,7 @@
     -ms-text-size-adjust: 100%;
     * { scroll-margin-top: 1rem; scroll-behavior: smooth; }
   }
+  .h1-big, h1, .h2-big, h2, h3, h4, h5, h6 { text-wrap: balance; }
   h1, h2, h3, h4, h5, h6, .title { color: var(--clr-1); }
   body, ul, li, p, h1, a { color: var(--clr-2); }
   body, ul, li, a, .title { margin: 0; padding: 0; list-style: none; text-decoration: none; }
@@ -124,7 +125,7 @@
   h5 { font-size: var(--fs-h5); font-weight: 300; }
   h6, .eyebrow-small { font-size: var(--fs-h6); font-weight: 200; }
   .title { font-size: clamp(1.5rem, 3vw, 4rem); font-weight: 600; }
-  p, .p-small, .p-large { line-height: 1.5; text-align: center; letter-spacing: .1em; }
+  p, .p-small, .p-large { line-height: 1.5; text-align: center; letter-spacing: .1em; text-wrap: pretty; }
   p { margin-bottom: .7em; font-size: 1rem; font-weight: 500; text-wrap: balance; }
   .p-small { font-size: 0.6rem; font-weight: 300; }
   .p-large { font-size: 1.2rem; font-weight: 600; }
