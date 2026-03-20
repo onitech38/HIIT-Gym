@@ -16,7 +16,23 @@ let selectedModality   = null;
 // ============================================
 // INIT
 // ============================================
-document.addEventListener('app:ready', init, { once: true });
+// Sem { once: true } — em bfcache restore o app:ready re-dispara
+// e precisamos de recarregar as inscrições para mostrar estado actual
+let _modInited = false;
+
+document.addEventListener('app:ready', async () => {
+  if (!_modInited) {
+    // Primeira vez: init completo
+    _modInited = true;
+    await init();
+  } else if (window.currentUser) {
+    // Bfcache restore: só recarrega inscrições e re-renderiza
+    currentUser = window.currentUser;
+    await loadEnrollments();
+    renderModalidades();
+    inscricaoStep1();
+  }
+});
 
 async function init() {
   if (window.currentUser) {
@@ -147,7 +163,7 @@ function renderModalidades() {
 
   list.querySelectorAll('.mod-btn-insc').forEach(btn => {
     btn.addEventListener('click', () => {
-      inscricaoStep2(btn.dataset.key);
+      renderInscricaoStep2(btn.dataset.key);
       scrollToInscricao();
     });
   });
