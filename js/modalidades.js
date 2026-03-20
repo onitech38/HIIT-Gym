@@ -16,23 +16,8 @@ let selectedModality   = null;
 // ============================================
 // INIT
 // ============================================
-// Sem { once: true } — em bfcache restore o app:ready re-dispara
-// e precisamos de recarregar as inscrições para mostrar estado actual
-let _modInited = false;
-
-document.addEventListener('app:ready', async () => {
-  if (!_modInited) {
-    // Primeira vez: init completo
-    _modInited = true;
-    await init();
-  } else if (window.currentUser) {
-    // Bfcache restore: só recarrega inscrições e re-renderiza
-    currentUser = window.currentUser;
-    await loadEnrollments();
-    renderModalidades();
-    inscricaoStep1();
-  }
-});
+// Corre sempre — tanto na primeira visita como em bfcache/logout
+document.addEventListener('app:ready', () => { init(); });
 
 async function init() {
   if (window.currentUser) {
