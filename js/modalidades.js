@@ -469,3 +469,22 @@ async function submeterInscricao(e) {
   form.classList.add('hidden');
   document.getElementById('insc-ok')?.classList.remove('hidden');
 }
+
+
+// ============================================
+// BFCACHE — forçar reload de inscrições
+// Em mobile, o browser pode restaurar a página
+// do bfcache sem re-executar scripts nem disparar
+// app:ready. O evento pageshow com persisted:true
+// detecta isso e recarrega sempre as inscrições.
+// ============================================
+window.addEventListener('pageshow', async (e) => {
+  if (!e.persisted) return;         // navegação normal — já tratada
+  if (!currentUser && window.currentUser) {
+    currentUser = window.currentUser;
+  }
+  if (!currentUser) return;         // não autenticado — nada a fazer
+  await loadEnrollments();
+  renderModalidades();
+  inscricaoStep1();
+});
