@@ -148,7 +148,7 @@ function renderModalidades() {
 
   list.querySelectorAll('.mod-btn-insc').forEach(btn => {
     btn.addEventListener('click', () => {
-      renderInscricaoStep2(btn.dataset.key);
+      inscricaoStep2(btn.dataset.key);
       scrollToInscricao();
     });
   });
