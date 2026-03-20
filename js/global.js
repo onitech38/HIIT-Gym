@@ -39,10 +39,15 @@ window.currentSession = null;
       background: #120D0F;
       display: flex; flex-direction: column;
       align-items: center; justify-content: center; gap: 1.5rem;
+      animation: sp-enter 0.25s ease forwards;
+    }
+    @keyframes sp-enter {
+      from { opacity: 0; }
+      to   { opacity: 1; }
     }
     #hiit-splash img {
       width: 72px; height: auto;
-      animation: sp-pulse 1.4s ease-in-out infinite;
+      animation: sp-pulse 1.4s ease-in-out 0.25s infinite;
     }
     #hiit-splash .sp-bar {
       width: 100px; height: 2px;
@@ -56,8 +61,8 @@ window.currentSession = null;
       animation: sp-slide 1.1s ease-in-out infinite;
     }
     @keyframes sp-pulse {
-      0%,100% { opacity:.6; transform:scale(1); }
-      50%     { opacity:1;  transform:scale(1.06); }
+      0%,100% { opacity:.55; }
+      50%     { opacity:1;   }
     }
     @keyframes sp-slide {
       0%   { transform:translateX(-100%); }
