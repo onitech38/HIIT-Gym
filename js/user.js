@@ -62,23 +62,13 @@ let currentEnrollments = [];
 // ============================================
 // INIT — aguarda app:ready do global.js
 // ============================================
-// Flag para evitar re-inicialização duplicada na mesma sessão de página
-let _userInited = false;
-
 document.addEventListener('app:ready', async () => {
 
-  // Bfcache restore: já iniciado, só actualiza nav e avatar
-  if (_userInited) {
-    await actualizarNav();
-    return;
-  }
-
-  // 1. Verificar sessão — window.currentUser já foi preenchido pelo global.js
+  // Verificar sessão — window.currentUser preenchido pelo global.js
   if (!window.currentUser) {
     window.location.href = '/index.html';
     return;
   }
-  _userInited = true;
   currentUser = window.currentUser;
 
   // 2–4. Carregar dados do Supabase
