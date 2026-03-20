@@ -42,32 +42,78 @@ async function injectFooter() {
 
 
 // ---------- AUTH ----------
-// Um único listener registado imediatamente (antes do DOMContentLoaded)
-// para apanhar INITIAL_SESSION que o Supabase só dispara uma vez.
-let _authResolve = null;
-const _authReady = new Promise(resolve => { _authResolve = resolve; });
-
-if (window.supabaseClient) {
-  window.supabaseClient.auth.onAuthStateChange(async (event, session) => {
-    window.currentSession = session;
-    window.currentUser    = session?.user || null;
-
-    if (event === 'INITIAL_SESSION') {
-      _authResolve();
-    } else {
-      // Pós-boot: login/logout noutro separador, token refresh, etc.
-      await actualizarNav();
-    }
-  });
-} else {
-  _authResolve();
-}
-
+// Estratégia dupla: getSession() + INITIAL_SESSION em corrida.
+// Problema resolvido: INITIAL_SESSION pode disparar com session=null
+// se o Supabase ainda não terminou de restaurar do localStorage.
+// getSession() faz uma leitura directa e sincronizada do storage.
+// O que resolver PRIMEIRO com uma sessão válida ganha.
+// Se nenhum tiver sessão, resolve com null (utilizador não autenticado).
 async function initAuth() {
-  await Promise.race([
-    _authReady,
-    new Promise(resolve => setTimeout(resolve, 5000)),
-  ]);
+  if (!window.supabaseClient) return;
+
+  return new Promise(resolve => {
+    let resolved = false;
+
+    function finish(session) {
+      if (resolved) return;
+      // Só resolve imediatamente se tiver sessão
+      // Se não tiver sessão, deixa o outro caminho tentar primeiro
+      if (session?.user) {
+        resolved = true;
+        window.currentSession = session;
+        window.currentUser    = session.user;
+        resolve();
+      }
+    }
+
+    function finishNull() {
+      // Resolve com null — nenhum caminho encontrou sessão
+      if (!resolved) {
+        resolved = true;
+        window.currentSession = null;
+        window.currentUser    = null;
+        resolve();
+      }
+    }
+
+    // Caminho 1: getSession() — lê directamente o localStorage
+    window.supabaseClient.auth.getSession()
+      .then(({ data: { session } }) => {
+        if (session?.user) {
+          finish(session);
+        }
+        // Se não tiver sessão, deixa o INITIAL_SESSION decidir
+        // mas com timeout de segurança
+        setTimeout(finishNull, 3000);
+      })
+      .catch(() => setTimeout(finishNull, 3000));
+
+    // Caminho 2: INITIAL_SESSION — evento do Supabase
+    // Pode chegar depois de getSession(), mas confirma o estado real
+    window.supabaseClient.auth.onAuthStateChange((event, session) => {
+      if (event === 'INITIAL_SESSION') {
+        if (session?.user) {
+          finish(session);
+        } else {
+          // INITIAL_SESSION sem sessão — resolve com null
+          finishNull();
+        }
+      } else if (event === 'SIGNED_IN') {
+        // Login feito enquanto a página está aberta (raro mas possível)
+        resolved = true;
+        window.currentSession = session;
+        window.currentUser    = session?.user || null;
+        actualizarNav();
+      } else if (event === 'SIGNED_OUT') {
+        window.currentSession = null;
+        window.currentUser    = null;
+        actualizarNav();
+      } else if (event === 'TOKEN_REFRESHED') {
+        window.currentSession = session;
+        window.currentUser    = session?.user || null;
+      }
+    });
+  });
 }
 
 
@@ -119,8 +165,6 @@ async function actualizarNav() {
 
 
 // ---------- TO-TOP ----------
-// Mostra o botão .to_top após 300px de scroll.
-// Usa MutationObserver para esperar que o chat.js injete o .q_a.
 function bindToTop() {
   const tryBind = () => {
     const btn = document.querySelector('.q_a .to_top');
@@ -130,9 +174,7 @@ function bindToTop() {
     }, { passive: true });
     return true;
   };
-
   if (tryBind()) return;
-
   const obs = new MutationObserver(() => {
     if (tryBind()) obs.disconnect();
   });
@@ -141,23 +183,29 @@ function bindToTop() {
 
 
 // ---------- INIT GLOBAL ----------
+let _booted = false;
+
 async function boot() {
+  if (_booted) {
+    // Bfcache restore: não re-injeta, só actualiza auth e nav
+    await initAuth();
+    await actualizarNav();
+    document.dispatchEvent(new Event('app:ready'));
+    return;
+  }
+  _booted = true;
+
   await injectNav();
   await injectFooter();
   await initAuth();
   await actualizarNav();
   bindToTop();
-  console.log('[boot] currentUser:', window.currentUser?.email, '| event fired');
   document.dispatchEvent(new Event('app:ready'));
-  console.log('[global] app:ready disparado | user:', window.currentUser?.email || 'null');
 }
 
 window.addEventListener('DOMContentLoaded', boot);
 
-// ---------- BFCACHE ----------
-// Quando o utilizador navega com o botão "voltar", o browser pode restaurar
-// a página do bfcache sem re-executar scripts. O evento pageshow com
-// persisted:true detecta isso e re-executa o boot para actualizar o estado.
+// Bfcache: página restaurada sem re-executar scripts
 window.addEventListener('pageshow', e => {
   if (e.persisted) boot();
 });
