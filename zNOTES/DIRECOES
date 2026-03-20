@@ -80,18 +80,6 @@ Pretendo que:
 <!-- =========================================
 O QUE FALTA:
 ========================================== -->
-1º USER(PERFIL)
-tentei simular uma inscrição diretamente e deu numa janela pop-up:
-"Erro ao inscrever. Tenta novamente." 
-
-2º todas as páginas
-existe sempre um "frame flicker" quando, ou clico num link para, dentro da página, fazer scroll para o #local tipo que está a fazer refresh (parece que o nav esta a reentrar e a janela do chat abre e volta a fechar)
-
-3º to_top
-o botão do to_top não aparece ( ele tem uma animação que só aparece depois de o nav não estar visível )
-
-4º MODALIDADES(PÁGINA)
-o wizard da .inscricao, falta conteúdo/mas coisas no step 2 ( fui buscar uma versão do site [ onde tem como estava de meu agrado ] nos deploys do cloudflare ).
 
 5º Chat
 Não consigo colocar a funcionar o chat
@@ -102,7 +90,7 @@ Erro que dá na consola:
     at async HTMLButtonElement.enviarMensagem (chat.js:236:22)
 enviarMensagem	@	chat.js:244"
 
-6º Email
+1º Email
 Resend — 3.000 emails/mês grátis:
 
 Integra diretamente com Supabase
@@ -110,7 +98,7 @@ Templates HTML bonitos
 API simples
 Para confirmações, notificações de inscrição, etc.
 
-7º Pagamentos
+2º Pagamentos
 Stripe — o melhor, sem mensalidade:
 
 Só cobras quando recebes (2.9% + 30¢ por transação)
@@ -118,6 +106,22 @@ Checkout pronto, seguro e certificado (PCI)
 Suporta MB Way, cartão, Apple Pay, Google Pay
 Dashboard de gestão completo
 Webhooks para atualizar Supabase automaticamente
+
+
+
+
+
+Faz sentido — deixamos o chat para o fim quando tudo o resto estiver estável.
+Então a ordem:
+Stripe teste — planos com checkout funcional
+Resend — emails (confirmação inscrição, boas-vindas, notificação admin)
+Fase 1 — treinos, QR, admin emails
+Chat — por último
+Para o Stripe precisas de:
+Criar conta em stripe.com (gratuito)
+Activar o modo teste (já vem activo por defeito)
+Copiar a Publishable key e a Secret key do dashboard (ambas começam com pk_test_ e sk_test_)
+Quando tiveres as chaves diz-me e começamos. Enquanto isso — tens domínio próprio ou estás a usar hiit-gym.pages.dev? Para o Resend e para o Stripe em produção futura faz diferença.
 
 
 
