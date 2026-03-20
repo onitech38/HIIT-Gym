@@ -66,7 +66,6 @@ let currentEnrollments = [];
 let _userInited = false;
 
 document.addEventListener('app:ready', async () => {
-  console.log('[user] app:ready received | currentUser:', window.currentUser?.email);
 
   // Bfcache restore: já iniciado, só actualiza nav e avatar
   if (_userInited) {
@@ -607,5 +606,52 @@ document.getElementById('btn-delete-account')?.addEventListener('click', async (
     await supabase.from('profiles').delete().eq('id', currentUser.id);
     await supabase.auth.signOut();
     window.location.href = '/index.html';
+  }
+});
+
+
+// ============================================
+// BFCACHE — forçar reload do perfil em mobile
+// ============================================
+window.addEventListener('pageshow', async (e) => {
+  if (!e.persisted) return;
+
+  try {
+    const { data: { session } } =
+      await supabase.auth.getSession();
+    if (!session?.user) {
+      window.location.href = '/index.html';
+      return;
+    }
+    // Actualiza dados e re-renderiza
+    currentUser = session.user;
+    const { data: profile } = await supabase
+      .from('profiles').select('*')
+      .eq('id', currentUser.id).single();
+    if (profile) {
+      currentProfile = profile;
+      currentProfile.email = currentUser.email;
+    }
+    const { data: treinos } = await supabase
+      .from('trainings').select('*')
+      .eq('user_id', currentUser.id)
+      .order('date', { ascending: false });
+    currentTrainings = treinos || [];
+
+    const { data: enrollments } = await supabase
+      .from('enrollments').select('*')
+      .eq('user_id', currentUser.id);
+    currentEnrollments = enrollments || [];
+
+    document.body.classList.remove('loading');
+    preencherSidebar();
+    preencherDashboard();
+    preencherTreinos();
+    preencherModalidades();
+    preencherFormPerfil();
+    preencherQR();
+    actualizarNav();
+  } catch (err) {
+    console.warn('[user] pageshow error:', err);
   }
 });
