@@ -182,7 +182,7 @@ function bindAnchorLinks() {
 let _booted = false;
 
 async function boot() {
-  const safetyTimer = setTimeout(removeSplash, 2500);
+  const safetyTimer = setTimeout(removeSplash, 2000);
 
   try {
     if (!_booted) {

@@ -10,11 +10,32 @@
             background-color: #120D0F;
             background-image: url(/src/logo/logo_def1.svg);
             background-repeat: no-repeat;
-            background-position: center center;
+            background-position: center calc(50% - 20px);
             background-size: 80px auto;
             transition: opacity .3s ease;
         }
-        html.splash-done::before {
+        html::after {
+            content: '';
+            position: fixed;
+            left: 50%;
+            top: calc(50% + 55px);
+            transform: translateX(-50%);
+            z-index: 9999;
+            width: 100px;
+            height: 2px;
+            background: rgba(251,160,2,0.15);
+            border-radius: 2px;
+            overflow: hidden;
+            transition: opacity .3s ease;
+            animation: sp-bar 1s ease-in-out infinite;
+        }
+        @keyframes sp-bar {
+            0%   { box-shadow: -60px 0 0 0 #fba002; }
+            50%  { box-shadow:   0px 0 0 0 #fba002; }
+            100% { box-shadow:  60px 0 0 0 #fba002; }
+        }
+        html.splash-done::before,
+        html.splash-done::after {
             opacity: 0;
             pointer-events: none;
         }
