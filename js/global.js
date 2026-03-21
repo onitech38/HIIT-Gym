@@ -50,8 +50,8 @@ window.currentSession = null;
       opacity: 0;
       transform: translateY(8px) scale(0.9);
       animation:
-        sp-logo-in 0.45s cubic-bezier(0.34,1.56,0.64,1) 0.05s forwards,
-        sp-pulse   1.8s ease-in-out 0.5s infinite;
+        sp-logo-in 0.4s cubic-bezier(0.34,1.56,0.64,1) 0s forwards,
+        sp-pulse   2s ease-in-out 0.4s infinite;
     }
     @keyframes sp-logo-in {
       to { opacity: 1; transform: translateY(0) scale(1); }
