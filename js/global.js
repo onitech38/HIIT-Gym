@@ -22,7 +22,7 @@ window.currentSession = null;
 // Aqui apenas removemos: adicionamos .ready ao <html>
 // que activa a transition de fade out via CSS
 function removeSplash() {
-  document.documentElement.classList.add('ready');
+  document.documentElement.classList.add('splash-done');
   document.body.classList.remove('loading');
 }
 
