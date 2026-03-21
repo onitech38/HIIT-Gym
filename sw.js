@@ -17,6 +17,12 @@ const STATIC = [
   '/manifest.json',
 ];
 
+
+// ── SKIP WAITING ──────────────────────────────
+// Permite forçar activação imediata via postMessage
+self.addEventListener('message', e => {
+  if (e.data === 'SKIP_WAITING') self.skipWaiting();
+});
 // ── INSTALL ───────────────────────────────────
 self.addEventListener('install', e => {
   // skipWaiting IMEDIATO — nunca fica em "Wait"

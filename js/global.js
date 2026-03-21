@@ -182,6 +182,11 @@ function bindAnchorLinks() {
 let _booted = false;
 
 async function boot() {
+  // Força activação do novo SW se estiver em espera
+  if (navigator.serviceWorker?.controller) {
+    navigator.serviceWorker.controller.postMessage('SKIP_WAITING');
+  }
+
   const safetyTimer = setTimeout(removeSplash, 1500);
 
   try {
