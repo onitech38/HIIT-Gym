@@ -170,4 +170,3 @@ const artigosData = {
 };
 
 window.artigosData = artigosData;
-``

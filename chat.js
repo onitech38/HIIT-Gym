@@ -7,7 +7,7 @@
 //   1. Injeta HTML (aside .q_a + .chat-panel) no body
 //   2. Injeta chat.css dinamicamente
 //   3. Ao abrir → carrega histórico (Supabase ou localStorage)
-//   4. Ao enviar → verifica plano → chama Claude API
+//   4. Ao enviar → verifica plano → chama API
 //   5. Guarda resposta no histórico
 //
 //   GATING:
@@ -16,23 +16,20 @@
 //============================================
 
 const CHAT_LS_KEY = 'hiitgym_chat_history';
-const CHAT_MAX_HISTORY = 20; // mensagens guardadas (pares user+assistant)
+const CHAT_MAX_HISTORY = 20;
 
 // ── Estado ────────────────────────────────────
 let chatAberto    = false;
-let chatHistorico = []; // [{role, content}]
-let chatUserPlan  = null; // 'none' | 'basic' | 'standard' | 'premium' | null
+let chatHistorico = [];
+let chatUserPlan  = null;
 
 
 //============================================
 //   1. INJECT HTML + CSS
 //============================================
 function injectChatUI() {
-  // Evitar duplicação
   if (document.getElementById('chat-panel')) return;
 
-  // CSS dinâmico — injectado no <head> para garantir que está
-  // aplicado antes de qualquer render do aside
   if (!document.getElementById('chat-css')) {
     const depth  = window.location.pathname.split('/').length - 2;
     const prefix = depth > 0 ? '../'.repeat(depth) : '';
@@ -40,10 +37,9 @@ function injectChatUI() {
     link.id       = 'chat-css';
     link.rel      = 'stylesheet';
     link.href     = `${prefix}chat.css`;
-    document.head.insertBefore(link, document.head.firstChild); // primeiro no head
+    document.head.insertBefore(link, document.head.firstChild);
   }
 
-  // HTML: botão flutuante + painel
   const aside = document.createElement('aside');
   aside.className = 'q_a';
   aside.innerHTML = `
@@ -81,7 +77,6 @@ function injectChatUI() {
       </button>
     </div>`;
 
-  // Remover .q_a estáticos do HTML que não têm #chat-toggle
   document.querySelectorAll('.q_a:not(:has(#chat-toggle))').forEach(el => el.remove());
 
   document.body.appendChild(aside);
@@ -143,7 +138,6 @@ function fecharChat() {
 //   3. PLANO + HISTÓRICO
 //============================================
 async function carregarPlano() {
-  // Se Supabase não existir nesta página
   if (!window.supabaseClient) {
     chatUserPlan = 'none';
     return;
@@ -153,10 +147,7 @@ async function carregarPlano() {
     const { data: { session } } =
       await window.supabaseClient.auth.getSession();
 
-    if (!session) {
-      chatUserPlan = 'none';
-      return;
-    }
+    if (!session) { chatUserPlan = 'none'; return; }
 
     const { data } = await window.supabaseClient
       .from('profiles')
@@ -174,22 +165,15 @@ async function carregarHistorico() {
   const msgs = document.getElementById('chat-messages');
   if (!msgs) return;
 
-  // ✅ Se Supabase NÃO existir → usar localStorage
   if (!window.supabaseClient) {
     const raw = localStorage.getItem(CHAT_LS_KEY);
-    chatHistorico = raw
-      ? JSON.parse(raw).slice(-CHAT_MAX_HISTORY * 2)
-      : [];
-
+    chatHistorico = raw ? JSON.parse(raw).slice(-CHAT_MAX_HISTORY * 2) : [];
     msgs.innerHTML = '';
-    chatHistorico.forEach(m =>
-      mostrarMensagem(m.role, m.content, false)
-    );
+    chatHistorico.forEach(m => mostrarMensagem(m.role, m.content, false));
     scrollChat();
     return;
   }
 
-  // ✅ Se Supabase existir → usar DB
   try {
     const { data: { session } } =
       await window.supabaseClient.auth.getSession();
@@ -202,37 +186,25 @@ async function carregarHistorico() {
         .order('created_at', { ascending: true })
         .limit(CHAT_MAX_HISTORY * 2);
 
-      chatHistorico = (data || []).map(r => ({
-        role: r.role,
-        content: r.content
-      }));
+      chatHistorico = (data || []).map(r => ({ role: r.role, content: r.content }));
     } else {
       const raw = localStorage.getItem(CHAT_LS_KEY);
-      chatHistorico = raw
-        ? JSON.parse(raw).slice(-CHAT_MAX_HISTORY * 2)
-        : [];
+      chatHistorico = raw ? JSON.parse(raw).slice(-CHAT_MAX_HISTORY * 2) : [];
     }
   } catch {
     chatHistorico = [];
   }
 
   msgs.innerHTML = '';
-  chatHistorico.forEach(m =>
-    mostrarMensagem(m.role, m.content, false)
-  );
+  chatHistorico.forEach(m => mostrarMensagem(m.role, m.content, false));
   scrollChat();
 }
 
-
 async function guardarMensagem(role, content) {
-  // ✅ Se Supabase não existir nesta página → localStorage
   if (!window.supabaseClient) {
     const hist = JSON.parse(localStorage.getItem(CHAT_LS_KEY) || '[]');
     hist.push({ role, content });
-    localStorage.setItem(
-      CHAT_LS_KEY,
-      JSON.stringify(hist.slice(-CHAT_MAX_HISTORY * 2))
-    );
+    localStorage.setItem(CHAT_LS_KEY, JSON.stringify(hist.slice(-CHAT_MAX_HISTORY * 2)));
     return;
   }
 
@@ -241,30 +213,18 @@ async function guardarMensagem(role, content) {
       await window.supabaseClient.auth.getSession();
 
     if (session) {
-      await window.supabaseClient.from('chat_history').insert({
-        user_id: session.user.id,
-        role,
-        content,
-      });
+      await window.supabaseClient.from('chat_history').insert({ user_id: session.user.id, role, content });
     } else {
       const hist = JSON.parse(localStorage.getItem(CHAT_LS_KEY) || '[]');
       hist.push({ role, content });
-      localStorage.setItem(
-        CHAT_LS_KEY,
-        JSON.stringify(hist.slice(-CHAT_MAX_HISTORY * 2))
-      );
+      localStorage.setItem(CHAT_LS_KEY, JSON.stringify(hist.slice(-CHAT_MAX_HISTORY * 2)));
     }
   } catch {
-    // fallback silencioso
     const hist = JSON.parse(localStorage.getItem(CHAT_LS_KEY) || '[]');
     hist.push({ role, content });
-    localStorage.setItem(
-      CHAT_LS_KEY,
-      JSON.stringify(hist.slice(-CHAT_MAX_HISTORY * 2))
-    );
+    localStorage.setItem(CHAT_LS_KEY, JSON.stringify(hist.slice(-CHAT_MAX_HISTORY * 2)));
   }
 }
-``
 
 
 //============================================
@@ -279,21 +239,18 @@ async function enviarMensagem() {
   input.disabled = true;
   document.getElementById('chat-send').disabled = true;
 
-  // Mostrar mensagem do utilizador
   mostrarMensagem('user', texto);
-
   const typingId = mostrarTyping();
 
   try {
-    const resposta = await chamarClaude(texto);
+    const resposta = await chamarAPI(texto);
     removerTyping(typingId);
     mostrarMensagem('assistant', resposta);
+    await guardarMensagem('user', texto);
+    await guardarMensagem('assistant', resposta);
   } catch (err) {
     removerTyping(typingId);
-    mostrarMensagem(
-      'assistant',
-      'De momento não consigo responder. Tenta novamente em breve.'
-    );
+    mostrarMensagem('assistant', 'De momento não consigo responder. Tenta novamente em breve.');
     console.error('Chat error:', err);
   }
 
@@ -309,74 +266,19 @@ function reativarInput() {
 
 
 //============================================
-//   5. CLAUDE API
+//   5. API
 //============================================
-
-async function chamarClaude(userMessage) {
+async function chamarAPI(userMessage) {
   const response = await fetch('/api/chat', {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-      message: userMessage
-    })
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ message: userMessage }),
   });
 
-  if (!response.ok) {
-    throw new Error(`Erro backend: ${response.status}`);
-  }
+  if (!response.ok) throw new Error(`Erro backend: ${response.status}`);
 
   const data = await response.json();
   return data.text;
-}
-
-
-function buildSystemPrompt() {
-  // Constrói contexto a partir do data.js (disponível globalmente)
-  const modalidades = typeof modalidadesData !== 'undefined'
-    ? Object.entries(modalidadesData)
-        .filter(([, d]) => d.active)
-        .map(([, d]) => `• ${d.titulo}: ${d.dias}, ${d.horas}`)
-        .join('\n')
-    : '';
-
-  const planInfo = chatUserPlan && chatUserPlan !== 'none'
-    ? `O utilizador tem plano: ${chatUserPlan}.`
-    : 'O utilizador não tem plano ou não está autenticado.';
-
-  const fitnessPermission = temPlanoFitness()
-    ? 'Podes responder a questões de fitness e nutrição em geral.'
-    : 'NÃO respondas a questões de fitness e nutrição geral — informa que está disponível a partir do plano Standard.';
-
-  return `És o assistente virtual da HIIT-Gym Montijo. Respondes sempre em português europeu, de forma simpática, directa e profissional.
-
-INFORMAÇÃO DO GINÁSIO:
-Morada: Rua Exemplo, 123, Montijo
-Horário geral: Seg-Sex 06h00-22h00 | Sáb-Dom 08h00-20h00
-Telefone: +351 912 345 678
-Email: info@hiitgym.pt
-
-MODALIDADES:
-${modalidades}
-
-PLANOS:
-• Básico (29€/mês): acesso à academia, musculação, horário livre
-• Standard (49€/mês): tudo do básico + aulas de grupo ilimitadas, piscina, 1 aula PT/mês
-• Premium (79€/mês): tudo do standard + PT 4x/mês, consulta de nutrição, acesso 24h/7
-
-INSCRIÇÕES:
-As inscrições nas modalidades são feitas na página "Modalidades" do site ou directamente em /modalidades/modalidades.html.
-
-${planInfo}
-${fitnessPermission}
-
-REGRAS:
-- Sê conciso (máx. 3-4 parágrafos por resposta).
-- Usa markdown simples (negrito, listas) quando ajuda.
-- Se não souberes, diz que não tens essa informação e sugere contactar o ginásio.
-- Nunca inventares horários, preços ou informações que não estejam aqui.
-- Não respondas a perguntas fora do âmbito do ginásio e fitness/saúde.`;
 }
 
 
@@ -389,8 +291,7 @@ function mostrarMensagem(role, content, animar = true) {
 
   const div = document.createElement('div');
   div.className = `chat-msg chat-msg--${role}${animar ? ' chat-msg--nova' : ''}`;
-  div.innerHTML = `
-    <div class="chat-bubble">${formatarMensagem(content)}</div>`;
+  div.innerHTML = `<div class="chat-bubble">${formatarMensagem(content)}</div>`;
   msgs.appendChild(div);
   scrollChat();
 }
@@ -434,7 +335,7 @@ function mensagemBoasVindas() {
 
 
 //============================================
-// 7. HELPERS — LÓGICA
+//   7. HELPERS — LÓGICA
 //============================================
 const PALAVRAS_FITNESS = [
   'calorias','proteína','proteinas','carboidratos','gordura','dieta','nutrição',

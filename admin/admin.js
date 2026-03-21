@@ -186,7 +186,7 @@ async function carregarInscricoes() {
     btn.addEventListener('click', () => accionarInscricao(btn.dataset.id, 'active'));
   });
   lista.querySelectorAll('.btn-rejeitar').forEach(btn => {
-    btn.addEventListener('click', () => accionarInscricao(btn.dataset.id, 'rejected'));
+    btn.addEventListener('click', () => accionarInscricao(btn.dataset.id, 'cancelled'));
   });
 }
 
@@ -206,7 +206,7 @@ async function accionarInscricao(id, novoStatus) {
     return;
   }
 
-  const msg = novoStatus === 'active' ? '✓ Inscrição confirmada!' : '✗ Inscrição rejeitada.';
+  const msg = novoStatus === 'active' ? '✓ Inscrição confirmada!' : '✗ Inscrição cancelada.';
   toast(msg, novoStatus === 'active' ? 'ok' : 'erro');
 
   // Remover card com animação

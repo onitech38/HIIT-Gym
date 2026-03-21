@@ -17,7 +17,7 @@ body#admin-page {
 
   /* ── HEADER ─────────────────────────────── */
   & .admin-header {
-    height: 10vh !important;  /* override style.css header { height: 100svh } */
+    height: auto !important;  /* override style.css header { height: 100svh } */
     position: sticky;
     top: 0;
     z-index: 50;
