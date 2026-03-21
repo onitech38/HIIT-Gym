@@ -12,7 +12,7 @@
             background-repeat: no-repeat;
             background-position: center calc(50% - 20px);
             background-size: 80px auto;
-            transition: opacity .3s ease;
+            transition: opacity .3s ease, visibility .3s ease;
         }
         html::after {
             content: '';
@@ -25,13 +25,11 @@
             height: 2px;
             border-radius: 2px;
             background: linear-gradient(90deg,
-            transparent 0%,
-            #fba002 50%,
-            transparent 100%);
+            transparent 0%, #fba002 50%, transparent 100%);
             background-size: 50% 100%;
             background-repeat: no-repeat;
             animation: sp-slide .9s ease-in-out infinite;
-            transition: opacity .3s ease;
+            transition: opacity .3s ease, visibility .3s ease;
         }
         @keyframes sp-slide {
             0%   { background-position: -50% center; }
@@ -40,6 +38,7 @@
         html.splash-done::before,
         html.splash-done::after {
             opacity: 0;
+            visibility: hidden;
             pointer-events: none;
         }
     </style>
