@@ -19,13 +19,12 @@ window.currentSession = null;
 
 // ── 3. SPLASH ─────────────────────────────────
 // O splash é CSS puro — html::before em style.css
-// Aqui apenas removemos: adicionamos .ready ao <html>
+// Aqui apenas removemos: adicionamos .splash-done ao <html>
 // que activa a transition de fade out via CSS
 function removeSplash() {
   document.documentElement.classList.add('splash-done');
   document.body.classList.remove('loading');
 }
-
 
 
 // ── 4. UTILS ──────────────────────────────────
@@ -174,18 +173,23 @@ function bindAnchorLinks() {
 // Ponto de entrada único. Corre no DOMContentLoaded
 // e em cada bfcache restore (pageshow.persisted).
 //
-// Garante SEMPRE:
-//   • splash visível durante o carregamento
-//   • window.currentUser definido antes de app:ready
-//   • splash removido antes de app:ready
-//   • página nunca fica preta (safetyTimer)
+// CORRECÇÃO (v4): postMessage enviado para reg.waiting
+// (SW em espera), não para controller (SW já activo).
+// Enviar para controller era um no-op — o SW em espera
+// nunca recebia a mensagem e ficava sempre em "Wait".
 let _booted = false;
 
 async function boot() {
-  // Força activação do novo SW se estiver em espera
-  if (navigator.serviceWorker?.controller) {
-    navigator.serviceWorker.controller.postMessage('SKIP_WAITING');
-  }
+  // Força activação do SW em espera, se existir.
+  // reg.waiting é o SW instalado mas a aguardar;
+  // controller é o SW já activo — enviar-lhe skipWaiting
+  // não faz nada porque ele já está activo.
+  try {
+    const reg = await navigator.serviceWorker?.getRegistration('/');
+    if (reg?.waiting) {
+      reg.waiting.postMessage('SKIP_WAITING');
+    }
+  } catch { /* SW não disponível */ }
 
   const safetyTimer = setTimeout(removeSplash, 1500);
 
@@ -216,9 +220,9 @@ async function boot() {
 
 window.addEventListener('DOMContentLoaded', boot);
 
-// Bfcache restore — re-corre boot() completo
+// Bfcache restore — re-corre boot() completo.
 // Garante que todas as páginas actualizam o estado
-// sem reload manual, em todos os browsers e mobile
+// sem reload manual, em todos os browsers e mobile.
 window.addEventListener('pageshow', e => {
   if (e.persisted) boot();
 });
