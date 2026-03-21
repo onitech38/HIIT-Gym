@@ -1,124 +1,98 @@
 // ============================================
-// HIIT-GYM — SERVICE WORKER (FINAL)
-// Seguro para Supabase + PWA
+// HIIT-GYM — SERVICE WORKER
+// Estratégia simples e segura:
+// • JS → NUNCA em cache (sempre network)
+// • HTML → network-first
+// • CSS → stale-while-revalidate  
+// • Imagens/fontes → cache-first
+// • Supabase/APIs → nunca interceptado
 // ============================================
 
-const CACHE_NAME = 'hiitgym-static-v5';
+const CACHE = 'hiitgym-v5';
 
-// Apenas assets realmente estáticos
-const STATIC_ASSETS = [
-  '/',
-  '/index.html',
-
-  // CSS
+const STATIC = [
   '/style.css',
-  '/modalidades/modalidades.css',
-  '/blog/blog.css',
-  '/user/user.css',
-
-  // HTML principais (visual)
-  '/modalidades/modalidades.html',
-  '/blog/blog.html',
-  '/user/user.html',
-
-  // Assets
   '/src/logo/logo_def1.svg',
   '/src/logo/favicon.svg',
-
-  // Manifest
   '/manifest.json',
 ];
 
-
-// ─────────────────────────────────────────────
-// INSTALL
-// ─────────────────────────────────────────────
-self.addEventListener('install', event => {
-  event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then(cache => cache.addAll(STATIC_ASSETS))
-      .then(() => self.skipWaiting())
+// ── INSTALL ───────────────────────────────────
+self.addEventListener('install', e => {
+  // skipWaiting IMEDIATO — nunca fica em "Wait"
+  self.skipWaiting();
+  e.waitUntil(
+    caches.open(CACHE).then(c =>
+      Promise.allSettled(STATIC.map(url => c.add(url)))
+    )
   );
 });
 
-
-// ─────────────────────────────────────────────
-// ACTIVATE
-// ─────────────────────────────────────────────
-self.addEventListener('activate', event => {
-  event.waitUntil(
+// ── ACTIVATE ──────────────────────────────────
+self.addEventListener('activate', e => {
+  e.waitUntil(
     caches.keys()
-      .then(keys =>
-        Promise.all(
-          keys.filter(k => k !== CACHE_NAME)
-              .map(k => caches.delete(k))
-        )
-      )
+      .then(keys => Promise.all(
+        keys.filter(k => k !== CACHE).map(k => caches.delete(k))
+      ))
       .then(() => self.clients.claim())
   );
 });
 
-
-// ─────────────────────────────────────────────
-// FETCH
-// ─────────────────────────────────────────────
-self.addEventListener('fetch', event => {
-  const req = event.request;
-  const url = new URL(req.url);
+// ── FETCH ─────────────────────────────────────
+self.addEventListener('fetch', e => {
+  const { request } = e;
+  const url = new URL(request.url);
 
   // Apenas GET
-  if (req.method !== 'GET') return;
+  if (request.method !== 'GET') return;
 
-  // ❌ Nunca tocar em Supabase
-  if (
-    url.hostname.includes('supabase.co') ||
-    url.pathname.startsWith('/auth') ||
-    url.pathname.startsWith('/rest') ||
-    url.pathname.startsWith('/storage')
-  ) {
-    return;
-  }
+  // Nunca interceptar Supabase ou APIs externas
+  if (url.origin !== self.location.origin) return;
 
-  // ❌ Nunca tocar em APIs externas (QR, etc.)
-  if (url.origin !== self.location.origin) {
-    return;
-  }
+  // Nunca interceptar JS — sempre network
+  if (url.pathname.match(/\.js(\?.*)?$/)) return;
+
+  // Nunca interceptar rotas de API
+  if (url.pathname.startsWith('/api/')) return;
 
   // HTML → network-first
-  if (req.headers.get('accept')?.includes('text/html')) {
-    event.respondWith(
-      fetch(req)
+  if (request.headers.get('accept')?.includes('text/html')) {
+    e.respondWith(
+      fetch(request)
         .then(res => {
           const copy = res.clone();
-          caches.open(CACHE_NAME).then(c => c.put(req, copy));
+          caches.open(CACHE).then(c => c.put(request, copy));
           return res;
         })
-        .catch(() => caches.match(req))
+        .catch(() => caches.match(request))
     );
     return;
   }
 
   // CSS → stale-while-revalidate
-  if (url.pathname.endsWith('.css')) {
-    event.respondWith(
-      caches.match(req).then(cached => {
-        const fresh = fetch(req).then(res => {
-          caches.open(CACHE_NAME).then(c => c.put(req, res.clone()));
-          return res;
-        });
-        return cached || fresh;
-      })
+  if (url.pathname.match(/\.css(\?.*)?$/)) {
+    e.respondWith(
+      caches.open(CACHE).then(cache =>
+        cache.match(request).then(cached => {
+          const fresh = fetch(request).then(res => {
+            cache.put(request, res.clone());
+            return res;
+          });
+          return cached || fresh;
+        })
+      )
     );
     return;
   }
 
-  // Imagens / fontes → cache-first
-  if (url.pathname.match(/\.(png|jpg|jpeg|svg|webp|woff2?)$/)) {
-    event.respondWith(
-      caches.match(req).then(cached => {
+  // Imagens e fontes → cache-first
+  if (url.pathname.match(/\.(png|jpg|jpeg|svg|webp|woff2?)(\?.*)?$/)) {
+    e.respondWith(
+      caches.match(request).then(cached => {
         if (cached) return cached;
-        return fetch(req).then(res => {
-          caches.open(CACHE_NAME).then(c => c.put(req, res.clone()));
+        return fetch(request).then(res => {
+          caches.open(CACHE).then(c => c.put(request, res.clone()));
           return res;
         });
       })
@@ -126,6 +100,5 @@ self.addEventListener('fetch', event => {
     return;
   }
 
-  // JS → network-only (SEGURANÇA)
-  // Deixa passar
+  // Tudo o resto → network only
 });
