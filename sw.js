@@ -1,37 +1,25 @@
 // ============================================
 // HIIT-GYM — SERVICE WORKER
-// Estratégia simples e segura:
-// • JS → NUNCA em cache (sempre network)
+// Estratégia minimalista e segura:
+// • Sem cache de ficheiros no install
+//   (evita crashes por ficheiros inexistentes)
+// • JS → sempre network
 // • HTML → network-first
-// • CSS → stale-while-revalidate  
-// • Imagens/fontes → cache-first
+// • CSS/imagens → cache-first com fallback
 // • Supabase/APIs → nunca interceptado
 // ============================================
 
 const CACHE = 'hiitgym-v5';
 
-const STATIC = [
-  '/style.css',
-  '/src/logo/logo_def1.svg',
-  '/src/logo/favicon.svg',
-  '/manifest.json',
-];
-
-
 // ── SKIP WAITING ──────────────────────────────
-// Permite forçar activação imediata via postMessage
 self.addEventListener('message', e => {
   if (e.data === 'SKIP_WAITING') self.skipWaiting();
 });
+
 // ── INSTALL ───────────────────────────────────
-self.addEventListener('install', e => {
-  // skipWaiting IMEDIATO — nunca fica em "Wait"
+// Sem addAll — evita crashes por ficheiros em falta
+self.addEventListener('install', () => {
   self.skipWaiting();
-  e.waitUntil(
-    caches.open(CACHE).then(c =>
-      Promise.allSettled(STATIC.map(url => c.add(url)))
-    )
-  );
 });
 
 // ── ACTIVATE ──────────────────────────────────
@@ -53,7 +41,7 @@ self.addEventListener('fetch', e => {
   // Apenas GET
   if (request.method !== 'GET') return;
 
-  // Nunca interceptar Supabase ou APIs externas
+  // Nunca interceptar origens externas (Supabase, CDNs, etc.)
   if (url.origin !== self.location.origin) return;
 
   // Nunca interceptar JS — sempre network
@@ -67,8 +55,7 @@ self.addEventListener('fetch', e => {
     e.respondWith(
       fetch(request)
         .then(res => {
-          const copy = res.clone();
-          caches.open(CACHE).then(c => c.put(request, copy));
+          caches.open(CACHE).then(c => c.put(request, res.clone()));
           return res;
         })
         .catch(() => caches.match(request))
@@ -76,35 +63,17 @@ self.addEventListener('fetch', e => {
     return;
   }
 
-  // CSS → stale-while-revalidate
-  if (url.pathname.match(/\.css(\?.*)?$/)) {
-    e.respondWith(
-      caches.open(CACHE).then(cache =>
-        cache.match(request).then(cached => {
-          const fresh = fetch(request).then(res => {
-            cache.put(request, res.clone());
-            return res;
-          });
-          return cached || fresh;
-        })
-      )
-    );
-    return;
-  }
-
-  // Imagens e fontes → cache-first
-  if (url.pathname.match(/\.(png|jpg|jpeg|svg|webp|woff2?)(\?.*)?$/)) {
+  // CSS e imagens → cache-first
+  if (url.pathname.match(/\.(css|png|jpg|jpeg|svg|webp|woff2?)(\?.*)?$/)) {
     e.respondWith(
       caches.match(request).then(cached => {
-        if (cached) return cached;
-        return fetch(request).then(res => {
+        const fresh = fetch(request).then(res => {
           caches.open(CACHE).then(c => c.put(request, res.clone()));
           return res;
         });
+        return cached || fresh;
       })
     );
     return;
   }
-
-  // Tudo o resto → network only
 });
