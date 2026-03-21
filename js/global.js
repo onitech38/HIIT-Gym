@@ -12,107 +12,20 @@
 // ============================================
 
 
-// ── 1. ANTI-FLASH ─────────────────────────────
-// Esconde o HTML imediatamente via JS se o inline
-// CSS do <head> não estiver presente (fallback).
-// O reveal é feito em removeSplash().
-if (!document.documentElement.style.visibility) {
-  document.documentElement.style.visibility = 'hidden';
-}
-
-
 // ── 2. ESTADO GLOBAL ──────────────────────────
 window.currentUser    = null;
 window.currentSession = null;
 
 
 // ── 3. SPLASH ─────────────────────────────────
-(function injectSplash() {
-  if (document.getElementById('hiit-splash')) return;
-
-  const style = document.createElement('style');
-  style.id = 'hiit-splash-style';
-  style.textContent = `
-    html { background: #120D0F; }
-    #hiit-splash {
-      position: fixed; inset: 0; z-index: 9999;
-      background: #120D0F;
-      display: flex; flex-direction: column;
-      align-items: center; justify-content: center; gap: 1.5rem;
-      animation: sp-enter 0.25s ease forwards;
-    }
-    @keyframes sp-enter {
-      from { opacity: 0; }
-      to   { opacity: 1; }
-    }
-    #hiit-splash img {
-      width: 72px; height: auto;
-      opacity: 0;
-      transform: translateY(8px) scale(0.9);
-      animation:
-        sp-logo-in 0.4s cubic-bezier(0.34,1.56,0.64,1) 0s forwards,
-        sp-pulse   2s ease-in-out 0.4s infinite;
-    }
-    @keyframes sp-logo-in {
-      to { opacity: 1; transform: translateY(0) scale(1); }
-    }
-    #hiit-splash .sp-bar {
-      width: 100px; height: 2px;
-      background: rgba(251,160,2,0.15);
-      border-radius: 2px; overflow: hidden;
-      opacity: 0;
-      animation: sp-bar-in 0.3s ease 0.35s forwards;
-    }
-    @keyframes sp-bar-in { to { opacity: 1; } }
-    #hiit-splash .sp-bar::after {
-      content: ''; display: block;
-      height: 100%; width: 35%; background: #fba002;
-      border-radius: 2px;
-      animation: sp-slide 1.1s ease-in-out infinite;
-    }
-    @keyframes sp-pulse {
-      0%,100% { opacity:.55; }
-      50%     { opacity:1;   }
-    }
-    @keyframes sp-slide {
-      0%   { transform:translateX(-100%); }
-      100% { transform:translateX(370%); }
-    }
-  `;
-  document.head.appendChild(style);
-
-  function mountSplash() {
-    if (document.getElementById('hiit-splash')) return;
-    const el = document.createElement('div');
-    el.id = 'hiit-splash';
-    el.innerHTML = `
-      <img src="/src/logo/logo_def1.svg" alt="HIIT-Gym">
-      <div class="sp-bar"></div>
-    `;
-    document.body.prepend(el);
-  }
-
-  document.body ? mountSplash()
-    : document.addEventListener('DOMContentLoaded', mountSplash);
-})();
-
+// O splash é CSS puro — html::before em style.css
+// Aqui apenas removemos: adicionamos .ready ao <html>
+// que activa a transition de fade out via CSS
 function removeSplash() {
-  // Revela o HTML com transição suave
-  document.documentElement.style.transition = 'opacity 0.25s ease';
-  document.documentElement.style.opacity    = '1';
-  document.documentElement.style.visibility = 'visible';
+  document.documentElement.classList.add('ready');
   document.body.classList.remove('loading');
-
-  // Remove o overlay
-  const el = document.getElementById('hiit-splash');
-  if (!el) return;
-  el.style.transition = 'opacity 0.25s ease';
-  el.style.opacity    = '0';
-  setTimeout(() => {
-    el.remove();
-    document.getElementById('hiit-splash-style')?.remove();
-  }, 280);
 }
+
 
 
 // ── 4. UTILS ──────────────────────────────────
