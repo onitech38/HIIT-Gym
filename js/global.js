@@ -47,13 +47,23 @@ window.currentSession = null;
     }
     #hiit-splash img {
       width: 72px; height: auto;
-      animation: sp-pulse 1.4s ease-in-out 0.25s infinite;
+      opacity: 0;
+      transform: translateY(8px) scale(0.9);
+      animation:
+        sp-logo-in 0.45s cubic-bezier(0.34,1.56,0.64,1) 0.05s forwards,
+        sp-pulse   1.8s ease-in-out 0.5s infinite;
+    }
+    @keyframes sp-logo-in {
+      to { opacity: 1; transform: translateY(0) scale(1); }
     }
     #hiit-splash .sp-bar {
       width: 100px; height: 2px;
       background: rgba(251,160,2,0.15);
       border-radius: 2px; overflow: hidden;
+      opacity: 0;
+      animation: sp-bar-in 0.3s ease 0.35s forwards;
     }
+    @keyframes sp-bar-in { to { opacity: 1; } }
     #hiit-splash .sp-bar::after {
       content: ''; display: block;
       height: 100%; width: 35%; background: #fba002;
@@ -88,7 +98,7 @@ window.currentSession = null;
 
 function removeSplash() {
   // Revela o HTML com transição suave
-  document.documentElement.style.transition = 'opacity 0.35s ease';
+  document.documentElement.style.transition = 'opacity 0.25s ease';
   document.documentElement.style.opacity    = '1';
   document.documentElement.style.visibility = 'visible';
   document.body.classList.remove('loading');
@@ -96,12 +106,12 @@ function removeSplash() {
   // Remove o overlay
   const el = document.getElementById('hiit-splash');
   if (!el) return;
-  el.style.transition = 'opacity 0.35s ease';
+  el.style.transition = 'opacity 0.25s ease';
   el.style.opacity    = '0';
   setTimeout(() => {
     el.remove();
     document.getElementById('hiit-splash-style')?.remove();
-  }, 380);
+  }, 280);
 }
 
 
@@ -259,7 +269,7 @@ function bindAnchorLinks() {
 let _booted = false;
 
 async function boot() {
-  const safetyTimer = setTimeout(removeSplash, 4000);
+  const safetyTimer = setTimeout(removeSplash, 2500);
 
   try {
     if (!_booted) {
