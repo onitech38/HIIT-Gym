@@ -7,27 +7,29 @@
 //   • window.supabaseClient → cliente Supabase
 //   • app:ready → dispara quando auth está resolvida
 //     e nav/footer já estão no DOM
+//   • window._appReady → true após primeiro boot
 //   • actualizarNav() → exportada para page scripts
 //   • ini(str) → exportada para page scripts
 // ============================================
 
 
-// ── 2. ESTADO GLOBAL ──────────────────────────
+// ── ESTADO GLOBAL ─────────────────────────────
 window.currentUser    = null;
 window.currentSession = null;
+window._appReady      = false;
 
 
-// ── 3. SPLASH ─────────────────────────────────
-// O splash é CSS puro — html::before em style.css
+// ── SPLASH ────────────────────────────────────
+// O splash é CSS puro — html::before em cada página.
 // Aqui apenas removemos: adicionamos .splash-done ao <html>
-// que activa a transition de fade out via CSS
+// que activa a transition de fade out via CSS.
 function removeSplash() {
   document.documentElement.classList.add('splash-done');
   document.body.classList.remove('loading');
 }
 
 
-// ── 4. UTILS ──────────────────────────────────
+// ── UTILS ─────────────────────────────────────
 function ini(str) {
   if (!str) return '';
   return str.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
@@ -40,7 +42,7 @@ async function loadPartial(url) {
 }
 
 
-// ── 5. NAV / FOOTER ───────────────────────────
+// ── NAV / FOOTER ──────────────────────────────
 async function injectNav() {
   const header = document.querySelector('header');
   if (!header || header.querySelector('nav')) return;
@@ -59,7 +61,7 @@ async function injectFooter() {
 }
 
 
-// ── 6. AUTH ───────────────────────────────────
+// ── AUTH ──────────────────────────────────────
 // getSession() é chamado UMA vez por boot().
 // Todas as páginas lêem window.currentUser — nunca
 // chamam getSession() directamente.
@@ -93,7 +95,7 @@ if (window.supabaseClient) {
 }
 
 
-// ── 7. NAV AUTH ───────────────────────────────
+// ── NAV AUTH ──────────────────────────────────
 async function actualizarNav() {
   const login  = document.getElementById('nav-login');
   const signup = document.getElementById('nav-signup');
@@ -134,7 +136,7 @@ async function actualizarNav() {
 }
 
 
-// ── 8. TO-TOP ─────────────────────────────────
+// ── TO-TOP ────────────────────────────────────
 function bindToTop() {
   const tryBind = () => {
     const btn = document.querySelector('.q_a .to_top');
@@ -152,7 +154,7 @@ function bindToTop() {
 }
 
 
-// ── 9. ANCHOR LINKS ───────────────────────────
+// ── ANCHOR LINKS ──────────────────────────────
 function bindAnchorLinks() {
   document.querySelectorAll('a[href*="#"]').forEach(a => {
     try {
@@ -169,21 +171,18 @@ function bindAnchorLinks() {
 }
 
 
-// ── 10. BOOT ──────────────────────────────────
-// Ponto de entrada único. Corre no DOMContentLoaded
-// e em cada bfcache restore (pageshow.persisted).
+// ── BOOT ──────────────────────────────────────
+// Ponto de entrada único.
 //
-// CORRECÇÃO (v4): postMessage enviado para reg.waiting
-// (SW em espera), não para controller (SW já activo).
-// Enviar para controller era um no-op — o SW em espera
-// nunca recebia a mensagem e ficava sempre em "Wait".
+// CORRECÇÃO (v4):
+//   1. postMessage para reg.waiting (não controller)
+//   2. readyState check evita race condition com DOMContentLoaded
+//   3. window._appReady flag para page scripts verificarem
+//      se boot já correu antes de registarem listeners
 let _booted = false;
 
 async function boot() {
   // Força activação do SW em espera, se existir.
-  // reg.waiting é o SW instalado mas a aguardar;
-  // controller é o SW já activo — enviar-lhe skipWaiting
-  // não faz nada porque ele já está activo.
   try {
     const reg = await navigator.serviceWorker?.getRegistration('/');
     if (reg?.waiting) {
@@ -208,17 +207,29 @@ async function boot() {
     clearTimeout(safetyTimer);
     removeSplash(); // revela página ANTES de app:ready
 
+    // Flag para page scripts que carregam após boot()
+    window._appReady = true;
     document.dispatchEvent(new Event('app:ready'));
 
   } catch (err) {
     console.error('[global] boot error:', err);
     clearTimeout(safetyTimer);
     removeSplash();
+    window._appReady = true;
     document.dispatchEvent(new Event('app:ready'));
   }
 }
 
-window.addEventListener('DOMContentLoaded', boot);
+// ── PROTECÇÃO RACE CONDITION ──────────────────
+// Se DOMContentLoaded já disparou antes deste script
+// carregar (bfcache, SW a servir HTML em cache, carregamento
+// rápido), o listener nunca seria chamado e boot() nunca corria.
+// Verificamos readyState e chamamos boot() directamente se necessário.
+if (document.readyState === 'loading') {
+  window.addEventListener('DOMContentLoaded', boot);
+} else {
+  boot();
+}
 
 // Bfcache restore — re-corre boot() completo.
 // Garante que todas as páginas actualizam o estado
