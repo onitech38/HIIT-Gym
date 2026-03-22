@@ -62,7 +62,12 @@ let currentEnrollments = [];
 // ============================================
 // INIT — aguarda app:ready do global.js
 // ============================================
-document.addEventListener('app:ready', async () => {
+// Protecção contra race condition:
+// Se global.js já completou boot() antes deste
+// script registar o listener, app:ready já disparou
+// e window._appReady está true. Nesse caso chamamos
+// o handler directamente, sem esperar pelo evento.
+async function onAppReady() {
   // window.currentUser garantido pelo global.js antes de app:ready disparar
   if (!window.currentUser) {
     window.location.href = '/index.html';
@@ -135,8 +140,15 @@ document.addEventListener('app:ready', async () => {
   bindAvatarUpload('avatar-upload');
   bindAvatarUpload('avatar-upload-perfil');
   bindAddTreino();
+}
 
-});
+// Arranque: usa evento se boot ainda não correu,
+// chama directamente se já correu (_appReady = true)
+if (window._appReady) {
+  onAppReady();
+} else {
+  document.addEventListener('app:ready', onAppReady, { once: true });
+}
 
 
 
@@ -573,9 +585,11 @@ document.getElementById('btn-remove-avatar')?.addEventListener('click', async ()
 
 
 // ── LOGOUT ────────────────────────────────────
-document.getElementById('btn-logout')?.addEventListener('click', async () => {
+// fire-and-forget: signOut não bloqueia o redirect
+// mesmo que a sessão esteja corrompida, o utilizador sai sempre
+document.getElementById('btn-logout')?.addEventListener('click', () => {
   if (confirm('Tens a certeza que queres sair?')) {
-    await supabase.auth.signOut();
+    supabase.auth.signOut().catch(() => {});
     window.location.href = '/index.html';
   }
 });
@@ -589,4 +603,3 @@ document.getElementById('btn-delete-account')?.addEventListener('click', async (
     window.location.href = '/index.html';
   }
 });
-
