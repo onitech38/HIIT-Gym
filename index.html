@@ -1,48 +1,48 @@
 <!DOCTYPE html>
 <html lang="pt-PT">
 <head>
-<style>
-  html::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    z-index: 490;
-    background-color: #120D0F;
-    background-image: url(/src/logo/logo_def1.svg);
-    background-repeat: no-repeat;
-    background-position: center calc(50% - 20px);
-    background-size: 80px auto;
-    pointer-events: none;
-    transition: opacity .3s ease, visibility .3s ease;
-  }
-  html::after {
-    content: '';
-    position: fixed;
-    left: 50%;
-    top: calc(50% + 50px);
-    transform: translateX(-50%);
-    z-index: 490;
-    width: 100px;
-    height: 2px;
-    border-radius: 2px;
-    background: linear-gradient(90deg,
-      transparent 0%, #fba002 50%, transparent 100%);
-    background-size: 50% 100%;
-    background-repeat: no-repeat;
-    animation: sp-slide .9s ease-in-out infinite;
-    pointer-events: none;
-    transition: opacity .3s ease, visibility .3s ease;
-  }
-  @keyframes sp-slide {
-    0%   { background-position: -50% center; }
-    100% { background-position: 150% center; }
-  }
-  html.splash-done::before,
-  html.splash-done::after {
-    opacity: 0;
-    visibility: hidden;
-  }
-</style>
+    <style>
+    html::before {
+        content: '';
+        position: fixed;
+        inset: 0;
+        z-index: 490;
+        background-color: #120D0F;
+        background-image: url(/src/logo/logo_def1.svg);
+        background-repeat: no-repeat;
+        background-position: center calc(50% - 20px);
+        background-size: 80px auto;
+        pointer-events: none;
+        transition: opacity .3s ease, visibility .3s ease;
+    }
+    html::after {
+        content: '';
+        position: fixed;
+        left: 50%;
+        top: calc(50% + 50px);
+        transform: translateX(-50%);
+        z-index: 490;
+        width: 100px;
+        height: 2px;
+        border-radius: 2px;
+        background: linear-gradient(90deg,
+        transparent 0%, #fba002 50%, transparent 100%);
+        background-size: 50% 100%;
+        background-repeat: no-repeat;
+        animation: sp-slide .9s ease-in-out infinite;
+        pointer-events: none;
+        transition: opacity .3s ease, visibility .3s ease;
+    }
+    @keyframes sp-slide {
+        0%   { background-position: -50% center; }
+        100% { background-position: 150% center; }
+    }
+    html.splash-done::before,
+    html.splash-done::after {
+        opacity: 0;
+        visibility: hidden;
+    }
+    </style>
 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -92,62 +92,61 @@
         <div class="welcome-backdrop" id="welcome-backdrop" aria-hidden="true"></div>
 
         <div class="welcome-panel glass">
+            <div class="welcome-header">
+                <a href="/index.html">
+                <img src="/src/logo/logo_def1.svg" alt="Hiit-Gym" class="welcome-logo">
+                </a>
+                <button class="btn icon glass" id="welcome-skip" aria-label="Fechar e continuar sem conta">
+                <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
 
-        <div class="welcome-header">
-            <a href="/index.html">
-            <img src="/src/logo/logo_def1.svg" alt="Hiit-Gym" class="welcome-logo">
-            </a>
-            <button class="btn icon glass" id="welcome-skip" aria-label="Fechar e continuar sem conta">
-            <i class="fa-solid fa-xmark"></i>
-            </button>
-        </div>
+            <div class="welcome-hero">
+                <h2>Get ready to <span>HIIT</span> your body</h2>
+            </div>
 
-        <div class="welcome-hero">
-            <h2>Get ready to <span>HIIT</span> your body</h2>
-        </div>
+            <div class="auth-tabs" role="tablist">
+                <label for="mode-login" class="auth-tab">Login</label>
+                <label for="mode-signup" class="auth-tab">Criar Conta</label>
+            </div>
 
-        <div class="auth-tabs" role="tablist">
-            <label for="mode-login" class="auth-tab">Login</label>
-            <label for="mode-signup" class="auth-tab">Criar Conta</label>
-        </div>
+            <!-- Login -->
+            <form class="auth-form login-form" id="form-login" novalidate>
+                <div class="campo">
+                <label for="l-email">Email</label>
+                <input id="l-email" type="email" name="email" required autocomplete="email">
+                </div>
+                <div class="campo">
+                <label for="l-pass">Password</label>
+                <input id="l-pass" type="password" name="password" required autocomplete="current-password">
+                </div>
+                <p class="form-error hidden" id="login-error" role="alert">Email ou password incorretos.</p>
+                <button type="submit" class="btn glass">Entrar <i class="fa-solid fa-arrow-right"></i></button>
+            </form>
 
-        <!-- Login -->
-        <form class="auth-form login-form" id="form-login" novalidate>
-            <div class="campo">
-            <label for="l-email">Email</label>
-            <input id="l-email" type="email" name="email" required autocomplete="email">
-            </div>
-            <div class="campo">
-            <label for="l-pass">Password</label>
-            <input id="l-pass" type="password" name="password" required autocomplete="current-password">
-            </div>
-            <p class="form-error hidden" id="login-error" role="alert">Email ou password incorretos.</p>
-            <button type="submit" class="btn glass">Entrar <i class="fa-solid fa-arrow-right"></i></button>
-        </form>
-
-        <!-- Signup -->
-        <form class="auth-form signup-form" id="form-signup" novalidate>
-            <div class="campos-row">
-            <div class="campo">
-                <label for="s-fname">Primeiro Nome</label>
-                <input id="s-fname" type="text" name="firstName" required autocomplete="given-name">
-            </div>
-            <div class="campo">
-                <label for="s-lname">Último Nome</label>
-                <input id="s-lname" type="text" name="lastName" required autocomplete="family-name">
-            </div>
-            </div>
-            <div class="campo">
-            <label for="s-email">Email</label>
-            <input id="s-email" type="email" name="email" required autocomplete="email">
-            </div>
-            <div class="campo">
-            <label for="s-pass">Password</label>
-            <input id="s-pass" type="password" name="password" minlength="6" required autocomplete="new-password">
-            </div>
-            <p class="form-error hidden" id="signup-error" role="alert"></p>
-            <button type="submit" class="btn glass">Criar Conta <i class="fa-solid fa-arrow-right"></i></button>
-        </form>
+            <!-- Signup -->
+            <form class="auth-form signup-form" id="form-signup" novalidate>
+                <div class="campos-row">
+                <div class="campo">
+                    <label for="s-fname">Primeiro Nome</label>
+                    <input id="s-fname" type="text" name="firstName" required autocomplete="given-name">
+                </div>
+                <div class="campo">
+                    <label for="s-lname">Último Nome</label>
+                    <input id="s-lname" type="text" name="lastName" required autocomplete="family-name">
+                </div>
+                </div>
+                <div class="campo">
+                <label for="s-email">Email</label>
+                <input id="s-email" type="email" name="email" required autocomplete="email">
+                </div>
+                <div class="campo">
+                <label for="s-pass">Password</label>
+                <input id="s-pass" type="password" name="password" minlength="6" required autocomplete="new-password">
+                </div>
+                <p class="form-error hidden" id="signup-error" role="alert"></p>
+                <button type="submit" class="btn glass">Criar Conta <i class="fa-solid fa-arrow-right"></i></button>
+            </form>
 
         </div>
     </aside>
@@ -166,20 +165,19 @@
         <img class="bg" src="/src/BG_hero-home.jpg" alt="Imagem de um ginásio">
 
         <div class="hero">
-        <div class="text_anim">
-            <h1 class="hiit">hiit</h1>
-            <div class="list_text">
-            <h1 class="text">the floor</h1>
-            <h1 class="text">the pool</h1>
-            <h1 class="text">the road</h1>
-            <h1 class="text">until you fall</h1>
-            <h1 class="text">the gym</h1>
+            <div class="text_anim">
+                <h1 class="hiit">hiit</h1>
+                <div class="list_text">
+                    <h1 class="text">the floor</h1>
+                    <h1 class="text">the pool</h1>
+                    <h1 class="text">the road</h1>
+                    <h1 class="text">until you fall</h1>
+                    <h1 class="text">the gym</h1>
+                </div>
             </div>
+            <button class="btn_large glass">free visit now</button>
         </div>
-        <button class="btn_large glass">free visit now</button>
-        </div>
-        
-            
+                 
         <details name="map" id="map">
             <summary class="btn icon glass" aria-label="Botão para abrir o mapa">
                 <i class="fa-solid fa-arrows-split-up-and-left" ></i>
@@ -201,7 +199,6 @@
         </details>
     </header>
   
-    
     <main>
         <section class="sobre golden-border" id="sobre">
           <video autoplay muted playsinline loop preload="auto">
@@ -235,7 +232,7 @@
                     <h5>Avaliação Média</h5>
                 </div>
             </div>            
-        </section> <!-- ok -->
+        </section>
 
         <section class="app-promo golden-border" id="app">
             <div class="app-promo-content">
@@ -276,8 +273,7 @@
             <!-- Decoração visual direita -->
             <div class="app-promo-visual" aria-hidden="true">
                 <div class="app-phone-mock">
-                    <div class="app-phone-screen">
-                    </div>
+                    <div class="app-phone-screen"></div>
                 </div>
             </div>
         </section>
@@ -288,7 +284,6 @@
             
             <div class="actividades">
                 <div class="col-esquerda">
-
                     <div class="escolhas" id="escolhas">
                         <div class="modalidade-item" data-modal="musculacao">
                             <span class="link-btn">musculação</span>
@@ -395,14 +390,14 @@
                     <div class="coaches-row" id="coaches-row"></div>
                 </div>
             </div>
-        </section> <!-- ok -->
+        </section>
 
-        <section class="planos glass" id="planos">
+        <section class="planos golden-border" id="planos">
             <h3>Os nossos Planos</h3>
             <p>Escolhe o plano ideal para os teus objectivos</p>
 
             <div class="planos-lista">
-                <article class="planos">
+                <article class="planos-cat">
                     <div class="valor">
                         <h5>basico</h5>
                         <div class="valor_mes">
@@ -419,7 +414,7 @@
                     <button class="btn-small glass">comecar</button>
                 </article>
 
-                <article class="planos popular">
+                <article class="planos-cat popular">
                     <div class="valor">
                         <h5>standard</h5>
                         <div class="valor_mes">
@@ -436,7 +431,7 @@
                     <button class="btn-small glass">mais popular</button>
                 </article>
 
-                <article class="planos">
+                <article class="planos-cat">
                     <div class="valor">
                         <h5>premium</h5>
                         <div class="valor_mes">
@@ -460,11 +455,11 @@
             <h3>A nossa Equipa</h3>
             <p>Conhece os profissionais que te vão acompanhar.</p>
             <div class="equipa-carousel">
-                <button class="btn icon" id="equipa-prev" aria-label="Anterior">
+                <button class="btn golden-border icon" id="equipa-prev" aria-label="Anterior">
                     <i class="fa-solid fa-chevron-left"></i>
                 </button>
                 <div class="carousel-viewport" id="equipa-track"></div>
-                <button class="btn icon" id="equipa-next" aria-label="Seguinte">
+                <button class="btn golden-border icon" id="equipa-next" aria-label="Seguinte">
                     <i class="fa-solid fa-chevron-right"></i>
                 </button>
             </div>

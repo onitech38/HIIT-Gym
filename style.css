@@ -1247,21 +1247,30 @@ main {
                 box-shadow var(--tempo) ease-in-out, 
                 border var(--tempo) ease-in-out;
 
+    
     &:hover {
-      border-radius: var(--border-radius);
-      .planos-lista .planos.popular {
-        transform: scale(1.05); box-shadow: var(--bx-sdw);
-        background-color: color-mix(in srgb, var(--clr-2) 15%, var(--clr-transp) 55%);
-      }
-      .planos-lista .planos:not(.popular) {
-        background: var(--clr-3); border-radius: var(--border-radius); opacity: .65; box-shadow: var(--bx-sdw);
+  
+      .planos-lista {
+  
+        .planos-cat.popular {
+          transform: scale(1.05);
+          box-shadow: var(--bx-sdw);
+        }
+  
+        .planos-cat:not(.popular) {
+          background: var(--clr-3);
+          border-radius: var(--border-radius);
+          box-shadow: var(--bx-sdw);
+        }
+  
       }
     }
 
     .planos-lista {
-      display: flex; justify-content: space-evenly; flex-wrap: wrap; width: 100%;
+      width: 100%;
+      display: flex; justify-content: space-evenly; flex-wrap: wrap;
 
-      .planos {
+      .planos-cat {
         min-height: 350px; padding: 1rem; margin-block: var(--gap-items);
         min-width: fit-content; max-width: 400px;
         display: grid; gap: var(--gap-items); place-items: center;
@@ -1269,7 +1278,17 @@ main {
 
         &.popular {
           border-inline: 2px solid var(--clr-4);
-          transition: border-radius var(--tempo) ease-in-out, background-color var(--tempo) ease-in-out;
+          transition: border-radius var(--tempo) ease-in-out, 
+                      background-color var(--tempo) ease-in-out,
+                      transform var(--tempo) ease-in-out;
+          &:hover {
+            border-radius: var(--border-radius);
+            background-color: color-mix(
+              in srgb,
+              var(--clr-2) 3%,
+              var(--clr-transp) 58%
+            );
+          }
         }
 
         .valor {
@@ -1357,6 +1376,7 @@ main {
 
         &:hover { transform: translateY(-4px); box-shadow: var(--bx-sdw); }
       }
+      .icon { font-size: var(--icon-font-size-small);}
     }
 
     @media (max-width: 900px) {
@@ -1382,8 +1402,6 @@ main {
       display: grid;
       gap: 1.25rem;
       padding: 2rem;
-      border-left: var(--border-size) var(--clr-4);
-      border-bottom: var(--border-size) var(--clr-4);
       border-radius: 0 0 0 1rem;
   
       .campo {
