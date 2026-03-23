@@ -356,8 +356,8 @@ const equipaTrack = document.getElementById('equipa-track');
 
 equipaTrack.innerHTML = Object.values(coaches).map(c => `
   <div class="equipa-card"
-       ${c.card ? `style="background-image:url('${c.card}')"` : ''}>
-    ${!c.card ? `<span class="equipa-card-iniciais">${getIniciais(c.nome)}</span>` : ''}
+       ${c.avatar ? `style="background-image:url('${c.avatar}')"` : ''}>
+    ${!c.avatar ? `<span class="equipa-card-iniciais">${getIniciais(c.nome)}</span>` : ''}
     <div class="equipa-info">
       <span class="equipa-nome">${c.nome}</span>
       <span class="equipa-tags">${c.modalidades.map(m => modalidadesData[m].titulo).join(' · ')}</span>

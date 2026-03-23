@@ -1330,6 +1330,7 @@ main {
       }
 
       .equipa-card {
+        max-height: 40vh;
         flex: 0 0 calc(33.333% - 0.667rem);
         scroll-snap-align: start;
         position: relative !important;
@@ -1337,7 +1338,7 @@ main {
         border-radius: var(--border-radius);
         overflow: hidden !important;
         cursor: pointer;
-        background-size: cover; background-position: center; background-color: var(--clr-3);
+        background-size: cover; background-position: center top; background-color: var(--clr-3);
         transition: transform var(--tempo) ease, box-shadow var(--tempo) ease;
 
         &::after {

@@ -161,23 +161,23 @@ const coaches = {
   fernando: {
     nome: 'Fernando Gomes',
     avatar: 'src/coaches/fernando/fernando.jpg',
-    card: 'src/coaches/fernando/fernando_card.jpg',
+    card: 'src/coaches/fernando/fernando_card.png',
     modalidades: ['lutas'],
     bio: 'Campeão nacional de Muay Thai.',
   },
 
   patricia: {
     nome: 'Patrícia Lima',
-    avatar: 'src/coaches/patricia/patricia.jpg',
-    card: 'src/coaches/patricia/patricia_card.jpg',
+    avatar: 'src/coaches/patricia/patricia.png',
+    card: 'src/coaches/patricia/patricia_card.png',
     modalidades: ['lutas'],
     bio: 'Faixa preta de Jiu-Jitsu Brasileiro.',
   },
 
   ricardo: {
     nome: 'Ricardo Alves',
-    avatar: 'src/coaches/ricardo/ricardo.jpg',
-    card: 'src/coaches/ricardo/ricardo_card.jpg',
+    avatar: 'src/coaches/ricardo/ricardo.png',
+    card: 'src/coaches/ricardo/ricardo_card.png',
     modalidades: ['lutas'],
     bio: 'Sensei de Karaté com 20 anos de experiência.',
   },
