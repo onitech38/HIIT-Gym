@@ -1,8 +1,10 @@
 // ============================================
+// ============================================
 // functions/api/stripe-checkout.js
 // Cria uma sessão Stripe Checkout.
 // Recebe: { priceId, userId, userEmail }
 // Devolve: { url } para redirecionar o browser
+// ============================================
 // ============================================
 
 const CORS = {
