@@ -10,6 +10,9 @@ HIIT Gym/(RAIZ)
 |__ functions
 |   |__ api
 |       |__ chat.js
+|       |__ stripe-checkout.js
+|       |__ stripe-portsl.js
+|       |__ stripe-webhook.js
 |
 |
 |__ js
@@ -59,10 +62,69 @@ HIIT Gym/(RAIZ)
 MEMÓRIA:
 ========================================== -->
 Purpose & context
-Jose is building HIIT-Gym, a full-stack gym website hosted on Cloudflare Pages with 
-Supabase for authentication and database. The project includes pages for class types (modalidades), 
-user profiles, and coach information. The stack uses vanilla JS, CSS with nesting, 
-and Supabase for auth and enrollment data, allong with vscode->github->cloudflare.
+José is building HIIT-Gym, a Portuguese-language fitness gym website deployed on Cloudflare Pages via the onitech38/HIIT-Gym GitHub repository. The project is a PWA built with vanilla HTML, CSS, and JavaScript, using Supabase for authentication and database, and an Anthropic API proxy via Cloudflare Pages Functions for a chat assistant widget.
+José works with Claude as a senior front-end/back-end collaborator. Established coding conventions:
+
+Pure CSS Nesting where hierarchy mirrors HTML structure
+@layer usage for animations, media queries, and variables
+Minimal JavaScript; warn when JS is being introduced
+Simplest and cleanest solutions preferred
+Step-by-step explanations for each change
+Avoid JS when CSS can handle it
+
+José has been direct about expecting thorough diagnosis before solutions are proposed — he explicitly called out repeated misdiagnoses and asked Claude to evaluate all possibilities before acting.
+
+Current state
+The site is live on Cloudflare Pages. Recent sessions resolved a series of cascading production bugs following a refactor that introduced global.js for shared functions. Key resolved issues include:
+
+data.js and global.js load order fixed in index.html (must precede script.js)
+Supabase CDN pinned to @2.49.4 across all four HTML files to avoid cached version incompatibility with newer key formats
+functions/api/chat.js fixed: replaced destructured const { request, env } = context with direct context.env / context.request access to resolve Cloudflare bundler scope errors
+Dead code and duplicate data declarations (coaches, modalidadesData) removed from script.js
+Blog auth guard (pre-Supabase localStorage redirect) removed
+Supabase handle_new_user trigger rebuilt with COALESCE to accept both camelCase and snake_case metadata fields
+Service Worker cache bumped to v3.1 with corrected asset paths
+
+Pending / unconfirmed at last session end:
+
+The chat.js fix (replacing the destructured context pattern) had been committed but not yet confirmed live in production
+ANTHROPIC_API_KEY environment variable needs verification that it is set under the Production scope (not Preview only) in Cloudflare Pages settings
+
+
+On the horizon
+
+Confirming the chat assistant is fully functional end-to-end in production (API key scope, proxy routing, response delivery)
+Chat feature gates fitness/nutrition advice behind Standard/Premium plan via profiles.plan column — may need further testing
+Conversation history: stored in Supabase for authenticated users, localStorage for anonymous users — integration stability to verify
+
+
+Key learnings & principles
+
+Cloudflare Pages Functions scope issue: Destructuring context at the top level (const { env } = context) causes bundler scope errors; always access context.env and context.request directly inside the handler
+GitHub file editing pitfall: Using GitHub's web editor without selecting all (Ctrl+A) before pasting appends content, causing duplicate export errors — always replace the full file
+Service Worker cache as a debugging suspect: Stale SW cache has caused multiple misdiagnoses; cache version should be bumped and SW cleared when deploying fixes
+Cloudflare Pages vs. Workers: Environment variables must be set in the Pages project, not a separate Worker — easy to misconfigure via the dashboard
+Supabase CDN floating tags (@2 without a pinned version) can resolve to cached incompatible builds; always pin to a specific version
+Commit verification before diagnosing: Several bugs were caused by the correct file never having been committed — always confirm the repo state matches expectations before assuming a logic error
+CSS nesting and DOM structure must align: CSS nesting hierarchy should reflect actual rendered DOM, not assumed structure — validate against JS-rendered output when dynamic elements are involved
+
+
+Approach & patterns
+
+José uploads files at the start of sessions for Claude to audit before making changes
+Fixes are delivered as complete, downloadable file outputs (not diffs)
+Bugs are worked through sequentially by priority, confirmed by José before moving on
+Production issues are debugged by cross-referencing browser console errors, Cloudflare deployment logs, and repository state
+Rollbacks to last stable deploy are used as a stabilisation strategy during deployment crises
+
+
+Tools & resources
+
+Cloudflare Pages — hosting and Pages Functions (serverless proxy)
+Supabase — authentication, user profiles, chat history storage
+Anthropic API — powers the chat assistant widget (proxied server-side)
+GitHub (onitech38/HIIT-Gym) — source repository with Cloudflare CI/CD integration
+Service Worker (sw.js) — PWA caching, versioned manually
 
 <!-- =========================================
 INSTRUÇÕES:
