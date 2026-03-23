@@ -603,4 +603,3 @@ document.getElementById('btn-delete-account')?.addEventListener('click', async (
     window.location.href = '/index.html';
   }
 });
-
