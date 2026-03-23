@@ -1613,7 +1613,11 @@ footer {
         text-decoration: none;
         transition: color var(--tempo) ease, opacity var(--tempo) ease;
 
-        &:hover { color: var(--clr-4); opacity: 1; text-decoration: none; }
+        &:hover { opacity: 1; text-decoration: none; }
+        &:nth-child(1):hover { color: var(--clr-social_wa); }
+        &:nth-child(2):hover { color: var(--clr-social_ig); }
+        &:nth-child(3):hover { color: var(--clr-social_fb); }
+        &:nth-child(4):hover { color: var(--clr-social_tt); }
       }
     }
   }
