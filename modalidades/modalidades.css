@@ -252,6 +252,7 @@
 
       .equipa {
         padding: 2.5rem;
+        scroll-margin-top: 100vh; /* altura do teu header */
 
         .equipa-grid {
           width: 100%; display: grid;

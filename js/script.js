@@ -258,17 +258,20 @@ const getIniciais = (n) => n.split(' ').map(i => i[0]).join('').slice(0, 2).toUp
 
 function renderCoaches(coachKeys) {
   const container = document.getElementById('coaches-row');
+  const modalidadeSlug = slugify(modalidadeData.titulo);
   container.innerHTML = coachKeys.map(key => {
     const c = coaches[key];
     return `
       <div class="coach-wrapper">
-        <button class="coach-avatar"
-                ${c.avatar ? `style="background-image:url('${c.avatar}')"` : ''}
-                aria-label="${c.nome}">
+        <a class="coach-avatar" href="/modalidades/modalidades.html#mod-${modalidadeKey}"
+          aria-label="${c.nome}"
+          ${c.avatar ? `style="background-image:url('${c.avatar}')"` : ''}
+        >
           ${c.avatar ? '' : getIniciais(c.nome)}
-        </button>
+        </a>
         <span class="coach-tooltip">${c.nome}</span>
-      </div>`;
+      </div>
+    `;
   }).join('');
 }
 

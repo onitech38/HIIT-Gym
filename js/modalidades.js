@@ -119,7 +119,7 @@ function renderModalidades() {
              </button>`;
 
       return `
-        <article class="mod-card" data-status="${status}">
+        <article class="mod-card" data-status="${status} id="mod-${key}">
           <div class="mod-card-body">
             <span class="mod-card-titulo">${m.titulo}</span>
 
