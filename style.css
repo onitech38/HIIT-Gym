@@ -86,7 +86,7 @@
 
     --font-weight: 800;
     --padding-element: 3rem 1rem 5rem;;
-    --margin-block-section: 1rem;
+    --margin-block-section: 2.5rem;
     --container-max: 1440px;
     --container-mid: 1024px;
     --container-small: 520px;
@@ -184,7 +184,6 @@
   .golden-border {
     position: relative;
     border-radius: 4px 12px 4px 18px;
-    padding: 1rem;
     background-image:
             linear-gradient(var(--clr-3), var(--clr-3)),
             linear-gradient(
@@ -201,21 +200,21 @@
   main, footer { 
     width: 100%; max-width: var(--container-max);
     margin-inline: auto; padding: var(--padding-element); 
-    display: grid; gap: 4rem;
+    display: grid; gap: 4.5rem;
 
   }
   section, .container {    
     scroll-margin-top: 2.5rem;
     width: 100%; max-width: var(--container-max);
-    padding: 1rem;
+    padding: var(--margin-block-section) 1rem;
     margin-inline: auto; 
     display: grid; gap: var(--gap-items);
     place-items: center; text-align: center;
 
-    &.glass { padding-inline: var(--margin-block-section);
+    &.glass { padding-block: var(--margin-block-section);
       scroll-margin-top: 3rem; 
     }
-    &:has(.golden-border) { padding-inline: var(--margin-block-section); }
+    &:has(.golden-border) { padding-block: var(--margin-block-section); }
   }
 
   section {
@@ -672,6 +671,8 @@ header {
     justify-content: space-between;
     * { text-transform: uppercase; }
 
+    .logo { position: relative; z-index: 100;}
+
     .mobile-nav { display: none; }
 
     .nav-content {
@@ -717,9 +718,9 @@ header {
     }
 
     @media (max-width: 700px) {
-      .mobile-nav { display: block; }
+      .mobile-nav { display: block; position: relative; z-index: 100; }
       .nav-content {
-        display: none; position: absolute; top: 70px; left: 0; right: 0; padding: 2rem 1rem;
+        display: none; position: absolute; top: 0; left: 0; right: 0; padding: 4.5rem 2rem 2.5rem;
         flex-direction: column; align-items: center; gap: 2rem;
         border-radius: var(--border-radius); box-shadow: var(--bx-sdw); z-index: 99;
       }
@@ -1293,7 +1294,7 @@ main {
 
         .valor {
           padding: 1rem; gap: 0.5rem;
-          h5 { padding: 1rem; text-transform: uppercase; }
+          h5 { padding: 1rem; text-transform: uppercase; font-size: medium;}
           .valor_mes {
             display: flex; align-items: flex-end;
             h4 { font-size: xx-large; font-weight: 900; color: var(--clr-4); }
