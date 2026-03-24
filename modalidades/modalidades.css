@@ -60,7 +60,9 @@
             minmax(min(100%, 420px), 1fr)
           );
 
-          .mod-card {
+          .mod-card {            
+          scroll-margin-top: 0;
+
             display: grid;
             grid-template-columns: 230px 1fr;
             overflow: hidden;
@@ -252,7 +254,6 @@
 
       .equipa {
         padding: 2.5rem;
-        scroll-margin-top: 100vh; /* altura do teu header */
 
         .equipa-grid {
           width: 100%; display: grid;

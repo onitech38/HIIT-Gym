@@ -256,17 +256,38 @@ const todosCoachKeys = Object.keys(coaches).slice(0, 8);
 // ============================================
 const getIniciais = (n) => n.split(' ').map(i => i[0]).join('').slice(0, 2).toUpperCase();
 
+// function renderCoaches(coachKeys) {
+//   const container = document.getElementById('coaches-row');
+//   container.innerHTML = coachKeys.map(key => {
+//     const c = coaches[key];
+//     return `
+//       <div class="coach-wrapper">
+//         <button class="coach-avatar"
+//           aria-label="${c.nome}"
+//           ${c.avatar ? `style="background-image:url('${c.avatar}')"` : ''}
+//         >
+//           ${c.avatar ? '' : getIniciais(c.nome)}
+//         </button>
+//         <span class="coach-tooltip">${c.nome}</span>
+//       </div>
+//     `;
+//   }).join('');
+// }
+
 function renderCoaches(coachKeys) {
   const container = document.getElementById('coaches-row');
-  const modalidadeSlug = slugify(modalidadeData.titulo);
-  container.innerHTML = coachKeys.map(key => {
-    const c = coaches[key];
+  if (!container) return;
+
+  container.innerHTML = coachKeys.map(coachKey => {
+    const c = coaches[coachKey];
+    const modalidadeKey = c.modalidades[0];
+
     return `
       <div class="coach-wrapper">
-        <a class="coach-avatar" href="/modalidades/modalidades.html#mod-${modalidadeKey}"
-          aria-label="${c.nome}"
-          ${c.avatar ? `style="background-image:url('${c.avatar}')"` : ''}
-        >
+        <a class="coach-avatar"
+           href="/modalidades/modalidades.html#mod-${modalidadeKey}"
+           aria-label="${c.nome}"
+           ${c.avatar ? `style="background-image:url('${c.avatar}')"` : ''}>
           ${c.avatar ? '' : getIniciais(c.nome)}
         </a>
         <span class="coach-tooltip">${c.nome}</span>
