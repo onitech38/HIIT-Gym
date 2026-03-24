@@ -56,10 +56,11 @@
     --clr-social_tt_shdw:0 0 20px 5px color-mix(in hsl shorter hue, var(--clr-social_tt) 30%, transparent 90%);
 
     /* light/dark mode */
-    --light-bg: var(--clr-2);
-    --dark-bg: var(--clr-1);
+    --light-bg: var(--clr-1);
+    --dark-bg: var(--clr-3);
 
-    --bg_pattrn: url(./src/logo/logo_dark2.svg);
+    --bg_pattrn-light: url(./src/logo/theme_clr3.svg);
+    --bg_pattrn-dark: url(./src/logo/theme_clr4.svg);
     --bg_pttrn_size: 1;
     --bg_pttrn_calc: calc(var(--icon-size-logo) * var(--bg_pttrn_size));
 
@@ -162,7 +163,7 @@
   body, p, .eyebrow { font-family: var(--fnt-body); }
   h1, .h1-big, h2, h3, .title { text-wrap: balance; font-family: var(--fnt-sign); }
   h1, h2, h3, ul, li, .title { font-weight: 500; text-transform: uppercase; }
-  body { font-size: clamp(.75rem, .3361vw + .6975rem, 1rem); background: light-dark(var(--light-bg), var(--dark-bg)); }
+  body { font-size: 16px; background: light-dark(var(--light-bg), var(--dark-bg)); }
   h1, h2, h3, h4, h5, h6, .title { line-height: 1.2; text-align: center; letter-spacing: .1em; }
   h1 { font-size: var(--fs-h1); }
   .h1-big { font-size: var(--fs-h1-big); font-weight: 600; line-height: 1.04em; text-align: left; letter-spacing: -0.01em; }
@@ -239,6 +240,7 @@
                 flex 500ms cubic-bezier(0.4, 0, 0.2, 1),
                 opacity 300ms ease;
   }
+  .no-bg { box-shadow: var(--bx-sdw);}
 }
 
 @layer multimedia {
@@ -378,10 +380,10 @@
 .hidden { display: none !important; }
 
 body {
-  position: relative; background: var(--clr-3);
+  position: relative; background: light-dark(var(--light-bg), var(--dark-bg));
   &::before {
     content: ""; position: absolute; inset: 0;
-    background: var(--bg_pattrn) top left / var(--bg_pttrn_calc) auto repeat;
+    background: var(--bg_pattrn-light) top left / var(--bg_pttrn_calc) auto repeat;
     opacity: 0.05; z-index: -1;
   }
   .welcome-intro {
@@ -404,7 +406,7 @@ body {
       --clr-2: blue ;
       --clr-3: lime ;
       --clr-1: oldlace ;
-      --bg_pattrn: url(./src/logo/logo_light2.svg);
+      --bg_pattrn-dark: url(./src/logo/logo_light2.svg);
     }
   }
 }
