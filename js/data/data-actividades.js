@@ -127,7 +127,7 @@ const coaches = {
   },
 
   pedro: {
-    nome: 'Pedro Santos',
+    nome: 'Pedro Ribeiro',
     avatar: 'src/coaches/pedro/pedro.png',
     card: 'src/coaches/pedro/pedro_card.png',
     modalidades: ['yoga_pilates'],
@@ -184,24 +184,24 @@ const coaches = {
 
   andre: {
     nome: 'André Sousa',
-    avatar: 'src/coaches/andre/andre.jpg',
-    card: 'src/coaches/andre/andre_card.jpg',
+    avatar: 'src/coaches/andre/andre.png',
+    card: 'src/coaches/andre/andre_card.png',
     modalidades: ['natacao'],
     bio: 'Treinador de natação competitiva.',
   },
 
   fernanda: {
     nome: 'Fernanda Rocha',
-    avatar: 'src/coaches/fernanda/fernanda.jpg',
-    card: 'src/coaches/fernanda/fernanda_card.jpg',
+    avatar: 'src/coaches/fernanda/fernanda.png',
+    card: 'src/coaches/fernanda/fernanda_card.png',
     modalidades: ['natacao'],
     bio: 'Especialista em natação terapêutica.',
   },
 
   lucas: {
     nome: 'Lucas Dias',
-    avatar: 'src/coaches/lucas/lucas.jpg',
-    card: 'src/coaches/lucas/lucas_card.jpg',
+    avatar: 'src/coaches/lucas/lucas.png',
+    card: 'src/coaches/lucas/lucas_card.png',
     modalidades: ['natacao'],
     bio: 'Treinador focado em técnica e performance.',
   },
