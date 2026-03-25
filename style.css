@@ -56,12 +56,12 @@
     --clr-social_tt_shdw:0 0 20px 5px color-mix(in hsl shorter hue, var(--clr-social_tt) 30%, transparent 90%);
 
     /* light/dark mode */
-    --bg_clr: light-dark(--clr-1, --clr-3);
-    --theme_txt_clr: light-dark(--clr-3, --clr-1);
+    --bg_clr: light-dark(var(--clr-1), var(--clr-3));
+    --theme_txt_clr: light-dark(var(--clr-3), var(--clr-1));
 
     --bg_pattrn: url(/src/logo/theme_clr4.svg);
     --bg_pttrn_size: 2;    
-    --bg_pttrn_opac: .15;
+    --bg_pttrn_opac: .1;
 
     --bg_pttrn-img-calc: calc(var(--icon-size-logo) * var(--bg_pttrn_size));
     --bg_pttrn: var(--bg_pattrn) top left / var(--bg_pttrn-img-calc) auto repeat;
