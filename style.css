@@ -21,9 +21,9 @@
     --fnt-sign: "Saira", sans-serif;
     --fnt-body: "Jost", sans-serif;
     --clr-current_mix: color-mix(in srgb, currentColor 70%, transparent);
-    --clr-1: light-dark( #120D0F, #FFFAFA );/*#FFFAFA;*/
+    --clr-1: light-dark(#120D0F, #FFFAFA);/*#FFFAFA;*/
     --clr-2: #B9CFD4;
-    --clr-3: light-dark(  #FFFAFA, #120D0F,);/*#120D0F;*/
+    --clr-3: light-dark(#FFFAFA, #120D0F);/*#120D0F;*/
     --clr-4: #fba002;
     --clr-4-light: hsl(from var(--clr-4) h s l / .5);
 
@@ -60,11 +60,11 @@
     --theme_txt_clr: light-dark(--clr-3, --clr-1);
 
     --bg_pattrn: url(/src/logo/theme_clr4.svg);
-    --bg_pttrn_size: 4;    
-    --bg_pttrn_opac: 0.2;
+    --bg_pttrn_size: 2;    
+    --bg_pttrn_opac: .15;
 
-    --bg_pttrn_img_calc: calc(var(--icon-size-logo) * var(--bg_pttrn_size));
-    --bg_pttrn: var(--bg_pattrn) top left / var(--bg_pttrn_img_calc) auto repeat;
+    --bg_pttrn-img-calc: calc(var(--icon-size-logo) * var(--bg_pttrn_size));
+    --bg_pttrn: var(--bg_pattrn) top left / var(--bg_pttrn-img-calc) auto repeat;
 
     --tempo: 300ms;
     --section-anim-in: 8%;
@@ -98,6 +98,8 @@
     --border-size: 1.5px solid;
     --border-radius: 0.25rem 0.75rem 0.25rem 1.125rem;
     --bx-sdw:  inset 0 0 0 1px rgba(255, 255, 255, 0.04), 0 24px 60px rgba(0, 0, 0, 0.5);
+    interpolate-size: allow-keywords;
+    --bx-sdw_small:  inset 0 0 0 1px rgba(255, 255, 255, 0.04), 0 24px 60px rgba(0, 0, 0, 0.5);
     interpolate-size: allow-keywords;
     
 
@@ -384,10 +386,11 @@
 
 body {
   position: relative; background-color: var(--bg_clr); isolation: isolate;
+
   &::before {
     content: ""; position: absolute; inset: 0;
-    background-image: var(--bg-pttrn);
-    opacity: var(--bg_pttrn_opac); z-index: -1;
+    background: var(--bg_pttrn);
+    opacity: var(--bg_pttrn_opac); z-index: -2;
   }
   .welcome-intro {
     position: relative; z-index: 3; margin-inline: auto;
@@ -396,8 +399,7 @@ body {
   }
   .q_a { 
     position: fixed; z-index: 150; bottom: 1rem; right: 1rem; 
-    display: grid;
-    justify-items: end;
+    display: grid; justify-items: end;
     color: var(--clr-4); gap: var(--gap-items);  
   }
 }
