@@ -22,9 +22,9 @@ body#blog-page {
   }
 
   header {
-    height: auto !important;
-    background: var(--clr-3);
-    border-bottom: 1.5px solid var(--glass-surface);
+    height: auto !important; background: var(--clr-3);
+    border-bottom: 1.5px solid var(--glass-surface); border-radius: 0 0 4px 18px;
+
 
     .blog-hero {
       min-height: 75svh;
