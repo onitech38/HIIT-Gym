@@ -55,11 +55,12 @@
     --clr-social_tt:#2590d3;
     --clr-social_tt_shdw:0 0 20px 5px color-mix(in hsl shorter hue, var(--clr-social_tt) 30%, transparent 90%);
 
-    /* light/dark mode */
+    /* light/dark mode */    
+    color-scheme: light dark;
     --bg_clr: light-dark(var(--clr-1), var(--clr-3));
     --theme_txt_clr: light-dark(var(--clr-3), var(--clr-1));
 
-    --bg_pattrn: url(/src/logo/theme_clr4.svg);
+    --bg_pattrn: url(/src/logo/theme_clr2.svg);
     --bg_pttrn_size: 2;    
     --bg_pttrn_opac: .1;
 
@@ -157,7 +158,6 @@
   }
 
   html {
-    color-scheme: light dark;
     -webkit-text-size-adjust: 100%;
     -ms-text-size-adjust: 100%;
     * { scroll-margin-top: 1rem; scroll-behavior: smooth; }
@@ -407,8 +407,9 @@ body {
 @layer media {
   @media (prefers-color-scheme: light) {
     :root {
-      --bg_pattrn: url(/src/logo/theme_clr2.svg);
+      --bg_pattrn: url(/src/logo/theme_clr2.svg) !important;
     }
+    nav { * { color: var(--clr-1) !important; } }
   }
 
 }
