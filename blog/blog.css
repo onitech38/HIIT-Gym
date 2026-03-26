@@ -22,7 +22,7 @@ body#blog-page {
   }
 
   header {
-    height: auto !important; background: var(--clr-3);
+    height: auto !important;
 
     .blog-hero {
       min-height: 75svh;
