@@ -262,8 +262,6 @@
     padding: 0.8rem 1.25rem;
     
     white-space: nowrap;
-    /* display: flex; */
-    /* align-items: center; */
     gap: 0.4rem;
     place-items: center;
     font-size: var(--font-size);
@@ -282,7 +280,7 @@
 
     /* == PRIMARY == */
     color: var(--clr-4);
-    background: none !important;
+    background: none;
 
     &.small { padding: .5rem .75rem; font-size: small; }
     &.large { padding: 1rem 1.5rem; font-size: large; }
