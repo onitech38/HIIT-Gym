@@ -51,7 +51,7 @@ function renderDestaque() {
   const cat = labelCat[a.categoria] || { label: a.categoria, cls: '' };
 
   el.innerHTML = `
-    <article class="featured-card glass">
+    <article class="featured-card">
       <div class="featured-img" style="background-image:url('${a.imagem}')">
         <span class="article-category ${cat.cls}">${cat.label}</span>
       </div>
