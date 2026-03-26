@@ -31,6 +31,7 @@ body#blog-page {
       padding: 3rem 1rem 4rem;
       max-width: var(--container-max);
       margin-inline: auto;
+      background-image: url(/src/BG_hero-home.jpg);
       width: 100%;
   
       .blog-hero-content {
