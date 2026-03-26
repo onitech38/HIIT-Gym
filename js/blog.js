@@ -52,7 +52,7 @@ function renderDestaque() {
 
   el.innerHTML = `
     <article class="featured-card">
-      <div class="featured-img" style="background-image:url('${a.imagem}')">
+      <div class="featured-img golden-border" style="background-image:url('${a.imagem}')">
         <span class="article-category ${cat.cls}">${cat.label}</span>
       </div>
       <div class="featured-body">
@@ -95,7 +95,7 @@ function renderGrelha(catFiltro = 'todos') {
     const c = cat[a.categoria] || { label: a.categoria, cls: '' };
     return `
       <article class="article-card cat-${a.categoria}">
-        <div class="article-img" style="background-image:url('${a.imagem}')">
+        <div class="article-img golden-border" style="background-image:url('${a.imagem}')">
           <span class="article-category ${c.cls}">${c.label}</span>
         </div>
         <div class="article-body">
