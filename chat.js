@@ -43,10 +43,10 @@ function injectChatUI() {
   const aside = document.createElement('aside');
   aside.className = 'q_a';
   aside.innerHTML = `
-    <a class="btn to_top icon-small glass" href="#" aria-label="Voltar ao topo">
+    <a class="btn small to_top glass" href="#" aria-label="Voltar ao topo">
       <i class="fa-solid fa-arrow-up-from-bracket"></i>
     </a>
-    <button class="btn icon glass" id="chat-toggle" aria-label="Abrir assistente">
+    <button class="glass" id="chat-toggle" aria-label="Abrir assistente">
       <i class="fa-regular fa-comment-dots fa-flip-horizontal"></i>
     </button>`;
 

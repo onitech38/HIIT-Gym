@@ -58,11 +58,10 @@
 
     <!-- PWA -->
     <link rel="manifest" href="/manifest.json">
-    <meta name="theme-color" content="#fba002">
-    
+    <meta name="theme-color" content="#fba002">    
 
-    <!-- Favicon -->
-    <link rel="icon" type="image/svg+xml" href="/src/logo/favicon.svg">
+    <!-- Fav -->
+    <link rel="icon" type="image/svg+xml" href="/src/logo/fav.svg">
 
     <!-- Preloads -->
     <link rel="preload" href="/style.css?v=1.0.0" as="style">
@@ -73,7 +72,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Jost:ital,wght@0,100..900;1,100..900&family=Saira:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
 
-    <!-- Icons -->
+    <!-- s -->
     <link rel="stylesheet"
             href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
             crossorigin="anonymous"
@@ -96,7 +95,7 @@
                 <a href="/index.html">
                 <img src="/src/logo/logo_def1.svg" alt="Hiit-Gym" class="welcome-logo">
                 </a>
-                <button class="btn icon glass" id="welcome-skip" aria-label="Fechar e continuar sem conta">
+                <button class="btn  glass" id="welcome-skip" aria-label="Fechar e continuar sem conta">
                 <i class="fa-solid fa-xmark"></i>
                 </button>
             </div>
@@ -152,14 +151,7 @@
     </aside>
 
     <!-- TO TOP / CHAT -->
-    <aside class="q_a">
-        <a class="btn to_top icon-small glass" href="#home">
-        <i class="fa-solid fa-arrow-up-from-bracket"></i>
-        </a>
-        <button class="chat icon glass">
-        <i class="fa-regular fa-comment-dots fa-flip-horizontal"></i>
-        </button>
-    </aside>
+    <aside class="q_a"></aside>
 
     <header>
         <img class="bg" src="/src/BG_hero-home.jpg" alt="Imagem de um ginásio">
@@ -175,11 +167,11 @@
                     <h1 class="text">the gym</h1>
                 </div>
             </div>
-            <button class="btn_large glass">free visit now</button>
+            <button class="large glass">free visit now</button>
         </div>
                  
         <details name="map" id="map">
-            <summary class="btn icon glass" aria-label="Botão para abrir o mapa">
+            <summary class="btn glass" aria-label="Botão para abrir o mapa">
                 <i class="fa-solid fa-arrows-split-up-and-left" ></i>
             </summary>
         
@@ -335,9 +327,9 @@
                     </div>
 
                     <article id="painel" class="hidden">
-                        <a id="painel-fechar" class="btn icon glass" href="#">
+                        <button id="painel-fechar" class="btn glass" href="#">
                             <i class="fa-solid fa-xmark"></i>   
-                        </a>
+                        </button>
                         <h2 id="painel-titulo"></h2>
                         <div class="painel-horarios-bloco" id="painel-horarios-bloco"></div>
                         <ul id="painel-coaches-lista"></ul>
@@ -411,7 +403,7 @@
                         <li><span>✓</span>Área de musculação</li>
                         <li><span>✓</span>Horário livre</li>
                     </ul>
-                    <button class="btn-small glass">comecar</button>
+                    <button class="small glass">comecar</button>
                 </article>
 
                 <article class="planos-cat popular">
@@ -428,7 +420,7 @@
                         <li><span>✓</span>Acesso à piscina</li>
                         <li><span>✓</span>1 aula com PT por mês</li>
                     </ul>
-                    <button class="btn-small glass">mais popular</button>
+                    <button class="small glass">mais popular</button>
                 </article>
 
                 <article class="planos-cat">
@@ -446,7 +438,7 @@
                         <li><span>✓</span>Consulta de nutrição</li>
                         <li><span>✓</span>Acesso total 24h/7</li>
                     </ul>
-                    <button class="btn-small glass">aderir agora</button>
+                    <button class="small glass">aderir agora</button>
                 </article>
             </div>
         </section>
@@ -455,11 +447,11 @@
             <h3>A nossa Equipa</h3>
             <p>Conhece os profissionais que te vão acompanhar.</p>
             <div class="equipa-carousel">
-                <button class="btn golden-border icon" id="equipa-prev" aria-label="Anterior">
+                <button class="golden-border " id="equipa-prev" aria-label="Anterior">
                     <i class="fa-solid fa-chevron-left"></i>
                 </button>
                 <div class="carousel-viewport" id="equipa-track"></div>
-                <button class="btn golden-border icon" id="equipa-next" aria-label="Seguinte">
+                <button class="golden-border " id="equipa-next" aria-label="Seguinte">
                     <i class="fa-solid fa-chevron-right"></i>
                 </button>
             </div>
@@ -493,7 +485,7 @@
                         <label for="ct-mensagem">Mensagem</label>
                         <textarea id="ct-mensagem" name="mensagem" rows="5" placeholder="Escreve aqui a tua mensagem..." required></textarea>
                     </div>
-                    <button type="submit" class="btn glass">Enviar mensagem</button>
+                    <button type="submit" class="golden-border">Enviar mensagem</button>
                 </form>
 
                 <div class="contactos-info">    
@@ -529,17 +521,17 @@
                         </div>
                     </div>
         
-                    <div class="sociais">
-                        <a class="btn icon glass social-wa" href="https://wa.me/351912345678" target="_blank" rel="noopener" aria-label="WhatsApp">
+                    <div class="sociais golden-border">
+                        <a class="btn social-wa" href="https://wa.me/351912345678" target="_blank" rel="noopener" aria-label="WhatsApp">
                             <i class="fa-brands fa-whatsapp"></i>
                         </a>
-                        <a class="btn icon glass social-ig" href="https://instagram.com/hiitgym" target="_blank" rel="noopener" aria-label="Instagram">
+                        <a class="btn social-ig" href="https://instagram.com/hiitgym" target="_blank" rel="noopener" aria-label="Instagram">
                             <i class="fa-brands fa-instagram"></i>
                         </a>
-                        <a class="btn icon glass social-fb" href="https://facebook.com/hiitgym" target="_blank" rel="noopener" aria-label="Facebook">
+                        <a class="btn social-fb" href="https://facebook.com/hiitgym" target="_blank" rel="noopener" aria-label="Facebook">
                             <i class="fa-brands fa-facebook-f"></i>
                         </a>
-                        <a class="btn icon glass social-tt" href="https://tiktok.com/@hiitgym" target="_blank" rel="noopener" aria-label="TikTok">
+                        <a class="btn social-tt" href="https://tiktok.com/@hiitgym" target="_blank" rel="noopener" aria-label="TikTok">
                             <i class="fa-brands fa-tiktok"></i>
                         </a>
                     </div>

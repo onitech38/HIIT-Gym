@@ -113,8 +113,8 @@ function renderModalidades() {
       const actionBtn =
         status === 'inscrito' ? '' :
         status === 'pendente'
-          ? `<button class="btn glass" disabled>A aguardar confirmação</button>`
-          : `<button class="btn glass mod-btn-insc" data-key="${key}">
+          ? `<button class="golden-border" disabled>A aguardar confirmação</button>`
+          : `<button class="golden-border" data-key="${key}">
                <i class="fa-solid fa-plus"></i> Inscrever
              </button>`;
 
@@ -152,7 +152,6 @@ function renderModalidades() {
     });
   });
 }
-
 
 // ============================================
 // EQUIPA

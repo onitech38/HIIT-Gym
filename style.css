@@ -71,11 +71,12 @@
     --section-anim-in: 8%;
     --section-anim-full: 25%;
 
-    --icon-size: 2rem ;
+    /* === sizes === */
+    --icon-size-logo: 3.5rem;
+    /* --icon-size: 2rem ; */
     --icon-font-size: 1.5rem;
     --icon-padding: .5rem 1rem;
     --icon-font-size-small: 1rem;
-    --icon-size-logo: 3rem;
     --icon-logo-hamb-size: 2.5rem;    
     --size-user-avatar: 1.625rem;
 
@@ -102,8 +103,6 @@
     interpolate-size: allow-keywords;
     --bx-sdw_small:  inset 0 0 0 1px rgba(255, 255, 255, 0.04), 0 24px 60px rgba(0, 0, 0, 0.5);
     interpolate-size: allow-keywords;
-    
-
   }
 }
 
@@ -260,7 +259,12 @@
 
 @layer actions {
   button, .btn {
-    padding: 0.5rem 0.8rem;
+    padding: 0.8rem 1.25rem;
+    
+    white-space: nowrap;
+    /* display: flex; */
+    /* align-items: center; */
+    gap: 0.4rem;
     place-items: center;
     font-size: var(--font-size);
     font-family: var(--fnt-body);
@@ -269,60 +273,72 @@
     text-transform: uppercase;
     cursor: pointer;
     list-style: none;
-    color: var(--clr-4);
-    background: none;
     border-radius: var(--border-radius);
-    transition: color var(--tempo) ease, background-color var(--tempo) ease, box-shadow var(--tempo) ease, border-color var(--tempo) ease, transform var(--tempo) ease, backdrop-filter var(--tempo) ease;
+    transition: color var(--tempo) ease, background-color var(--tempo) ease, 
+                box-shadow var(--tempo) ease, border-color var(--tempo) ease,
+                opacity var(--tempo) ease, transform var(--tempo) ease, 
+                backdrop-filter var(--tempo) ease;
     * { fill: var(--clr-4); }
-    &:hover { backdrop-filter: var(--backdrop-filter); box-shadow: var(--bx-sdw); color: var(--clr-2); fill: var(--clr-2) !important; }
-    &:active { transform: scale(0.95); color: var(--clr-2); background: var(--clr-4); }
-    &:focus-visible, &:focus { outline: var(--border-size) var(--clr-5); backdrop-filter: var(--backdrop-filter); outline-offset: 2px; border-color: var(--clr-4) !important; }
-    &.btn-primary { margin-top: 2rem; }
-    &.btn-small { padding: 5px 10px; font-size: 0.8rem; }
-    &.btn_large { padding: 16px 24px; font-size: 1.2rem; }
-    
-  }
 
-  .icon, .icon-small {
-    padding: var(--icon-padding);
-    background-color: var(--clr-3);
-  }
-  .icon { font-size: var(--icon-font-size); }
-  .icon-small { font-size: var(--icon-font-size-small); }
+    /* == PRIMARY == */
+    color: var(--clr-4);
+    background: none !important;
 
-  .logo {
-    height: var(--icon-size-logo);
-    padding: 0px; border: var(--clr-transp);
-    inline-size: 4rem; aspect-ratio: 1; object-fit: contain;
-    image { height: auto; width: auto; }
-    &::after { background: none; }
-    &.btn { * { fill: var(--clr-3) !important; color: var(--clr-3); } }
-    &.btn:active { transform: scale(0.95); color: var(--clr-2); background: var(--clr-4); }
-    &.btn:focus-visible, .logo.btn:focus { outline: var(--border-size) var(--clr-4); outline-offset: -1px; }
-  }
-  .hamburger {
-    padding: 10px;
-    height: var(--icon-logo-hamb-size);
-    width: calc(var(--icon-size) + 10px);
-    display: none; flex-direction: column;
-    justify-content: space-between; align-items: stretch; gap: 5px;
-    cursor: pointer; border-radius: var(--border-radius);
-    border: var(--border-size) transparent;
-    transition: transform var(--tempo) ease, box-shadow var(--tempo) ease, backdrop-filter var(--tempo) ease;
-    z-index: 100; list-style: none;
-    &::-webkit-details-marker { display: none; }
-    span {
-      display: block; width: 100%; height: 2px;
-      background: var(--clr-1); border-radius: 2px;
-      transition: transform var(--tempo) ease, opacity var(--tempo) ease, background-color var(--tempo) ease;
+    &.small { padding: .5rem .75rem; font-size: small; }
+    &.large { padding: 1rem 1.5rem; font-size: large; }
+
+    /* == PRIMARY == */
+    &.sec {  color: var(--clr-3); background-color: var(--clr-4); background-color: var(--clr-4) !important;
+      &.small { padding: .5rem .75rem; font-size: small; }
+      &.large { padding: 1rem 1.5rem; font-size: large; }
     }
-    &:hover { span { background-color: var(--clr-2); } }
-    &:active { transform: scale(0.95); }
-    &:focus-visible { outline: var(--border-size) var(--clr-4); outline-offset: 4px; backdrop-filter: var(--backdrop-filter); box-shadow: var(--bx-sdw); }
+
+    &.logo {
+      height: var(--icon-size-logo); position: relative; z-index: 100;
+      padding: 0px; inline-size: 4rem; aspect-ratio: 1; 
+      object-fit: contain; image { height: auto; width: auto; }
+    }
+    &.hamburger {
+      padding: 10px;
+      height: var(--icon-logo-hamb-size);
+      width: calc(var(--icon-size) + 10px);
+      display: none; flex-direction: column;
+      justify-content: space-between; align-items: stretch; gap: 5px;
+      cursor: pointer; border-radius: var(--border-radius);
+      border: var(--border-size) transparent;
+      transition: transform var(--tempo) ease, box-shadow var(--tempo) ease, backdrop-filter var(--tempo) ease;
+      z-index: 100; list-style: none;
+      &::-webkit-details-marker { display: none; }
+      span {
+        display: block; width: 100%; height: 2px;
+        background: var(--clr-1); border-radius: 2px;
+        transition: transform var(--tempo) ease, opacity var(--tempo) ease, background-color var(--tempo) ease;
+      }
+      &:hover { span { background-color: var(--clr-2); } }
+      &:active { transform: scale(0.95); }
+      &:focus-visible { outline: var(--border-size) var(--clr-4); outline-offset: 4px; backdrop-filter: var(--backdrop-filter); box-shadow: var(--bx-sdw); }
+    }
+        
+
+    /* == STATES == */
+    &:is(:hover, :focus-visible, :focus) { 
+      box-shadow: var(--bx-sdw); 
+      color: var(--clr-2); 
+      fill: var(--clr-2) !important;
+      border-color: var(--clr-4) !important;
+    }
+    &:active { transform: scale(0.95); color: var(--clr-2); background: var(--clr-4); }
+    
+    --icon-size: 2rem ;
+    --icon-font-size: 1.5rem;
+    --icon-padding: .5rem 1rem;
+    --icon-font-size-small: 1rem;
+    --icon-logo-hamb-size: 2.5rem;    
+    --size-user-avatar: 1.625rem;
+  
+    
+
   }
-  /* .btn-primary { margin-top: 2rem; }
-  .btn-small { padding: 5px 10px; font-size: 0.8rem; }
-  .btn_large { padding: 16px 24px; font-size: 1.2rem; } */
   .link-btn {
     padding-inline: 7px; color: var(--clr-1); font-weight: 400; letter-spacing: .01em; font-size: 0.9rem;
     background: transparent; border: var(--border-size) transparent;
@@ -331,6 +347,9 @@
     &:hover { color: var(--clr-2); backdrop-filter: var(--backdrop-filter); border: var(--border-size) transparent; border-radius: var(--border-radius); text-decoration-color: var(--clr-4); text-underline-offset: .725rem; box-shadow: var(--bx-sdw); }
     &:focus-visible, :active { color: var(--clr-4); text-decoration: underline; text-decoration-color: var(--clr-4); text-underline-offset: .725rem; }
     &.active { color: var(--clr-4); text-decoration: underline; text-decoration-color: var(--clr-4); text-underline-offset: 0.725rem;
+    }
+    .link_sec-btn {
+      padding-inline: 7px;
     }
   }
 }
@@ -676,7 +695,7 @@ header {
     justify-content: space-between;
     * { text-transform: uppercase; }
 
-    .logo { position: relative; z-index: 100;}
+    /* .logo { position: relative; z-index: 100;} */
 
     .mobile-nav { display: none; }
 
@@ -747,7 +766,6 @@ header {
     padding: 0px 16px 150px 16px;
     display: flex; flex-direction: column; justify-content: flex-end; align-items: flex-start;
     gap: 4rem; container-type: inline-size;
-    * { padding-inline: 20px; }
     .text_anim {
       width: 100%; padding: 0px; display: flex; flex-wrap: wrap; align-items: flex-start;
       text-transform: uppercase; gap: 10px; font-size: clamp(2.5rem, 5vw, 6rem); line-height: 1;
@@ -762,7 +780,7 @@ header {
 
   #map {
     position: absolute; width: 100%; padding-inline: 1rem; margin-inline: auto;
-    max-width: var(--container-mid); top: calc(var(--container-height) - 60px);
+    max-width: var(--container-mid); top: calc(var(--container-height) - 68px);
     display: grid; justify-items: stretch; z-index: 10; gap: 1rem; place-self: center;
   
     summary {
