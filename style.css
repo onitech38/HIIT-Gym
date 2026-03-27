@@ -706,8 +706,6 @@ header {
     justify-content: space-between;
     * { text-transform: uppercase; }
 
-    /* .logo { position: relative; z-index: 100;} */
-
     .mobile-nav { display: none; }
 
     .nav-content {
