@@ -758,7 +758,6 @@ header {
             
         &:checked + .label {
           background-color: rgba(0,0,0,0.2);
-
         }
         &:checked + .label .ball {
           animation: slideOn 0.3s linear forwards;
@@ -766,8 +765,7 @@ header {
       }
       
       .label {
-        --height: 39px;
-        --width: 12px;
+        --height: 39px; --width: 12px;
         --radius: 4px 16px 4px 8px;
         background-color: lightgrey;
         width: var(--width);
@@ -782,12 +780,9 @@ header {
       
         .ball {
           background-color: hsl(28, 88%, 53%);
-          width: 40px;
-          height: var(--width);
+          width: var(--width); height: var(--width);
           border-radius: var(--radius);
-          position:absolute;
-          top: 0px;
-          left: 0px;
+          position:absolute; top: 0px; left: -1px;
           box-shadow: inset 4px 4px 12px 10px hsl(38, 97%, 51%),
                       0 0 20px 5px rgba(0,0,0,0.8);
           animation: slideOff 0.3s linear forwards;
