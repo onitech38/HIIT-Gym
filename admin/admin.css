@@ -106,7 +106,7 @@ body#admin-page {
         color: var(--clr-3);
         font-size: 0.6rem;
         font-weight: 700;
-        border-radius: 100px;
+        /* border-radius: 100px; */
 
         &:empty, &[data-count="0"] { display: none; }
       }
@@ -406,7 +406,6 @@ body#admin-page {
       letter-spacing: 0.1em;
       text-transform: uppercase;
       padding: 0.25rem 0.65rem;
-      border-radius: 100px;
       flex-shrink: 0;
 
       &.basico   { background: rgba(185,207,212,0.1); color: var(--clr-2); border: 1px solid rgba(185,207,212,0.2); }

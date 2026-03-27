@@ -280,7 +280,7 @@ function renderMembros(lista) {
           <span class="membro-nome">${nome}${p.is_admin ? ' <span style="color:var(--clr-4);font-size:.6rem">ADMIN</span>' : ''}</span>
           <span class="membro-email">${p.id}</span>
         </div>
-        <span class="membro-plano ${plano}">${plano === 'none' ? 'Sem plano' : plano}</span>
+        <span class="membro-plano golden-border${plano}">${plano === 'none' ? 'Sem plano' : plano}</span>
       </div>`;
   }).join('');
 }
