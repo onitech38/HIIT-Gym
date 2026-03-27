@@ -248,6 +248,53 @@ body#user-page {
         }
       }
 
+      /* ============================================
+        SUBSCRIÇÃO — adicionar em user.css
+        Dentro de body#user-page .user-wrapper .user-main
+      ============================================ */
+
+      /* Card do plano no dashboard */
+      & .subscricao-card {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        padding: 1rem 1.25rem;
+        flex-wrap: wrap;
+
+        & .sub-info {
+          display: flex;
+          flex-direction: column;
+          gap: 0.2rem;
+        }
+
+        & .sub-plano {
+          font-family: var(--fnt-sign);
+          font-size: 0.95rem;
+          font-weight: 600;
+          color: var(--clr-1);
+          text-transform: uppercase;
+          letter-spacing: 0.06em;
+        }
+
+        & .sub-status {
+          font-size: 0.68rem;
+          text-transform: uppercase;
+          letter-spacing: 0.1em;
+          font-weight: 500;
+
+          &.sub-activo {
+            color: var(--clr-sucesso);
+          }
+        }
+
+        & .sub-acoes {
+          display: flex;
+          gap: 0.5rem;
+          flex-wrap: wrap;
+        }
+      }
+
       & .section-block {
         margin-bottom: 2rem;
 

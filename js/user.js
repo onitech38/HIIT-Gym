@@ -133,6 +133,7 @@ async function onAppReady() {
   // 6. Preencher UI
   preencherSidebar();
   preencherDashboard();
+  preencherSubscricao(); 
   preencherTreinos();
   preencherModalidades();
   preencherFormPerfil();
@@ -603,3 +604,89 @@ document.getElementById('btn-delete-account')?.addEventListener('click', async (
     window.location.href = '/index.html';
   }
 });
+
+
+// ============================================
+// STRIPE — user.js additions
+// Adicionar no fim de user.js
+//
+// Mostra plano actual no dashboard e permite
+// gerir subscrição via Stripe Portal.
+// ============================================
+
+// ── Mostrar plano no dashboard ────────────────
+function preencherSubscricao() {
+  const plano     = currentProfile?.plan || null;
+  const nomeEl    = document.getElementById('sub-plano-nome');
+  const statusEl  = document.getElementById('sub-status');
+  const btnGerir  = document.getElementById('btn-gerir-sub');
+  const btnVer    = document.getElementById('btn-ver-planos');
+
+  if (!nomeEl) return;
+
+  const labels = {
+    basico:   'Plano Básico · 29€/mês',
+    standard: 'Plano Standard · 49€/mês',
+    premium:  'Plano Premium · 79€/mês',
+  };
+
+  if (plano && labels[plano]) {
+    nomeEl.textContent   = labels[plano];
+    statusEl.textContent = 'Activo';
+    statusEl.className   = 'sub-status sub-activo';
+    btnGerir.style.display = '';
+    btnVer.style.display   = 'none';
+  } else {
+    nomeEl.textContent   = 'Sem plano activo';
+    statusEl.textContent = '';
+    btnGerir.style.display = 'none';
+    btnVer.style.display   = '';
+  }
+}
+
+
+// ── Botão "Gerir subscrição" → Stripe Portal ──
+document.getElementById('btn-gerir-sub')?.addEventListener('click', async () => {
+  const btn = document.getElementById('btn-gerir-sub');
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
+
+  try {
+    const res = await fetch('/api/stripe-portal', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId: currentUser.id }),
+    });
+
+    const data = await res.json();
+
+    if (data.url) {
+      window.location.href = data.url;
+    } else {
+      throw new Error(data.error || 'Erro desconhecido');
+    }
+  } catch (err) {
+    console.error('[stripe] portal error:', err);
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fa-solid fa-gear"></i> Gerir subscrição';
+    alert('Erro ao abrir portal. Tenta novamente.');
+  }
+});
+
+
+// ── Feedback pós-checkout ─────────────────────
+// Stripe redireciona para ?checkout=success após pagamento
+if (new URLSearchParams(window.location.search).get('checkout') === 'success') {
+  history.replaceState(null, '', window.location.pathname);
+  // Toast de sucesso
+  const toast = document.createElement('div');
+  toast.style.cssText = `
+    position:fixed; bottom:1.5rem; left:50%; transform:translateX(-50%);
+    background:rgba(100,200,120,0.15); border:1px solid rgba(100,200,120,0.4);
+    color:#64c878; padding:.75rem 1.5rem; border-radius:var(--border-radius);
+    font-size:.85rem; z-index:500; font-family:var(--fnt-body);
+  `;
+  toast.textContent = '✓ Subscrição activada com sucesso!';
+  document.body.appendChild(toast);
+  setTimeout(() => toast.remove(), 4000);
+}

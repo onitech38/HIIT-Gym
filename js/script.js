@@ -470,3 +470,77 @@ document.getElementById('btn-membro')?.addEventListener('click', e => {
   }
   // Se autenticado, o href normal navega para user/user.html
 });
+
+
+// ============================================
+// STRIPE FRONTEND — adicionar no fim de script.js
+//
+// Lida com:
+//   • Clique nos botões .btn-plano → Checkout
+//   • ?checkout=success na URL → feedback ao user
+// ============================================
+
+// ── Price IDs (teste) ─────────────────────────
+const STRIPE_PRICES = {
+  basico:   'price_1TDlVh77sfEVvt5IUrlmFp2',
+  standard: 'price_1TDlVh77sfEVvt5INOWoWBD9',
+  premium:  'price_1TDlMC77sfEVvt5Il1i75JN0',
+};
+
+
+// ── Botões dos planos ─────────────────────────
+document.querySelectorAll('.btn-plano').forEach(btn => {
+  btn.addEventListener('click', async () => {
+    const priceId = btn.dataset.priceId;
+    if (!priceId) return;
+
+    // Utilizador não autenticado → abre modal de login
+    if (!window.currentUser) {
+      document.getElementById('mode-signup')?.click();
+      mostrarWelcome();
+      return;
+    }
+
+    // Feedback visual
+    const textoOriginal = btn.textContent;
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
+
+    try {
+      const res = await fetch('/api/stripe-checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          priceId,
+          userId:    window.currentUser.id,
+          userEmail: window.currentUser.email,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (data.url) {
+        window.location.href = data.url; // redireciona para o Stripe
+      } else {
+        throw new Error(data.error || 'Erro desconhecido');
+      }
+    } catch (err) {
+      console.error('[stripe] checkout error:', err);
+      btn.disabled = false;
+      btn.textContent = textoOriginal;
+      alert('Erro ao iniciar pagamento. Tenta novamente.');
+    }
+  });
+});
+
+
+// ── Feedback pós-checkout ─────────────────────
+// Stripe redireciona para ?checkout=success após pagamento
+if (new URLSearchParams(window.location.search).get('checkout') === 'success') {
+  // Limpar URL sem reload
+  history.replaceState(null, '', window.location.pathname);
+  // Redirecionar para o perfil onde vê o plano activo
+  setTimeout(() => {
+    window.location.href = '/user/user.html';
+  }, 500);
+}

@@ -2,6 +2,13 @@
 ESTRUTURA: ficheiros já existentes
 ========================================== -->
 HIIT Gym/(RAIZ)
+|
+|__ admin
+|   |__ admin.css
+|   |__ admin.html
+|   |__ admin.js
+|
+|
 |__ blog
 |   |__ blog.css
 |   |__ blog.html
