@@ -2,48 +2,48 @@
 <html lang="pt-PT">
 <head>
   
-    <style>
-  html::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    z-index: 490;
-    background-color: #120D0F;
-    background-image: url(/src/logo/logo_def1.svg);
-    background-repeat: no-repeat;
-    background-position: center calc(50% - 20px);
-    background-size: 80px auto;
-    pointer-events: none;
-    transition: opacity .3s ease, visibility .3s ease;
-  }
-  html::after {
-    content: '';
-    position: fixed;
-    left: 50%;
-    top: calc(50% + 50px);
-    transform: translateX(-50%);
-    z-index: 490;
-    width: 100px;
-    height: 2px;
-    border-radius: 2px;
-    background: linear-gradient(90deg,
-      transparent 0%, #fba002 50%, transparent 100%);
-    background-size: 50% 100%;
-    background-repeat: no-repeat;
-    animation: sp-slide .9s ease-in-out infinite;
-    pointer-events: none;
-    transition: opacity .3s ease, visibility .3s ease;
-  }
-  @keyframes sp-slide {
-    0%   { background-position: -50% center; }
-    100% { background-position: 150% center; }
-  }
-  html.splash-done::before,
-  html.splash-done::after {
-    opacity: 0;
-    visibility: hidden;
-  }
-</style>
+  <style>
+    html::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      z-index: 490;
+      background-color: #120D0F;
+      background-image: url(/src/logo/logo_def1.svg);
+      background-repeat: no-repeat;
+      background-position: center calc(50% - 20px);
+      background-size: 80px auto;
+      pointer-events: none;
+      transition: opacity .3s ease, visibility .3s ease;
+    }
+    html::after {
+      content: '';
+      position: fixed;
+      left: 50%;
+      top: calc(50% + 50px);
+      transform: translateX(-50%);
+      z-index: 490;
+      width: 100px;
+      height: 2px;
+      border-radius: 2px;
+      background: linear-gradient(90deg,
+        transparent 0%, #fba002 50%, transparent 100%);
+      background-size: 50% 100%;
+      background-repeat: no-repeat;
+      animation: sp-slide .9s ease-in-out infinite;
+      pointer-events: none;
+      transition: opacity .3s ease, visibility .3s ease;
+    }
+    @keyframes sp-slide {
+      0%   { background-position: -50% center; }
+      100% { background-position: 150% center; }
+    }
+    html.splash-done::before,
+    html.splash-done::after {
+      opacity: 0;
+      visibility: hidden;
+    }
+  </style>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Admin — HIIT-Gym</title>
@@ -67,10 +67,10 @@
       <a class="logo btn" href="/index.html">
         <img src="/src/logo/logo_def1.svg" alt="HIIT-Gym">
       </a>
-      <span class="admin-badge">
+      <span class="admin-badge glass">
         <i class="fa-solid fa-shield-halved"></i> Painel Admin
       </span>
-      <button class="btn glass btn-small" id="btn-logout-admin">
+      <button class="small glass" id="btn-logout-admin">
         <i class="fa-solid fa-right-from-bracket"></i> Sair
       </button>
     </nav>
@@ -97,7 +97,7 @@
   <main class="admin-main">
 
     <!-- TAB: INSCRIÇÕES -->
-    <section id="tab-inscricoes" class="admin-section">
+    <section id="tab-inscricoes" class="admin-section glass">
       <div class="section-header">
         <h2>Inscrições Pendentes</h2>
         <button class="btn glass btn-small" id="btn-refresh-insc">
@@ -108,7 +108,7 @@
     </section>
 
     <!-- TAB: MEMBROS -->
-    <section id="tab-membros" class="admin-section hidden">
+    <section id="tab-membros" class="admin-section glass hidden">
       <div class="section-header">
         <h2>Todos os Membros</h2>
         <div class="search-wrap">
@@ -120,7 +120,7 @@
     </section>
 
     <!-- TAB: PLANOS -->
-    <section id="tab-planos" class="admin-section hidden">
+    <section id="tab-planos" class="admin-section glass hidden">
       <div class="section-header">
         <h2>Gestão de Planos</h2>
         <p class="section-desc">Altera o plano de qualquer membro.</p>

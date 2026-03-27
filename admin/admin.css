@@ -43,8 +43,6 @@ body#admin-page {
         text-transform: uppercase;
         color: var(--clr-4);
         padding: 0.3rem 0.75rem;
-        border: 1px solid rgba(251,160,2,0.3);
-        border-radius: 100px;
 
         & i { font-size: 0.65rem; }
       }
