@@ -21,8 +21,8 @@ body#admin-page {
     position: sticky;
     top: 0;
     z-index: 50;
-    background: var(--clr-3);
-    border-bottom: 1px solid rgba(251,160,2,0.2);
+    /* background: var(--clr-3);
+    border-bottom: 1px solid rgba(251,160,2,0.2); */
 
     & nav {
       max-width: var(--container-max);
