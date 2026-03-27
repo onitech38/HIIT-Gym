@@ -180,7 +180,7 @@ body#user-page {
       min-height: 600px;
 
       /* Todas as tabs escondidas por defeito */
-      & .tab-content { display: none; box-shadow: none;}
+      & .tab-content { display: none; box-shadow: var(--clr-transp);}
 
       /* ── COMPONENTES COMUNS ────────────── */
 
