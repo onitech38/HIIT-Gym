@@ -100,8 +100,7 @@
     --border-size: 1.5px solid;
     --border-radius: 0.25rem 0.75rem 0.25rem 1.125rem;
     --bx-sdw:  inset 0 0 0 1px rgba(255, 255, 255, 0.04), 0 24px 60px rgba(0, 0, 0, 0.5);
-    interpolate-size: allow-keywords;
-    --bx-sdw_small:  inset 0 0 0 1px rgba(255, 255, 255, 0.04), 0 24px 60px rgba(0, 0, 0, 0.5);
+    --bx-sdw_small:  inset 0 0 10px 11px rgba(255, 255, 255, 0.04), 0 18px 20px rgba(0, 0, 0, 0.5);
     interpolate-size: allow-keywords;
   }
 }
@@ -320,7 +319,7 @@
 
     /* == STATES == */
     &:is(:hover, :focus-visible, :focus) { 
-      box-shadow: var(--bx-sdw); 
+      box-shadow: var(--bx-sdw_small); 
       color: var(--clr-2); 
       fill: var(--clr-2) !important;
       border-color: var(--clr-4) !important;
