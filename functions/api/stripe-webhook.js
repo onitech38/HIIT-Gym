@@ -10,9 +10,9 @@
 // ============================================
 
 const PRICE_TO_PLAN = {
-  'price_1TDlVh77sfEVvt5IUrlmFp2': 'basico',
-  'price_1TDlVh77sfEVvt5INOWoWBD9': 'standard',
-  'price_1TDlMC77sfEVvt5Il1i75JN0': 'premium',
+  'price_1TDlVH77sfEVvt5IUrlmnFp2': 'basico',
+  'price_1TDlVh77sfEVvt5INOWoW8D9': 'standard',
+  'price_1TDlWC77sfEVvt5It1l75JNO': 'premium',
 };
 
 export async function onRequestPost(context) {
