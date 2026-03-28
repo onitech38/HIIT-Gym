@@ -473,102 +473,21 @@ document.getElementById('btn-membro')?.addEventListener('click', e => {
 
 
 // ============================================
-// STRIPE FRONTEND — adicionar no fim de script.js
-//
-// Lida com:
-//   • Clique nos botões .btn-plano → Checkout
-//   • ?checkout=success na URL → feedback ao user
-// ============================================
-
-// ── Price IDs (teste) ─────────────────────────
-const STRIPE_PRICES = {
-  basico:   'price_1TDlVh77sfEVvt5IUrlmFp2',
-  standard: 'price_1TDlVh77sfEVvt5INOWoWBD9',
-  premium:  'price_1TDlMC77sfEVvt5Il1i75JN0',
-};
-
-
-// ── Botões dos planos ─────────────────────────
-document.querySelectorAll('.btn-plano').forEach(btn => {
-  btn.addEventListener('click', async () => {
-    const priceId = btn.dataset.priceId;
-    if (!priceId) return;
-
-    // Utilizador não autenticado → abre modal de login
-    if (!window.currentUser) {
-      document.getElementById('mode-signup')?.click();
-      mostrarWelcome();
-      return;
-    }
-//test
-    // Feedback visual
-    const textoOriginal = btn.textContent;
-    btn.disabled = true;
-    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
-
-    try {
-      const res = await fetch('/functions/api/stripe-checkout', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          priceId,
-          userId:    window.currentUser.id,
-          userEmail: window.currentUser.email,
-        }),
-      });
-
-      const data = await res.json();
-
-      if (data.url) {
-        window.location.href = data.url; // redireciona para o Stripe
-      } else {
-        throw new Error(data.error || 'Erro desconhecido');
-      }
-    } catch (err) {
-      console.error('[stripe] checkout error:', err);
-      btn.disabled = false;
-      btn.textContent = textoOriginal;
-      alert('Erro ao iniciar pagamento. Tenta novamente.');
-    }
-  });
-});
-
-
-// ── Feedback pós-checkout ─────────────────────
-// Stripe redireciona para ?checkout=success após pagamento
-if (new URLSearchParams(window.location.search).get('checkout') === 'success') {
-  // Limpar URL sem reload
-  history.replaceState(null, '', window.location.pathname);
-  // Redirecionar para o perfil onde vê o plano activo
-  setTimeout(() => {
-    window.location.href = '/user/user.html';
-  }, 500);
-}
-
-// ============================================
 // STRIPE CHECKOUT
-// Fluxo:
-//   1. Utilizador não autenticado → abre signup
-//   2. Autenticado → POST /api/stripe-checkout
-//   3. API devolve { url } → redirect para o Stripe
-//   4. Stripe redireciona de volta para
-//      /user/user.html?checkout=success (ou #planos em cancel)
 // ============================================
 async function iniciarCheckout(priceId, btn) {
-  // Sem sessão → abre modal de signup
   if (!window.currentUser) {
     document.getElementById('mode-signup')?.click();
     mostrarWelcome();
     return;
   }
 
-  // Loading state
   const textoOriginal = btn.textContent.trim();
   btn.disabled = true;
   btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
 
   try {
-    const res = await fetch('/functions/api/stripe-checkout', {
+    const res = await fetch('/api/stripe-checkout', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -584,20 +503,17 @@ async function iniciarCheckout(priceId, btn) {
       throw new Error(data.error || 'Resposta inválida');
     }
 
-    // Redireciona para a página de pagamento do Stripe
     window.location.href = data.url;
 
   } catch (err) {
     console.error('[checkout]', err);
     btn.disabled = false;
     btn.textContent = textoOriginal;
-    // Mostra erro inline abaixo dos planos (não alert)
-    mostrarErrroPlanos(err.message);
+    mostrarErroPlanos(err.message);
   }
 }
 
-// Mensagem de erro inline (sem alert)
-function mostrarErrroPlanos(msg) {
+function mostrarErroPlanos(msg) {
   const secao = document.getElementById('planos');
   let erroEl = secao?.querySelector('.planos-erro');
   if (!erroEl) {
@@ -610,8 +526,6 @@ function mostrarErrroPlanos(msg) {
   setTimeout(() => erroEl.classList.add('hidden'), 5000);
 }
 
-// Bind nos botões — corre depois de app:ready
-// para garantir que window.currentUser está disponível no click
 document.querySelectorAll('.btn-plano').forEach(btn => {
   btn.addEventListener('click', () => iniciarCheckout(btn.dataset.priceId, btn));
 });
