@@ -1,10 +1,5 @@
 // ============================================
 // functions/api/stripe-portal.js
-// Abre o portal de gestão de subscrição Stripe.
-// O utilizador pode cancelar, actualizar dados,
-// ver facturas — tudo hosted pelo Stripe.
-// Recebe: { userId }
-// Devolve: { url } para redirecionar
 // ============================================
 
 const CORS = {
@@ -18,14 +13,12 @@ export async function onRequestOptions() {
 }
 
 export async function onRequestPost(context) {
-  const { request, env } = context;
-
-  if (!env.STRIPE_SECRET_KEY) {
+  if (!context.env.STRIPE_SECRET_KEY) {
     return json({ error: 'Stripe não configurado' }, 500);
   }
 
   let body;
-  try { body = await request.json(); }
+  try { body = await context.request.json(); }
   catch { return json({ error: 'Body inválido' }, 400); }
 
   const { userId } = body;
@@ -33,11 +26,11 @@ export async function onRequestPost(context) {
 
   // 1. Buscar stripe_customer_id do Supabase
   const profileRes = await fetch(
-    `${env.SUPABASE_URL}/rest/v1/profiles?id=eq.${userId}&select=stripe_customer_id`,
+    `${context.env.SUPABASE_URL}/rest/v1/profiles?id=eq.${userId}&select=stripe_customer_id`,
     {
       headers: {
-        'apikey':        env.SUPABASE_SERVICE_KEY,
-        'Authorization': `Bearer ${env.SUPABASE_SERVICE_KEY}`,
+        'apikey':        context.env.SUPABASE_SERVICE_KEY,
+        'Authorization': `Bearer ${context.env.SUPABASE_SERVICE_KEY}`,
       },
     }
   );
@@ -50,14 +43,14 @@ export async function onRequestPost(context) {
 
   // 2. Criar sessão do portal Stripe
   const params = new URLSearchParams({
-    customer:     customerId,
-    return_url:   `${env.SITE_URL}/user/user.html`,
+    customer:   customerId,
+    return_url: `${context.env.SITE_URL}/user/user.html`,
   });
 
   const res = await fetch('https://api.stripe.com/v1/billing_portal/sessions', {
     method: 'POST',
     headers: {
-      'Authorization': `Bearer ${env.STRIPE_SECRET_KEY}`,
+      'Authorization': `Bearer ${context.env.STRIPE_SECRET_KEY}`,
       'Content-Type':  'application/x-www-form-urlencoded',
     },
     body: params.toString(),
