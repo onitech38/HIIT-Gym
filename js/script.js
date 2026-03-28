@@ -507,7 +507,7 @@ document.querySelectorAll('.btn-plano').forEach(btn => {
     btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
 
     try {
-      const res = await fetch('/api/stripe-checkout', {
+      const res = await fetch('/functions/api/stripe-checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
