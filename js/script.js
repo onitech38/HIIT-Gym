@@ -500,7 +500,7 @@ document.querySelectorAll('.btn-plano').forEach(btn => {
       mostrarWelcome();
       return;
     }
-
+//test
     // Feedback visual
     const textoOriginal = btn.textContent;
     btn.disabled = true;
