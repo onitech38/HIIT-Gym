@@ -544,3 +544,74 @@ if (new URLSearchParams(window.location.search).get('checkout') === 'success') {
     window.location.href = '/user/user.html';
   }, 500);
 }
+
+// ============================================
+// STRIPE CHECKOUT
+// Fluxo:
+//   1. Utilizador não autenticado → abre signup
+//   2. Autenticado → POST /api/stripe-checkout
+//   3. API devolve { url } → redirect para o Stripe
+//   4. Stripe redireciona de volta para
+//      /user/user.html?checkout=success (ou #planos em cancel)
+// ============================================
+async function iniciarCheckout(priceId, btn) {
+  // Sem sessão → abre modal de signup
+  if (!window.currentUser) {
+    document.getElementById('mode-signup')?.click();
+    mostrarWelcome();
+    return;
+  }
+
+  // Loading state
+  const textoOriginal = btn.textContent.trim();
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
+
+  try {
+    const res = await fetch('/api/stripe-checkout', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        priceId,
+        userId:    window.currentUser.id,
+        userEmail: window.currentUser.email,
+      }),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok || !data.url) {
+      throw new Error(data.error || 'Resposta inválida');
+    }
+
+    // Redireciona para a página de pagamento do Stripe
+    window.location.href = data.url;
+
+  } catch (err) {
+    console.error('[checkout]', err);
+    btn.disabled = false;
+    btn.textContent = textoOriginal;
+    // Mostra erro inline abaixo dos planos (não alert)
+    mostrarErrroPlanos(err.message);
+  }
+}
+
+// Mensagem de erro inline (sem alert)
+function mostrarErrroPlanos(msg) {
+  const secao = document.getElementById('planos');
+  let erroEl = secao?.querySelector('.planos-erro');
+  if (!erroEl) {
+    erroEl = document.createElement('p');
+    erroEl.className = 'planos-erro form-error';
+    secao?.appendChild(erroEl);
+  }
+  erroEl.textContent = `Erro ao iniciar pagamento: ${msg}`;
+  erroEl.classList.remove('hidden');
+  setTimeout(() => erroEl.classList.add('hidden'), 5000);
+}
+
+// Bind nos botões — corre depois de app:ready
+// para garantir que window.currentUser está disponível no click
+document.querySelectorAll('.btn-plano').forEach(btn => {
+  btn.addEventListener('click', () => iniciarCheckout(btn.dataset.price, btn));
+});
