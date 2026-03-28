@@ -613,5 +613,5 @@ function mostrarErrroPlanos(msg) {
 // Bind nos botões — corre depois de app:ready
 // para garantir que window.currentUser está disponível no click
 document.querySelectorAll('.btn-plano').forEach(btn => {
-  btn.addEventListener('click', () => iniciarCheckout(btn.dataset.price, btn));
+  btn.addEventListener('click', () => iniciarCheckout(btn.dataset.priceId, btn));
 });

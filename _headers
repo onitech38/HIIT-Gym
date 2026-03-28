@@ -5,8 +5,32 @@
 /supabase.js
   Cache-Control: no-store
 
-/script.js
+/chat.js
   Cache-Control: no-store
 
-/data.js
+/js/global.js
+  Cache-Control: no-store
+
+/js/script.js
+  Cache-Control: no-store
+
+/js/user.js
+  Cache-Control: no-store
+
+/js/blog.js
+  Cache-Control: no-store
+
+/js/modalidades.js
+  Cache-Control: no-store
+
+/js/data/config.js
+  Cache-Control: no-store
+
+/js/data/data-gym.js
+  Cache-Control: no-store
+
+/js/data/data-actividades.js
+  Cache-Control: no-store
+
+/js/data/data-blog.js
   Cache-Control: no-store

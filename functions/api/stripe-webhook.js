@@ -4,13 +4,11 @@
 // profiles.plan no Supabase.
 //
 // Eventos tratados:
-//   checkout.session.completed  → activa plano
-//   customer.subscription.updated → muda plano
-//   customer.subscription.deleted → cancela plano
+//   checkout.session.completed       → activa plano + guarda customer_id
+//   customer.subscription.updated    → muda plano (com fallback por customer_id)
+//   customer.subscription.deleted    → cancela plano (com fallback por customer_id)
 // ============================================
 
-// Mapa Price ID → nome do plano
-// Actualizar com os IDs reais de produção quando chegar a hora
 const PRICE_TO_PLAN = {
   'price_1TDlVh77sfEVvt5IUrlmFp2': 'basico',
   'price_1TDlVh77sfEVvt5INOWoWBD9': 'standard',
@@ -27,7 +25,6 @@ export async function onRequestPost(context) {
   const body      = await request.text();
   const signature = request.headers.get('stripe-signature');
 
-  // Verificar assinatura do webhook
   const valid = await verifyStripeSignature(body, signature, env.STRIPE_WEBHOOK_SECRET);
   if (!valid) {
     return new Response('Assinatura inválida', { status: 400 });
@@ -40,40 +37,44 @@ export async function onRequestPost(context) {
 
       // ── Checkout concluído ─────────────────
       case 'checkout.session.completed': {
-        const session = event.data.object;
-        const userId  = session.metadata?.user_id || session.client_reference_id;
+        const session    = event.data.object;
+        const userId     = session.metadata?.user_id || session.client_reference_id;
+        const customerId = session.customer;
         if (!userId) break;
 
-        // Buscar o priceId da subscrição
         const subId   = session.subscription;
         const priceId = await getSubscriptionPriceId(subId, env.STRIPE_SECRET_KEY);
         const plan    = PRICE_TO_PLAN[priceId] || 'basico';
 
-        await updatePlan(userId, plan, subId, env);
+        // Guarda customer_id para fallback nos eventos futuros
+        await updatePlan(userId, plan, subId, customerId, env);
         break;
       }
 
-      // ── Subscrição actualizada (upgrade/downgrade) ─
+      // ── Subscrição actualizada ─────────────
       case 'customer.subscription.updated': {
-        const sub     = event.data.object;
-        const userId  = sub.metadata?.user_id;
+        const sub    = event.data.object;
+        // Tenta userId via metadata; fallback: procura por stripe_customer_id
+        const userId = sub.metadata?.user_id
+          || await getUserIdByCustomer(sub.customer, env);
         if (!userId) break;
 
         const priceId = sub.items?.data?.[0]?.price?.id;
         const plan    = PRICE_TO_PLAN[priceId] || 'basico';
         const active  = sub.status === 'active' || sub.status === 'trialing';
 
-        await updatePlan(userId, active ? plan : null, sub.id, env);
+        await updatePlan(userId, active ? plan : null, sub.id, sub.customer, env);
         break;
       }
 
       // ── Subscrição cancelada ───────────────
       case 'customer.subscription.deleted': {
         const sub    = event.data.object;
-        const userId = sub.metadata?.user_id;
+        const userId = sub.metadata?.user_id
+          || await getUserIdByCustomer(sub.customer, env);
         if (!userId) break;
 
-        await updatePlan(userId, null, null, env);
+        await updatePlan(userId, null, null, sub.customer, env);
         break;
       }
     }
@@ -97,24 +98,42 @@ async function getSubscriptionPriceId(subId, secretKey) {
   return data?.items?.data?.[0]?.price?.id || null;
 }
 
-async function updatePlan(userId, plan, stripeSubId, env) {
-  const supabaseUrl = env.SUPABASE_URL;
-  const supabaseKey = env.SUPABASE_SERVICE_KEY; // service_role — bypassa RLS
+// Fallback: encontra userId no Supabase pelo stripe_customer_id
+async function getUserIdByCustomer(customerId, env) {
+  if (!customerId) return null;
+  try {
+    const res = await fetch(
+      `${env.SUPABASE_URL}/rest/v1/profiles?stripe_customer_id=eq.${customerId}&select=id&limit=1`,
+      {
+        headers: {
+          'apikey':        env.SUPABASE_SERVICE_KEY,
+          'Authorization': `Bearer ${env.SUPABASE_SERVICE_KEY}`,
+        },
+      }
+    );
+    const data = await res.json();
+    return data?.[0]?.id || null;
+  } catch {
+    return null;
+  }
+}
 
+async function updatePlan(userId, plan, stripeSubId, stripeCustomerId, env) {
   const payload = {
-    plan:              plan,
-    stripe_sub_id:     stripeSubId || null,
-    plan_updated_at:   new Date().toISOString(),
+    plan:                plan,
+    stripe_sub_id:       stripeSubId      || null,
+    stripe_customer_id:  stripeCustomerId || null,
+    plan_updated_at:     new Date().toISOString(),
   };
 
   await fetch(
-    `${supabaseUrl}/rest/v1/profiles?id=eq.${userId}`,
+    `${env.SUPABASE_URL}/rest/v1/profiles?id=eq.${userId}`,
     {
       method:  'PATCH',
       headers: {
         'Content-Type':  'application/json',
-        'apikey':        supabaseKey,
-        'Authorization': `Bearer ${supabaseKey}`,
+        'apikey':        env.SUPABASE_SERVICE_KEY,
+        'Authorization': `Bearer ${env.SUPABASE_SERVICE_KEY}`,
         'Prefer':        'return=minimal',
       },
       body: JSON.stringify(payload),
@@ -122,14 +141,12 @@ async function updatePlan(userId, plan, stripeSubId, env) {
   );
 }
 
-// Verificação HMAC-SHA256 da assinatura Stripe
-// compatível com Cloudflare Workers (Web Crypto API)
+// Verificação HMAC-SHA256 — Web Crypto API (Cloudflare Workers)
 async function verifyStripeSignature(payload, sigHeader, secret) {
   try {
     if (!sigHeader) return false;
 
-    // Extrair timestamp e v1 do header
-    const parts     = sigHeader.split(',').reduce((acc, part) => {
+    const parts = sigHeader.split(',').reduce((acc, part) => {
       const [k, v] = part.split('=');
       acc[k] = v;
       return acc;
@@ -139,7 +156,6 @@ async function verifyStripeSignature(payload, sigHeader, secret) {
     const signature = parts['v1'];
     if (!timestamp || !signature) return false;
 
-    // Rejeitar eventos com mais de 5 minutos
     if (Math.abs(Date.now() / 1000 - parseInt(timestamp)) > 300) return false;
 
     const signedPayload = `${timestamp}.${payload}`;
