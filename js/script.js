@@ -173,6 +173,26 @@ document.addEventListener('app:ready', () => {
   // Sempre: fechar o welcome se o utilizador já está autenticado
   if (window.currentUser) {
     fecharWelcome();
+
+    // ── Destaque do plano activo nos cards ──────
+    // Lê o plano do perfil e marca o card correspondente
+    window.supabaseClient
+      .from('profiles')
+      .select('plan')
+      .eq('id', window.currentUser.id)
+      .single()
+      .then(({ data }) => {
+        const plano = data?.plan;
+        if (!plano) return;
+        document.querySelectorAll('.btn-plano').forEach(btn => {
+          if (btn.dataset.plano === plano) {
+            btn.textContent = '✓ Plano actual';
+            btn.disabled = true;
+            btn.closest('.planos-cat')?.classList.add('plano-activo');
+          }
+        });
+      });
+
     return;
   }
 
@@ -255,24 +275,6 @@ const todosCoachKeys = Object.keys(coaches).slice(0, 8);
 // HELPERS
 // ============================================
 const getIniciais = (n) => n.split(' ').map(i => i[0]).join('').slice(0, 2).toUpperCase();
-
-// function renderCoaches(coachKeys) {
-//   const container = document.getElementById('coaches-row');
-//   container.innerHTML = coachKeys.map(key => {
-//     const c = coaches[key];
-//     return `
-//       <div class="coach-wrapper">
-//         <button class="coach-avatar"
-//           aria-label="${c.nome}"
-//           ${c.avatar ? `style="background-image:url('${c.avatar}')"` : ''}
-//         >
-//           ${c.avatar ? '' : getIniciais(c.nome)}
-//         </button>
-//         <span class="coach-tooltip">${c.nome}</span>
-//       </div>
-//     `;
-//   }).join('');
-// }
 
 function renderCoaches(coachKeys) {
   const container = document.getElementById('coaches-row');

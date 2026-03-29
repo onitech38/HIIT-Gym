@@ -1741,3 +1741,8 @@ footer {
     div { display: flex; gap: 0.75rem; align-items: center; }
   }
 }
+
+.planos-cat.plano-activo {
+  border-inline: 2px solid var(--clr-sucesso);
+  & .valor h4 { color: var(--clr-sucesso); }
+}

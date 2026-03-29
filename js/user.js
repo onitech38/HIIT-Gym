@@ -588,13 +588,12 @@ document.getElementById('btn-remove-avatar')?.addEventListener('click', async ()
 // ── LOGOUT ────────────────────────────────────
 // fire-and-forget: signOut não bloqueia o redirect
 // mesmo que a sessão esteja corrompida, o utilizador sai sempre
-document.getElementById('btn-logout')?.addEventListener('click', () => {
+document.getElementById('btn-logout')?.addEventListener('click', async () => {
   if (confirm('Tens a certeza que queres sair?')) {
-    supabase.auth.signOut().catch(() => {});
+    await supabase.auth.signOut().catch(() => {});
     window.location.href = '/index.html';
   }
 });
-
 
 // ── ELIMINAR CONTA ────────────────────────────
 document.getElementById('btn-delete-account')?.addEventListener('click', async () => {
