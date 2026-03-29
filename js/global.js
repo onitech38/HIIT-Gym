@@ -179,13 +179,18 @@ function bindAnchorLinks() {
 //   2. readyState check evita race condition com DOMContentLoaded
 //   3. window._appReady flag para page scripts verificarem
 //      se boot já correu antes de registarem listeners
+// ── BOOT ──────────────────────────────────────
 let _booted = false;
 
 async function boot() {
   // Força activação do SW em espera, se existir.
+  // Sem return — boot continua normalmente enquanto o SW activa.
   try {
     const reg = await navigator.serviceWorker?.getRegistration('/');
     if (reg?.waiting) {
+      navigator.serviceWorker.addEventListener('controllerchange', () => {
+        window.location.reload();
+      }, { once: true });
       reg.waiting.postMessage('SKIP_WAITING');
     }
   } catch { /* SW não disponível */ }
@@ -201,13 +206,12 @@ async function boot() {
       bindToTop();
     }
 
-    await initAuth();      // define window.currentUser
-    await actualizarNav(); // actualiza nav com estado real
+    await initAuth();
+    await actualizarNav();
 
     clearTimeout(safetyTimer);
-    removeSplash(); // revela página ANTES de app:ready
+    removeSplash();
 
-    // Flag para page scripts que carregam após boot()
     window._appReady = true;
     document.dispatchEvent(new Event('app:ready'));
 
@@ -220,20 +224,12 @@ async function boot() {
   }
 }
 
-// ── PROTECÇÃO RACE CONDITION ──────────────────
-// Se DOMContentLoaded já disparou antes deste script
-// carregar (bfcache, SW a servir HTML em cache, carregamento
-// rápido), o listener nunca seria chamado e boot() nunca corria.
-// Verificamos readyState e chamamos boot() directamente se necessário.
 if (document.readyState === 'loading') {
   window.addEventListener('DOMContentLoaded', boot);
 } else {
   boot();
 }
 
-// Bfcache restore — re-corre boot() completo.
-// Garante que todas as páginas actualizam o estado
-// sem reload manual, em todos os browsers e mobile.
 window.addEventListener('pageshow', e => {
   if (e.persisted) boot();
 });

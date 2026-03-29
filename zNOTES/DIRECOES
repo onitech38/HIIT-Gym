@@ -1,6 +1,6 @@
 <!-- =========================================
 ESTRUTURA: ficheiros já existentes
-========================================== -->
+
 HIIT Gym/(RAIZ)
 |
 |__ admin
@@ -64,10 +64,11 @@ HIIT Gym/(RAIZ)
 |__ supabase.js
 |__ sw.js
 
+========================================== -->
 
 <!-- =========================================
 MEMÓRIA:
-========================================== -->
+
 Purpose & context
 José is building HIIT-Gym, a Portuguese-language fitness gym website deployed on Cloudflare Pages via the onitech38/HIIT-Gym GitHub repository. The project is a PWA built with vanilla HTML, CSS, and JavaScript, using Supabase for authentication and database, and an Anthropic API proxy via Cloudflare Pages Functions for a chat assistant widget.
 José works with Claude as a senior front-end/back-end collaborator. Established coding conventions:
@@ -133,6 +134,8 @@ Anthropic API — powers the chat assistant widget (proxied server-side)
 GitHub (onitech38/HIIT-Gym) — source repository with Cloudflare CI/CD integration
 Service Worker (sw.js) — PWA caching, versioned manually
 
+========================================== -->
+
 <!-- =========================================
 INSTRUÇÕES:
 ========================================== -->
@@ -161,6 +164,9 @@ enviarMensagem	@	chat.js:244"
 
 ```
 Contexto: Projecto HIIT-Gym — PWA em vanilla JS/HTML/CSS deployado em Cloudflare Pages (hiit-gym.pages.dev), repo github.com/onitech38/HIIT-Gym, Supabase para auth/DB.
+
+6º Theme
+Ambiente comotável de light dark ou automático
 
 ═══════════════════════════════════
 ESTADO ACTUAL DA ARQUITECTURA
