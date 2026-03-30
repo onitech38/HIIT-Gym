@@ -162,11 +162,17 @@ Erro que dá na consola:
     at async HTMLButtonElement.enviarMensagem (chat.js:236:22)
 enviarMensagem	@	chat.js:244"
 
+6º Theme
+Ambiente comotável de light dark ou automático
+
+7º os utilizadores poderem abrir sessão com conta google, etc..
+
+8º pagamentos podem ser feitos pelo paypal, visa, mastercar, (o que conseguir simular FREE)
+
 ```
 Contexto: Projecto HIIT-Gym — PWA em vanilla JS/HTML/CSS deployado em Cloudflare Pages (hiit-gym.pages.dev), repo github.com/onitech38/HIIT-Gym, Supabase para auth/DB.
 
-6º Theme
-Ambiente comotável de light dark ou automático
+
 
 ═══════════════════════════════════
 ESTADO ACTUAL DA ARQUITECTURA
@@ -280,4 +286,3 @@ NOTAS TÉCNICAS IMPORTANTES
 • Cloudflare Pages Functions: functions/api/chat.js (proxy Anthropic)
 • SW cache name: hiitgym-v5
 • Todos os HTMLs têm splash CSS como primeira linha do <head>
-```
