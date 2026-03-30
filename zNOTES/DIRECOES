@@ -180,6 +180,9 @@ Quando pedi para outra pessoa criarem o seu perfil:
    - no perfil user tentou carregar nova foto, sem sucesso.
    - na página modalidades, na secção de inscrição aparece pendente a modalidade inscrita (admin não atualizou novo membro, supabase tem info de novo utilizador).
 
+estado atual:
+fiz hard reset(sevice worker e clear site data) e não apareceu o .welcome(antes disso tentei forçar nova versão sw.js de 'hiitgym-v5' para 'hiitgym-v6') pois tinha tudo ficado congelado. e o resto do teste com outro user.
+
 1. Resolver SW "Wait" + user.js warnings (diagnóstico pendente)
 2. Stripe (modo teste) — checkout para os 3 planos do index
    • Botões "Começar/Aderir" nos planos → Stripe Checkout
