@@ -1,4 +1,4 @@
-<!-- =========================================
+<!-- ESTRUTURA ===============================
 ESTRUTURA: ficheiros já existentes
 
 HIIT Gym/(RAIZ)
@@ -66,7 +66,7 @@ HIIT Gym/(RAIZ)
 
 ========================================== -->
 
-<!-- =========================================
+<!-- MEMÓRIA: =============================
 MEMÓRIA:
 
 Purpose & context
@@ -136,9 +136,8 @@ Service Worker (sw.js) — PWA caching, versioned manually
 
 ========================================== -->
 
-<!-- =========================================
+<!-- INSTRUÇÕES: ===========================
 INSTRUÇÕES:
-========================================== -->
 Pretendo que:
 - sejas um ajudante senyor de front-end/back-end web dev;
 - entregues o resultado mais simples e limpo;
@@ -147,12 +146,9 @@ Pretendo que:
 - que cada processo seja explicado passo a passo;
 - tentes evitar a utilização de JS(mas informes no fim caso seja a melhor opção e 
   perguntes se quero ver/que seja implementada);
-
-
-<!-- =========================================
-O QUE FALTA:
 ========================================== -->
 
+<!-- O QUE FALTA: ============================
 5º Chat
 Não consigo colocar a funcionar o chat
 Erro que dá na consola:
@@ -169,10 +165,45 @@ Ambiente comotável de light dark ou automático
 
 8º pagamentos podem ser feitos pelo paypal, visa, mastercar, (o que conseguir simular FREE)
 
-```
+
+   --------------------------------------------
+   POR RESOLVER -------------------------------
+   --------------------------------------------
+
+AGORA: 
+   Enquanto esperava para poder voltar a falar com o claude, tentei continuar com o copilot a parte do recend e fiz alterações no script.js e adicionei novo ficheiro nno functions/api/send-emails.js e criei conta no recend tenho o api re_... e não adiantei mais...fiz deploy...
+Quando pedi para outra pessoa criarem o seu perfil:
+   - pelo telemovel (samsung A51);
+   - abriu página, abriu .welcome e conseguiu criar conta. (admin não atualizou novo membro, supabase tem info de novo utilizador)
+   - utilizador foi transportado para o perfil. 
+   - no perfil adicionou nova modalidade e apareceu avido de a aaguardar confirmação (admin não atualizou novo membro, supabase tem info de novo utilizador)
+   - no perfil user tentou carregar nova foto, sem sucesso.
+   - na página modalidades, na secção de inscrição aparece pendente a modalidade inscrita (admin não atualizou novo membro, supabase tem info de novo utilizador).
+
+1. Resolver SW "Wait" + user.js warnings (diagnóstico pendente)
+2. Stripe (modo teste) — checkout para os 3 planos do index
+   • Botões "Começar/Aderir" nos planos → Stripe Checkout
+   • Webhook → actualiza profiles.plan no Supabase
+   • Gestão de subscrições no perfil
+3. Resend (emails transaccionais, plano gratuito 3000/mês)
+   • Confirmação de inscrição em modalidade
+   • Boas-vindas no signup
+   • Notificação ao admin de nova inscrição pendente
+   • Confirmação quando admin aceita inscrição
+4. Chat assistant (Claude Haiku via Anthropic API — já tem ANTHROPIC_API_KEY no Cloudflare)
+   • Reverter functions/api/chat.js para Anthropic (estava OpenAI)
+   • Testar proxy /api/chat end-to-end
+5. Fase de polimento final
+   • Treinos no perfil (adicionar/sincronizar)
+   • QR Code (testar geração)
+   • Admin — mostrar email real dos membros
+   • Testes completos novo utilizador do zero
+   • SEO e meta tags
+
+   --------------------------------------------
+========================================== -->
+
 Contexto: Projecto HIIT-Gym — PWA em vanilla JS/HTML/CSS deployado em Cloudflare Pages (hiit-gym.pages.dev), repo github.com/onitech38/HIIT-Gym, Supabase para auth/DB.
-
-
 
 ═══════════════════════════════════
 ESTADO ACTUAL DA ARQUITECTURA
@@ -229,15 +260,6 @@ RESOLVIDO NESTA SESSÃO
 ✅ Supabase enrollments: coluna é modality (não modality_key)
 ✅ is_admin flag na tabela profiles para acesso ao admin
 
-═══════════════════════════════════
-POR RESOLVER
-═══════════════════════════════════
-
-🔴 CRÍTICO: user.html por vezes abre sem dados (sidebar "CARREGANDO...", stats em "—")
-   • Acontece após logout + login ou navegação entre páginas
-   • SW ainda em "Wait" (5 erros no sw.js — causa desconhecida)
-   • 5 warnings no user.js — conteúdo não visível ainda (telemóvel)
-   • Suspeita: SW antigo a servir user.js antigo
 
 🟡 SW ainda em "Wait" após múltiplos Unregister + hard refresh
    • postMessage SKIP_WAITING implementado mas não resolve completamente
