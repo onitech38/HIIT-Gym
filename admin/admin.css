@@ -670,6 +670,7 @@ body#admin-page {
         letter-spacing: 0.04em;
         text-transform: uppercase;
       }
+      & .membro-plano { padding: 0.2rem 0.4rem; font-size: 0.62rem; }
     }
  
     & .mod-admin-empty {
