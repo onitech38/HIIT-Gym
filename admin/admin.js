@@ -1,14 +1,5 @@
 // ============================================
 // ADMIN.JS — Painel de Administração HIIT-Gym
-//
-// Depende de:
-//   • supabase.js  → window.supabaseClient
-//   • global.js    → window.currentUser, app:ready
-//
-// SEGURANÇA:
-//   • Verifica sessão Supabase
-//   • Verifica profiles.is_admin = true
-//   • Sem is_admin → redireciona para index
 // ============================================
 
 const sb = window.supabaseClient;
@@ -25,7 +16,8 @@ const MODALIDADES_LABEL = {
 };
 
 // ── Estado ────────────────────────────────────
-let todosMembros = [];
+let todosMembros     = [];
+let todasInscricoes  = []; // todas as active (para tab modalidades)
 
 
 // ============================================
@@ -33,13 +25,11 @@ let todosMembros = [];
 // ============================================
 document.addEventListener('app:ready', async () => {
 
-  // 1. Verificar autenticação
   if (!window.currentUser) {
     window.location.href = '/index.html';
     return;
   }
 
-  // 2. Verificar flag admin na base de dados
   const { data: profile } = await sb
     .from('profiles')
     .select('is_admin, first_name, last_name')
@@ -51,22 +41,19 @@ document.addEventListener('app:ready', async () => {
     return;
   }
 
-  // 3. Mostrar página
   document.body.classList.remove('loading');
 
-  // 4. Carregar dados
   await Promise.all([
     carregarInscricoes(),
     carregarMembros(),
+    carregarModalidadesAdmin(),
   ]);
 
-  // 5. Binds
   bindTabs();
   bindLogout();
   bindSearchMembros();
   document.getElementById('btn-refresh-insc')
     ?.addEventListener('click', carregarInscricoes);
-
 });
 
 
@@ -97,7 +84,7 @@ function bindLogout() {
 
 
 // ============================================
-// INSCRIÇÕES
+// INSCRIÇÕES PENDENTES
 // ============================================
 async function carregarInscricoes() {
   const lista = document.getElementById('inscricoes-lista');
@@ -106,39 +93,23 @@ async function carregarInscricoes() {
   const { data, error } = await sb
     .from('enrollments')
     .select(`
-      id,
-      modality,
-      status,
-      has_health,
-      health_notes,
-      physio,
-      medical_ref,
-      medical_notes,
-      created_at,
-      user_id,
-      profiles:user_id (
-        id,
-        first_name,
-        last_name,
-        avatar_url
-      )
+      id, modality, status, has_health, health_notes,
+      physio, medical_ref, medical_notes, created_at, user_id,
+      profiles:user_id ( id, first_name, last_name, avatar_url )
     `)
     .eq('status', 'pending')
     .order('created_at', { ascending: true });
 
   if (error) {
     lista.innerHTML = `<div class="empty-state"><i class="fa-solid fa-triangle-exclamation"></i> Erro ao carregar inscrições.</div>`;
-    console.error('Erro inscrições:', error);
     return;
   }
 
-  // Email não está no profile (está no auth) — usamos o UUID abreviado
   const enriched = (data || []).map(enr => ({
     ...enr,
-    email: enr.user_id ? enr.user_id.slice(0, 8) + '…' : '—'
+    email: enr.user_id ? enr.user_id.slice(0, 8) + '…' : '—',
   }));
 
-  // Actualizar badge
   const badge = document.getElementById('badge-pendentes');
   if (badge) badge.textContent = enriched.length || '';
 
@@ -152,10 +123,10 @@ async function carregarInscricoes() {
   }
 
   lista.innerHTML = enriched.map(enr => {
-    const p      = enr.profiles || {};
-    const nome   = [p.first_name, p.last_name].filter(Boolean).join(' ') || '—';
-    const mod    = MODALIDADES_LABEL[enr.modality] || enr.modality;
-    const data   = new Date(enr.created_at).toLocaleDateString('pt-PT');
+    const p        = enr.profiles || {};
+    const nome     = [p.first_name, p.last_name].filter(Boolean).join(' ') || '—';
+    const mod      = MODALIDADES_LABEL[enr.modality] || enr.modality;
+    const dataStr  = new Date(enr.created_at).toLocaleDateString('pt-PT');
     const temSaude = enr.has_health || enr.physio || enr.medical_ref;
 
     return `
@@ -165,7 +136,7 @@ async function carregarInscricoes() {
           <span class="insc-email">${enr.email}</span>
           <div class="insc-meta">
             <span class="insc-modalidade">${mod}</span>
-            <span class="insc-data"><i class="fa-regular fa-clock"></i> ${data}</span>
+            <span class="insc-data"><i class="fa-regular fa-clock"></i> ${dataStr}</span>
             ${temSaude ? `<span class="insc-saude-info"><i class="fa-solid fa-heart-pulse"></i> Info de saúde</span>` : ''}
           </div>
           ${enr.health_notes ? `<div style="font-size:.72rem;color:var(--clr-2);opacity:.7;margin-top:.35rem;font-style:italic">"${enr.health_notes}"</div>` : ''}
@@ -181,7 +152,6 @@ async function carregarInscricoes() {
       </div>`;
   }).join('');
 
-  // Binds
   lista.querySelectorAll('.btn-confirmar').forEach(btn => {
     btn.addEventListener('click', () => accionarInscricao(btn.dataset.id, 'active'));
   });
@@ -195,10 +165,7 @@ async function accionarInscricao(id, novoStatus) {
   const btns = card?.querySelectorAll('button');
   btns?.forEach(b => { b.disabled = true; });
 
-  const { error } = await sb
-    .from('enrollments')
-    .update({ status: novoStatus })
-    .eq('id', id);
+  const { error } = await sb.from('enrollments').update({ status: novoStatus }).eq('id', id);
 
   if (error) {
     toast('Erro ao actualizar inscrição.', 'erro');
@@ -206,16 +173,14 @@ async function accionarInscricao(id, novoStatus) {
     return;
   }
 
-  const msg = novoStatus === 'active' ? '✓ Inscrição confirmada!' : '✗ Inscrição cancelada.';
-  toast(msg, novoStatus === 'active' ? 'ok' : 'erro');
+  toast(novoStatus === 'active' ? '✓ Inscrição confirmada!' : '✗ Inscrição cancelada.',
+        novoStatus === 'active' ? 'ok' : 'erro');
 
-  // Remover card com animação
   card.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
-  card.style.opacity = '0';
-  card.style.transform = 'translateX(20px)';
+  card.style.opacity    = '0';
+  card.style.transform  = 'translateX(20px)';
   setTimeout(() => {
     card.remove();
-    // Actualizar badge
     const restantes = document.querySelectorAll('.insc-card').length;
     const badge = document.getElementById('badge-pendentes');
     if (badge) badge.textContent = restantes || '';
@@ -226,6 +191,8 @@ async function accionarInscricao(id, novoStatus) {
           Sem inscrições pendentes.
         </div>`;
     }
+    // Actualiza tab modalidades em background
+    carregarModalidadesAdmin();
   }, 300);
 }
 
@@ -239,24 +206,28 @@ async function carregarMembros() {
 
   listaM.innerHTML = `<div class="loading-state"><i class="fa-solid fa-rotate fa-spin"></i> A carregar…</div>`;
 
-  const { data, error } = await sb
-    .from('profiles')
-    .select('id, first_name, last_name, avatar_url, plan, is_admin')
-    .order('first_name', { ascending: true });
+  // Carrega perfis + todas as inscrições activas de cada membro
+  const [{ data: perfis, error }, { data: enrolls }] = await Promise.all([
+    sb.from('profiles').select('id, first_name, last_name, avatar_url, plan, is_admin').order('first_name'),
+    sb.from('enrollments').select('user_id, modality, status').eq('status', 'active'),
+  ]);
 
   if (error) {
-    listaM.innerHTML = `<div class="empty-state"><i class="fa-solid fa-triangle-exclamation"></i> Erro ao carregar membros.</div>`;
+    listaM.innerHTML = `<div class="empty-state"><i class="fa-solid fa-triangle-exclamation"></i> Erro.</div>`;
     return;
   }
 
-  todosMembros = data || [];
+  todosMembros = (perfis || []).map(p => ({
+    ...p,
+    modalidades: (enrolls || []).filter(e => e.user_id === p.id).map(e => e.modality),
+  }));
+
   renderMembros(todosMembros);
   renderPlanos(todosMembros);
 }
 
 function iniciais(p) {
-  return ((p.first_name?.[0] || '') + (p.last_name?.[0] || '')).toUpperCase()
-    || '?';
+  return ((p.first_name?.[0] || '') + (p.last_name?.[0] || '')).toUpperCase() || '?';
 }
 
 function renderMembros(lista) {
@@ -269,18 +240,28 @@ function renderMembros(lista) {
   listaEl.innerHTML = lista.map(p => {
     const nome  = [p.first_name, p.last_name].filter(Boolean).join(' ') || 'Sem nome';
     const plano = p.plan || 'none';
-    const avatarStyle = p.avatar_url
-      ? `style="background-image:url('${p.avatar_url}')"`
-      : '';
+    const avatarStyle = p.avatar_url ? `style="background-image:url('${p.avatar_url}')"` : '';
+
+    // Badges de modalidades inscritas
+    const modsBadges = p.modalidades.length
+      ? p.modalidades.map(m =>
+          `<span class="membro-mod-badge">${MODALIDADES_LABEL[m] || m}</span>`
+        ).join('')
+      : `<span style="font-size:.65rem;color:var(--clr-2);opacity:.4;">Nenhuma</span>`;
 
     return `
       <div class="membro-card">
         <div class="membro-avatar" ${avatarStyle}>${p.avatar_url ? '' : iniciais(p)}</div>
         <div class="membro-info">
-          <span class="membro-nome">${nome}${p.is_admin ? ' <span style="color:var(--clr-4);font-size:.6rem">ADMIN</span>' : ''}</span>
-          <span class="membro-email">${p.id}</span>
+          <span class="membro-nome">
+            ${nome}
+            ${p.is_admin ? '<span style="color:var(--clr-4);font-size:.6rem">ADMIN</span>' : ''}
+          </span>
+          <div class="membro-mods">${modsBadges}</div>
         </div>
-        <span class="membro-plano golden-border ${plano}">${plano === 'none' ? 'Sem plano' : plano}</span>
+        <span class="membro-plano golden-border ${plano}">
+          ${plano === 'none' ? 'Sem plano' : plano}
+        </span>
       </div>`;
   }).join('');
 }
@@ -295,10 +276,7 @@ function renderPlanos(lista) {
   listaEl.innerHTML = lista.map(p => {
     const nome  = [p.first_name, p.last_name].filter(Boolean).join(' ') || 'Sem nome';
     const plano = p.plan || 'none';
-    const avatarStyle = p.avatar_url
-      ? `style="background-image:url('${p.avatar_url}')"`
-      : '';
-
+    const avatarStyle = p.avatar_url ? `style="background-image:url('${p.avatar_url}')"` : '';
     const options = PLANOS.map(pl =>
       `<option value="${pl}" ${pl === plano ? 'selected' : ''}>${pl === 'none' ? 'Sem plano' : pl}</option>`
     ).join('');
@@ -308,10 +286,10 @@ function renderPlanos(lista) {
         <div class="plano-avatar" ${avatarStyle}>${p.avatar_url ? '' : iniciais(p)}</div>
         <div class="plano-info">
           <span class="plano-nome">${nome}</span>
-          <span class="plano-email">${p.id.slice(0,8)}…</span>
+          <span class="plano-email">${p.id.slice(0, 8)}…</span>
         </div>
         <div class="plano-selector">
-          <select class="plano-select" data-userid="${p.id}" data-plano-atual="${plano}">
+          <select class="plano-select" data-userid="${p.id}">
             ${options}
           </select>
           <button class="btn-save-plano" data-userid="${p.id}">
@@ -321,7 +299,6 @@ function renderPlanos(lista) {
       </div>`;
   }).join('');
 
-  // Binds
   listaEl.querySelectorAll('.btn-save-plano').forEach(btn => {
     btn.addEventListener('click', () => {
       const userId = btn.dataset.userid;
@@ -343,16 +320,91 @@ async function guardarPlano(userId, novoPlano, btn) {
   btn.disabled = false;
   btn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Guardar';
 
+  if (error) { toast('Erro ao actualizar plano.', 'erro'); return; }
+
+  toast(`Plano actualizado: ${novoPlano === 'none' ? 'sem plano' : novoPlano}`, 'ok');
+  const membro = todosMembros.find(m => m.id === userId);
+  if (membro) membro.plan = novoPlano === 'none' ? null : novoPlano;
+}
+
+
+// ============================================
+// MODALIDADES ADMIN — membros por modalidade
+// ============================================
+async function carregarModalidadesAdmin() {
+  const lista = document.getElementById('modalidades-admin-lista');
+  if (!lista) return;
+
+  lista.innerHTML = `<div class="loading-state"><i class="fa-solid fa-rotate fa-spin"></i> A carregar…</div>`;
+
+  // Busca todas as inscrições activas com dados do perfil
+  const { data, error } = await sb
+    .from('enrollments')
+    .select(`
+      id, modality, status, created_at, user_id,
+      profiles:user_id ( id, first_name, last_name, avatar_url, plan )
+    `)
+    .eq('status', 'active')
+    .order('modality');
+
   if (error) {
-    toast('Erro ao actualizar plano.', 'erro');
+    lista.innerHTML = `<div class="empty-state"><i class="fa-solid fa-triangle-exclamation"></i> Erro.</div>`;
     return;
   }
 
-  toast(`Plano actualizado: ${novoPlano === 'none' ? 'sem plano' : novoPlano}`, 'ok');
+  todasInscricoes = data || [];
 
-  // Actualiza estado local
-  const membro = todosMembros.find(m => m.id === userId);
-  if (membro) membro.plan = novoPlano === 'none' ? null : novoPlano;
+  // Agrupa por modalidade
+  const porModalidade = {};
+  Object.keys(MODALIDADES_LABEL).forEach(key => { porModalidade[key] = []; });
+  todasInscricoes.forEach(enr => {
+    if (porModalidade[enr.modality] !== undefined) {
+      porModalidade[enr.modality].push(enr);
+    }
+  });
+
+  lista.innerHTML = Object.entries(MODALIDADES_LABEL).map(([key, label]) => {
+    const membros = porModalidade[key] || [];
+    const count   = membros.length;
+
+    const membrosHtml = count === 0
+      ? `<div class="mod-admin-empty">Nenhum membro inscrito.</div>`
+      : membros.map(enr => {
+          const p     = enr.profiles || {};
+          const nome  = [p.first_name, p.last_name].filter(Boolean).join(' ') || '—';
+          const plano = p.plan || 'none';
+          const avatarStyle = p.avatar_url ? `style="background-image:url('${p.avatar_url}')"` : '';
+          const dataStr = new Date(enr.created_at).toLocaleDateString('pt-PT');
+
+          return `
+            <div class="mod-admin-membro">
+              <div class="membro-avatar small" ${avatarStyle}>${p.avatar_url ? '' : iniciais(p)}</div>
+              <div class="mod-admin-membro-info">
+                <span class="mod-admin-membro-nome">${nome}</span>
+                <span class="mod-admin-membro-data">Desde ${dataStr}</span>
+              </div>
+              <span class="membro-plano golden-border ${plano}">
+                ${plano === 'none' ? 'Sem plano' : plano}
+              </span>
+            </div>`;
+        }).join('');
+
+    return `
+      <details class="mod-admin-card">
+        <summary class="mod-admin-summary">
+          <div class="mod-admin-summary-info">
+            <span class="mod-admin-nome">${label}</span>
+            <span class="mod-admin-count">
+              ${count} membro${count !== 1 ? 's' : ''} inscrito${count !== 1 ? 's' : ''}
+            </span>
+          </div>
+          <i class="fa-solid fa-chevron-down mod-admin-chevron"></i>
+        </summary>
+        <div class="mod-admin-membros">
+          ${membrosHtml}
+        </div>
+      </details>`;
+  }).join('');
 }
 
 
@@ -382,10 +434,7 @@ function toast(msg, tipo = 'ok') {
   const el = document.getElementById('admin-toast');
   if (!el) return;
   if (_toastTimer) clearTimeout(_toastTimer);
-
   el.textContent = msg;
-  el.className = `admin-toast toast-${tipo}`;
-  _toastTimer = setTimeout(() => {
-    el.classList.add('hidden');
-  }, 3000);
+  el.className   = `admin-toast toast-${tipo}`;
+  _toastTimer    = setTimeout(() => el.classList.add('hidden'), 3000);
 }

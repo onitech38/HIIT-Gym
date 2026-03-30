@@ -16,11 +16,9 @@ let selectedModality   = null;
 // ============================================
 // INIT
 // ============================================
-// Corre sempre — tanto na primeira visita como em bfcache/logout
 document.addEventListener('app:ready', () => { init(); });
 
 async function init() {
-  // window.currentUser garantido pelo global.js antes de app:ready
   if (window.currentUser) {
     currentUser = window.currentUser;
     await Promise.all([loadProfile(), loadEnrollments()]);
@@ -72,18 +70,18 @@ function getStatus(modality) {
   if (!e) return 'disponivel';
   if (e.status === 'active')  return 'inscrito';
   if (e.status === 'pending') return 'pendente';
-  return 'disponivel'; // cancelled ou qualquer outro estado → disponível para inscrição
+  return 'disponivel'; // cancelled ou outro → disponível para nova inscrição
 }
 
 const statusLabel = {
-  inscrito:  '✓ Inscrito',
-  pendente:  '⏳ Pendente',
-  disponivel:'Disponível',
+  inscrito:   '✓ Inscrito',
+  pendente:   '⏳ Pendente',
+  disponivel: 'Disponível',
 };
 
 function scrollToInscricao() {
   document.getElementById('inscricao')
-    ?.scrollIntoView({ behavior:'smooth', block:'start' });
+    ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 
@@ -95,7 +93,7 @@ function renderModalidades() {
   if (!list) return;
 
   list.innerHTML = Object.entries(modalidadesData)
-    .filter(([,m]) => m.active)
+    .filter(([, m]) => m.active)
     .map(([key, m]) => {
       const status = getStatus(key);
 
@@ -112,11 +110,12 @@ function renderModalidades() {
           </div>`;
       }).join('');
 
+      // Botão de acção — classe btn-insc-modal para o bind
       const actionBtn =
         status === 'inscrito' ? '' :
         status === 'pendente'
           ? `<button class="golden-border" disabled>A aguardar confirmação</button>`
-          : `<button class="golden-border" data-key="${key}">
+          : `<button class="golden-border btn-insc-modal" data-key="${key}">
                <i class="fa-solid fa-plus"></i> Inscrever
              </button>`;
 
@@ -147,13 +146,15 @@ function renderModalidades() {
         </article>`;
     }).join('');
 
-  list.querySelectorAll('.mod-btn-insc').forEach(btn => {
+  // Bind nos botões de inscrição dos cards
+  list.querySelectorAll('.btn-insc-modal').forEach(btn => {
     btn.addEventListener('click', () => {
       inscricaoStep2(btn.dataset.key);
       scrollToInscricao();
     });
   });
 }
+
 
 // ============================================
 // EQUIPA
@@ -163,10 +164,8 @@ function renderEquipa() {
   if (!grid) return;
 
   grid.innerHTML = Object.values(coaches).map(c => {
-    const bg = c.card ? `style="background-image:url('../${c.card}')"` : '';
-    const tags = c.modalidades
-      .map(k => modalidadesData[k]?.titulo || k)
-      .join(' · ');
+    const bg   = c.card ? `style="background-image:url('../${c.card}')"` : '';
+    const tags = c.modalidades.map(k => modalidadesData[k]?.titulo || k).join(' · ');
 
     return `
       <div class="equipa-card" ${bg}>
@@ -181,34 +180,20 @@ function renderEquipa() {
 }
 
 
-/* ============================================
-   5. INSCRIÇÃO — 2 PASSOS
-
-   Layout da secção #inscricao:
-   ┌────────────────────────────────┐
-   │  #insc-wrap                    │
-   │  ┌──────────┐ ┌──────────────┐ │
-   │  │ step1    │ │ step2        │ │
-   │  │ (lista)  │ │ (form saúde) │ │
-   │  └──────────┘ └──────────────┘ │
-   └────────────────────────────────┘
-
-   Quando step2 está aberto → step1 fica escondido.
-   Fechar step2 → step1 volta, sem qualquer scroll.
-============================================ */
-
+// ============================================
+// INSCRIÇÃO — 2 PASSOS
+// ============================================
 function inscricaoStep1() {
   const wrap = document.getElementById('insc-wrap');
   if (!wrap) return;
 
-  const activas = Object.entries(modalidadesData).filter(([, d]) => d.active);
+  const activas     = Object.entries(modalidadesData).filter(([, d]) => d.active);
   const disponiveis = activas.filter(([key]) => getStatus(key) === 'disponivel');
   const jaInscritas = activas.filter(([key]) => getStatus(key) !== 'disponivel');
 
   let listaHtml = '';
 
   if (!currentUser) {
-    // Não autenticado: mostra lista mas com aviso
     listaHtml = activas.map(([key, d]) => `
       <li class="step1-item step1-item--lock" data-key="${key}">
         <span class="step1-nome">${d.titulo}</span>
@@ -217,7 +202,6 @@ function inscricaoStep1() {
       </li>`).join('');
 
   } else if (disponiveis.length === 0) {
-    // Tudo inscrito
     listaHtml = `<li class="step1-vazio">
       <i class="fa-solid fa-circle-check"></i>
       Estás inscrito em todas as modalidades disponíveis!
@@ -232,7 +216,6 @@ function inscricaoStep1() {
       </li>`).join('');
   }
 
-  // Badge de já inscritas (se houver)
   const inscritasHtml = jaInscritas.length ? `
     <div class="step1-inscritas">
       <span class="step1-inscritas-label">Já inscrito:</span>
@@ -242,26 +225,28 @@ function inscricaoStep1() {
       }).join('')}
     </div>` : '';
 
-  // Aviso de login (apenas não autenticado)
   const loginAviso = !currentUser ? `
     <div class="step1-login-aviso">
       <p>Precisas de conta para te inscreveres.</p>
       <div>
-        <a href="../index.html" class="btn glass"><i class="fa-solid fa-arrow-right-to-bracket"></i> Login / Criar Conta</a>
+        <a href="../index.html" class="btn glass">
+          <i class="fa-solid fa-arrow-right-to-bracket"></i> Login / Criar Conta
+        </a>
       </div>
     </div>` : '';
 
   wrap.innerHTML = `
     <div id="insc-step1">
       <p class="step1-intro">
-        ${currentUser ? 'Escolhe a modalidade em que te queres inscrever.' : 'Modalidades disponíveis para inscrição.'}
+        ${currentUser
+          ? 'Escolhe a modalidade em que te queres inscrever.'
+          : 'Modalidades disponíveis para inscrição.'}
       </p>
       <ul class="step1-lista">${listaHtml}</ul>
       ${inscritasHtml}
       ${loginAviso}
     </div>`;
 
-  // Bind clicks (só se autenticado e com disponíveis)
   if (currentUser) {
     wrap.querySelectorAll('.step1-item[data-key]').forEach(item => {
       item.addEventListener('click', () => inscricaoStep2(item.dataset.key));
@@ -276,7 +261,6 @@ function inscricaoStep2(key) {
   const wrap = document.getElementById('insc-wrap');
   if (!wrap) return;
 
-  // Dados do utilizador
   let dadosHtml = '';
   if (currentUser) {
     const p      = currentProfile;
@@ -300,7 +284,9 @@ function inscricaoStep2(key) {
     dadosHtml = `
       <div class="insc-dados insc-nao-auth">
         <p>Precisas de conta para te inscreveres.</p>
-        <a href="../index.html" class="btn glass"><i class="fa-solid fa-arrow-right-to-bracket"></i> Login / Criar Conta</a>
+        <a href="../index.html" class="btn glass">
+          <i class="fa-solid fa-arrow-right-to-bracket"></i> Login / Criar Conta
+        </a>
       </div>`;
   }
 
@@ -308,7 +294,7 @@ function inscricaoStep2(key) {
     <div id="insc-step2">
 
       <div class="insc-topo">
-        <button class="btn icon glass" id="btn-voltar" aria-label="Voltar à lista de modalidades">
+        <button class="btn icon glass" id="btn-voltar" aria-label="Voltar">
           <i class="fa-solid fa-arrow-left"></i>
         </button>
         <div class="insc-topo-txt">
@@ -374,32 +360,21 @@ function inscricaoStep2(key) {
 
     </div>`;
 
-  // ── Binds ──────────────────────────────────────
+  document.getElementById('btn-voltar')?.addEventListener('click', inscricaoStep1);
+  document.getElementById('btn-nova-insc')?.addEventListener('click', inscricaoStep1);
 
-  // Voltar ao step 1 — sem scroll
-  document.getElementById('btn-voltar')?.addEventListener('click', () => {
-    inscricaoStep1();
-  });
-
-  // Nova inscrição → step 1
-  document.getElementById('btn-nova-insc')?.addEventListener('click', () => {
-    inscricaoStep1();
-  });
-
-  // Toggles saúde/médico
   document.getElementById('chk-saude')?.addEventListener('change', e =>
     document.getElementById('xtra-saude')?.classList.toggle('hidden', !e.target.checked));
   document.getElementById('chk-medico')?.addEventListener('change', e =>
     document.getElementById('xtra-medico')?.classList.toggle('hidden', !e.target.checked));
 
-  // Submit
   document.getElementById('insc-form')?.addEventListener('submit', submeterInscricao);
 }
 
 
-/* ============================================
-   6. SUBMIT
-============================================ */
+// ============================================
+// SUBMIT
+// ============================================
 async function submeterInscricao(e) {
   e.preventDefault();
   if (!currentUser) return;
@@ -412,7 +387,7 @@ async function submeterInscricao(e) {
 
   // Verificar se já existe inscrição activa/pendente
   const existente = currentEnrollments.find(
-    en => en.modality === selectedModality && ['active','pending'].includes(en.status)
+    en => en.modality === selectedModality && ['active', 'pending'].includes(en.status)
   );
   if (existente) {
     erro.textContent = 'Já tens uma inscrição activa ou pendente nesta modalidade.';
@@ -424,14 +399,14 @@ async function submeterInscricao(e) {
 
   const form    = e.target;
   const payload = {
-    user_id      : currentUser.id,
-    modality     : selectedModality,
-    status       : 'pending',
-    has_health   : form.has_health?.checked   || false,
-    health_notes : form.health_notes?.value.trim()  || null,
-    physio       : form.physio?.checked        || false,
-    medical_ref  : form.medical_ref?.checked   || false,
-    medical_notes: form.medical_notes?.value.trim() || null,
+    user_id:       currentUser.id,
+    modality:      selectedModality,
+    status:        'pending',
+    has_health:    form.has_health?.checked    || false,
+    health_notes:  form.health_notes?.value.trim()   || null,
+    physio:        form.physio?.checked         || false,
+    medical_ref:   form.medical_ref?.checked    || false,
+    medical_notes: form.medical_notes?.value.trim()  || null,
   };
 
   const { error } = await window.supabaseClient.from('enrollments').insert(payload);
@@ -446,13 +421,9 @@ async function submeterInscricao(e) {
     return;
   }
 
-  // Actualiza estado local e re-renderiza cards
   await loadEnrollments();
   renderModalidades();
 
-  // Mostra mensagem de sucesso (esconde form)
   form.classList.add('hidden');
   document.getElementById('insc-ok')?.classList.remove('hidden');
 }
-
-

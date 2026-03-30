@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-PT">
 <head>
-  
   <style>
     html::before {
       content: '';
@@ -87,6 +86,10 @@
       <i class="fa-solid fa-users"></i>
       Membros
     </button>
+    <button class="admin-tab" data-tab="modalidades-admin">
+      <i class="fa-solid fa-layer-group"></i>
+      Modalidades
+    </button>
     <button class="admin-tab" data-tab="planos">
       <i class="fa-solid fa-credit-card"></i>
       Planos
@@ -113,10 +116,19 @@
         <h2>Todos os Membros</h2>
         <div class="search-wrap">
           <i class="fa-solid fa-magnifying-glass"></i>
-          <input type="text" id="search-membros" placeholder="Pesquisar por nome ou email…">
+          <input type="text" id="search-membros" placeholder="Pesquisar por nome…">
         </div>
       </div>
       <div id="membros-lista" class="admin-lista"></div>
+    </section>
+
+    <!-- TAB: MODALIDADES -->
+    <section id="tab-modalidades-admin" class="admin-section glass hidden">
+      <div class="section-header">
+        <h2>Membros por Modalidade</h2>
+        <p class="section-desc">Clica numa modalidade para ver os membros inscritos.</p>
+      </div>
+      <div id="modalidades-admin-lista" class="admin-lista"></div>
     </section>
 
     <!-- TAB: PLANOS -->
