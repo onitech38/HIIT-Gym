@@ -70,7 +70,9 @@ function getStatus(modality) {
   if (!currentUser) return 'disponivel';
   const e = currentEnrollments.find(e => e.modality === modality);
   if (!e) return 'disponivel';
-  return e.status === 'active' ? 'inscrito' : 'pendente';
+  if (e.status === 'active')  return 'inscrito';
+  if (e.status === 'pending') return 'pendente';
+  return 'disponivel'; // cancelled ou qualquer outro estado → disponível para inscrição
 }
 
 const statusLabel = {
