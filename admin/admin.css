@@ -191,9 +191,11 @@ body#admin-page {
 
   /* ── LISTA ADMIN ─────────────────────────── */
   & .admin-lista {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
+      display: flex;
+      flex-direction: row;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      justify-content: center;
 
     & .empty-state {
       padding: 3rem 1rem;
@@ -405,7 +407,7 @@ body#admin-page {
       font-weight: 600;
       letter-spacing: 0.1em;
       text-transform: uppercase;
-      padding: 0.25rem 0.65rem;
+      padding: 0.2rem 0.5rem;
       flex-shrink: 0;
 
       &.basico   { background: rgba(185,207,212,0.1); color: var(--clr-2); border: 1px solid rgba(185,207,212,0.2); }
