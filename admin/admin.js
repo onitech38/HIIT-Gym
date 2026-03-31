@@ -176,6 +176,28 @@ async function accionarInscricao(id, novoStatus) {
   toast(novoStatus === 'active' ? '✓ Inscrição confirmada!' : '✗ Inscrição cancelada.',
         novoStatus === 'active' ? 'ok' : 'erro');
 
+  // Email de confirmação ao membro (fire-and-forget)
+  if (novoStatus === 'active' && window.emailInscricaoConfirmada) {
+    const nome = card?.querySelector('.insc-nome')?.textContent?.trim() || '';
+    const mod  = card?.querySelector('.insc-modalidade')?.textContent?.trim() || '';
+    // Busca email do perfil (requer coluna email na tabela profiles)
+    const { data: enrRow } = await sb
+      .from('enrollments')
+      .select('user_id, profiles:user_id(email, first_name, last_name)')
+      .eq('id', id)
+      .single();
+    const emailMembro = enrRow?.profiles?.email;
+    const nomeMembro  = [enrRow?.profiles?.first_name, enrRow?.profiles?.last_name]
+      .filter(Boolean).join(' ') || nome;
+    if (emailMembro) {
+      window.emailInscricaoConfirmada({
+        email:      emailMembro,
+        nomeMembro,
+        modalidade: mod,
+      });
+    }
+  }
+
   card.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
   card.style.opacity    = '0';
   card.style.transform  = 'translateX(20px)';
