@@ -100,6 +100,15 @@ async function onAppReady() {
     } else {
       currentProfile = profile;
     }
+    if (currentProfile.is_admin) {
+      const logoutBtn = document.querySelector('.user-logout-btn');
+      const adminLink = document.createElement('a');
+      adminLink.href = '/admin/admin.html';
+      adminLink.className = 'btn glass user-logout-btn';
+      adminLink.style.cssText = 'color:var(--clr-4);border-color:rgba(251,160,2,0.3);';
+      adminLink.innerHTML = '<i class="fa-solid fa-shield-halved"></i> Admin';
+      logoutBtn?.parentNode.insertBefore(adminLink, logoutBtn);
+    }
     currentProfile.email = currentUser.email;
 
     // 3. Treinos

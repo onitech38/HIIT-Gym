@@ -13,13 +13,6 @@
 
 // ============================================
 // 1. WELCOME MODAL
-//
-// Aparece 1 segundo após a página carregar,
-// mas SÓ SE o user não estiver autenticado.
-//
-// O toggle entre Login ↔ Signup é feito
-// 100% em CSS (radio buttons ocultos).
-// O JS só trata de: timer, guardar dados, fechar.
 // ============================================
 
 function mostrarWelcome() {
@@ -79,31 +72,25 @@ function bindSignupForm() {
     const lastName  = form.lastName.value.trim();
     const email     = form.email.value.trim().toLowerCase();
 
-    // Botão de loading
     const btn = form.querySelector('button[type="submit"]');
     if (btn) { btn.disabled = true; btn.textContent = 'A criar conta...'; }
 
     try {
-      // 1. Criar conta no Supabase Auth
       const { data, error: signupError } = await window.supabaseClient.auth.signUp({
         email,
         password: pass,
-        options: {
-          data: { firstName, lastName }
-        }
+        options: { data: { firstName, lastName } }
       });
 
       if (signupError) throw signupError;
 
       const userId = data?.user?.id;
 
-      // 2. Criar perfil (o trigger Supabase pode já fazer isto,
-      //    mas upsert garante mesmo que o trigger falhe)
       if (userId) {
         try {
           await window.supabaseClient.from('profiles').upsert({
             id:         userId,
-            email,                             // guarda email no perfil
+            email,
             first_name: firstName,
             last_name:  lastName,
             phone:      form.phone?.value.trim() || null,
@@ -111,22 +98,25 @@ function bindSignupForm() {
             weight:     form.weight?.value ? parseFloat(form.weight.value) : null,
             address:    form.address?.value.trim() || null,
           }, { onConflict: 'id' });
-        } catch { /* o trigger já criou o perfil — falha silenciosa */ }
+        } catch { /* trigger já criou o perfil */ }
       }
 
       erro?.classList.add('hidden');
       fecharWelcome();
 
-      // Se o Supabase pediu confirmação de email, não há sessão imediata
+      // ── Email de boas-vindas ───────────────────
+      // Dispara SEMPRE após signup com sucesso,
+      // independentemente de o Supabase pedir confirmação de email ou não.
+      if (typeof emailBoasVindas === 'function') {
+        emailBoasVindas({ nome: firstName, email });
+      }
+
       if (data?.session) {
-        // Email de boas-vindas (fire-and-forget — não bloqueia o fluxo)
-        if (typeof emailBoasVindas === 'function') {
-          emailBoasVindas({ nome: firstName, email });
-        }
+        // Sessão imediata (confirmação de email desactivada no Supabase)
         await actualizarNav();
         setTimeout(() => { window.location.href = 'user/user.html'; }, 300);
       } else {
-        // Email de confirmação enviado — avisar o utilizador
+        // Supabase pediu confirmação de email → avisar o utilizador
         const msgEl = document.getElementById('signup-error');
         if (msgEl) {
           msgEl.style.color = 'var(--clr-sucesso)';
@@ -134,7 +124,6 @@ function bindSignupForm() {
           msgEl.textContent = '✓ Conta criada! Verifica o teu email para confirmar.';
           msgEl.classList.remove('hidden');
         }
-        // Desabilitar botão de submit
         const btn2 = form.querySelector('button[type="submit"]');
         if (btn2) { btn2.disabled = true; btn2.textContent = 'Email enviado ✓'; }
       }
@@ -151,23 +140,15 @@ function bindSignupForm() {
 function bindWelcomeClose() {
   document.getElementById('welcome-backdrop')?.addEventListener('click', fecharWelcome);
   document.getElementById('welcome-skip')?.addEventListener('click', fecharWelcome);
-
-  // ESC também fecha
   document.addEventListener('keydown', e => {
     if (e.key === 'Escape') fecharWelcome();
   });
 }
 
-/** Timer de 1s — mostra o welcome se não estiver autenticado.
- *  Usa app:ready (global.js) para garantir que a sessão Supabase
- *  já foi restaurada antes de decidir mostrar o modal.
- */
-// Flag para evitar re-bind dos forms em navegações bfcache
 let _scriptInited = false;
 
 document.addEventListener('app:ready', () => {
 
-  // Primeira vez: faz bind dos forms e close
   if (!_scriptInited) {
     _scriptInited = true;
     bindLoginForm();
@@ -175,11 +156,10 @@ document.addEventListener('app:ready', () => {
     bindWelcomeClose();
   }
 
-  // Sempre: fechar o welcome se o utilizador já está autenticado
   if (window.currentUser) {
     fecharWelcome();
 
-    // ── Destaque do plano activo nos cards ──────
+    // Destaque do plano activo nos cards de planos
     window.supabaseClient
       .from('profiles')
       .select('plan')
@@ -200,7 +180,6 @@ document.addEventListener('app:ready', () => {
     return;
   }
 
-  // Auto-open via URL param (?auth=login ou ?auth=signup)
   const auth = new URLSearchParams(window.location.search).get('auth');
   if (auth === 'login') {
     document.getElementById('mode-login')?.click();
@@ -213,19 +192,14 @@ document.addEventListener('app:ready', () => {
     return;
   }
 
-  // Sem sessão → welcome após 1s
   setTimeout(mostrarWelcome, 1000);
 });
 
-// Fechar o welcome quando o Supabase confirma login (SIGNED_IN)
 if (window.supabaseClient) {
   window.supabaseClient.auth.onAuthStateChange((event) => {
-    if (event === 'SIGNED_IN') {
-      fecharWelcome();
-    }
+    if (event === 'SIGNED_IN') fecharWelcome();
   });
 }
-
 
 
 // ============================================
@@ -248,16 +222,12 @@ mapSummary.addEventListener('click', (e) => {
     e.preventDefault();
     fecharMapa();
   } else {
-    setTimeout(() => {
-      mapDetails.scrollIntoView({ behavior: 'smooth' });
-    }, 50);
+    setTimeout(() => { mapDetails.scrollIntoView({ behavior: 'smooth' }); }, 50);
   }
 });
 
 document.addEventListener('click', (e) => {
-  if (mapDetails.open && !mapDetails.contains(e.target)) {
-    fecharMapa();
-  }
+  if (mapDetails.open && !mapDetails.contains(e.target)) fecharMapa();
 });
 
 
@@ -285,7 +255,6 @@ function renderCoaches(coachKeys) {
   container.innerHTML = coachKeys.map(coachKey => {
     const c = coaches[coachKey];
     const modalidadeKey = c.modalidades[0];
-
     return `
       <div class="coach-wrapper">
         <a class="coach-avatar"
@@ -301,10 +270,7 @@ function renderCoaches(coachKeys) {
 }
 
 function pararVideos() {
-  document.querySelectorAll('.fatia-video').forEach(v => {
-    v.pause();
-    v.currentTime = 0;
-  });
+  document.querySelectorAll('.fatia-video').forEach(v => { v.pause(); v.currentTime = 0; });
 }
 
 function limparFatias() {
@@ -396,7 +362,6 @@ const scrollPorCard = () => equipaTrack.querySelector('.equipa-card')?.offsetWid
 
 document.getElementById('equipa-prev')
   .addEventListener('click', () => equipaTrack.scrollBy({ left: -scrollPorCard(), behavior: 'smooth' }));
-
 document.getElementById('equipa-next')
   .addEventListener('click', () => equipaTrack.scrollBy({ left: scrollPorCard(), behavior: 'smooth' }));
 
@@ -425,10 +390,7 @@ window.addEventListener('beforeinstallprompt', e => {
       if (!deferredPrompt) return;
       deferredPrompt.prompt();
       const { outcome } = await deferredPrompt.userChoice;
-      if (outcome === 'accepted') {
-        btn.textContent = '✓ App instalada!';
-        btn.disabled = true;
-      }
+      if (outcome === 'accepted') { btn.textContent = '✓ App instalada!'; btn.disabled = true; }
       deferredPrompt = null;
     });
   }
@@ -441,21 +403,14 @@ window.addEventListener('appinstalled', () => {
   deferredPrompt = null;
 });
 
-// Se PWA não disponível (iOS/Safari), mostra instruções
 window.addEventListener('load', () => {
-  const isIos    = /iphone|ipad|ipod/i.test(navigator.userAgent);
-  const isInApp  = window.matchMedia('(display-mode: standalone)').matches;
+  const isIos   = /iphone|ipad|ipod/i.test(navigator.userAgent);
+  const isInApp = window.matchMedia('(display-mode: standalone)').matches;
   const fallback = document.getElementById('app-fallback');
   const btn      = document.getElementById('pwa-install-btn');
 
-  if (isInApp) {
-    btn?.classList.add('hidden');
-    return;
-  }
-
-  if (isIos && !deferredPrompt && fallback) {
-    fallback.classList.remove('hidden');
-  }
+  if (isInApp) { btn?.classList.add('hidden'); return; }
+  if (isIos && !deferredPrompt && fallback) fallback.classList.remove('hidden');
 });
 
 
@@ -497,11 +452,7 @@ async function iniciarCheckout(priceId, btn) {
     });
 
     const data = await res.json();
-
-    if (!res.ok || !data.url) {
-      throw new Error(data.error || 'Resposta inválida');
-    }
-
+    if (!res.ok || !data.url) throw new Error(data.error || 'Resposta inválida');
     window.location.href = data.url;
 
   } catch (err) {

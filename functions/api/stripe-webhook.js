@@ -10,7 +10,7 @@
 // ============================================
 
 const PRICE_TO_PLAN = {
-  'price_1TDlVH77sfEVvt5IUrlmnFp2': 'basico',
+  'price_1TDlVH77sfEVvt5IUrImnFp2': 'basico',
   'price_1TDlVh77sfEVvt5INOWoW8D9': 'standard',
   'price_1TDlWC77sfEVvt5It1l75JNO': 'premium',
 };
