@@ -176,26 +176,32 @@ async function accionarInscricao(id, novoStatus) {
   toast(novoStatus === 'active' ? '✓ Inscrição confirmada!' : '✗ Inscrição cancelada.',
         novoStatus === 'active' ? 'ok' : 'erro');
 
-  // Email de confirmação ao membro (fire-and-forget)
-  if (novoStatus === 'active' && window.emailInscricaoConfirmada) {
-    const nome = card?.querySelector('.insc-nome')?.textContent?.trim() || '';
-    const mod  = card?.querySelector('.insc-modalidade')?.textContent?.trim() || '';
-    // Busca email do perfil (requer coluna email na tabela profiles)
-    const { data: enrRow } = await sb
-      .from('enrollments')
-      .select('user_id, profiles:user_id(email, first_name, last_name)')
-      .eq('id', id)
-      .single();
-    const emailMembro = enrRow?.profiles?.email;
-    const nomeMembro  = [enrRow?.profiles?.first_name, enrRow?.profiles?.last_name]
-      .filter(Boolean).join(' ') || nome;
-    if (emailMembro) {
-      window.emailInscricaoConfirmada({
-        email:      emailMembro,
-        nomeMembro,
-        modalidade: mod,
-      });
-    }
+  // Após o update com sucesso, antes de remover o card
+  if (novoStatus === 'active') {
+    // Buscar dados do membro para o email
+    try {
+      const card = document.querySelector(`.insc-card[data-id="${id}"]`);
+      const nomeEl = card?.querySelector('.insc-nome');
+      const modEl  = card?.querySelector('.insc-modalidade');
+      const nome   = nomeEl?.textContent || 'Membro';
+      const mod    = modEl?.textContent  || '';
+
+      // Buscar email via profiles (coluna email que adicionámos)
+      const enrollData = await sb
+        .from('enrollments')
+        .select('user_id, profiles:user_id(email)')
+        .eq('id', id)
+        .single();
+
+      const emailMembro = enrollData?.data?.profiles?.email;
+      if (emailMembro && typeof emailInscricaoConfirmada === 'function') {
+        emailInscricaoConfirmada({
+          email:       emailMembro,
+          nomeMembro:  nome,
+          modalidade:  mod,
+        });
+      }
+    } catch { /* email falha silenciosamente — não bloqueia */ }
   }
 
   card.style.transition = 'opacity 0.3s ease, transform 0.3s ease';

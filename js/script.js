@@ -106,10 +106,10 @@ function bindSignupForm() {
             email,                             // guarda email no perfil
             first_name: firstName,
             last_name:  lastName,
-            phone:      form.phone.value.trim() || null,
-            age:        parseInt(form.age.value) || null,
-            weight:     form.weight.value ? parseFloat(form.weight.value) : null,
-            address:    form.address.value.trim() || null,
+            phone:      form.phone?.value.trim() || null,
+            age:        parseInt(form.age?.value) || null,
+            weight:     form.weight?.value ? parseFloat(form.weight.value) : null,
+            address:    form.address?.value.trim() || null,
           }, { onConflict: 'id' });
         } catch { /* o trigger já criou o perfil — falha silenciosa */ }
       }
@@ -119,9 +119,9 @@ function bindSignupForm() {
 
       // Se o Supabase pediu confirmação de email, não há sessão imediata
       if (data?.session) {
-        // Email de boas-vindas (fire-and-forget)
-        if (window.emailBoasVindas) {
-          window.emailBoasVindas({ nome: firstName, email });
+        // Email de boas-vindas (fire-and-forget — não bloqueia o fluxo)
+        if (typeof emailBoasVindas === 'function') {
+          emailBoasVindas({ nome: firstName, email });
         }
         await actualizarNav();
         setTimeout(() => { window.location.href = 'user/user.html'; }, 300);
@@ -180,7 +180,6 @@ document.addEventListener('app:ready', () => {
     fecharWelcome();
 
     // ── Destaque do plano activo nos cards ──────
-    // Lê o plano do perfil e marca o card correspondente
     window.supabaseClient
       .from('profiles')
       .select('plan')
@@ -219,8 +218,6 @@ document.addEventListener('app:ready', () => {
 });
 
 // Fechar o welcome quando o Supabase confirma login (SIGNED_IN)
-// Garante que o welcome fecha mesmo que app:ready tenha disparado
-// antes da sessão ser restaurada (timeout de 5s no initAuth)
 if (window.supabaseClient) {
   window.supabaseClient.auth.onAuthStateChange((event) => {
     if (event === 'SIGNED_IN') {
@@ -355,7 +352,6 @@ function estado3(key) {
   descEl.classList.add('visivel');
   renderCoaches(d.coaches);
 
-  // Href do botão "inscrever" → abre a página de modalidades na inscrição correcta
   const btnInsc = document.getElementById('painel-inscrever');
   if (btnInsc) btnInsc.href = `modalidades/modalidades.html?modal=${key}#inscricao`;
 }
@@ -453,7 +449,6 @@ window.addEventListener('load', () => {
   const btn      = document.getElementById('pwa-install-btn');
 
   if (isInApp) {
-    // Já está instalada — esconde toda a secção de instalação
     btn?.classList.add('hidden');
     return;
   }
@@ -466,16 +461,13 @@ window.addEventListener('load', () => {
 
 // ============================================
 // BOTÃO "Área de Membro"
-// Se não está autenticado → abre form de signup
 // ============================================
 document.getElementById('btn-membro')?.addEventListener('click', e => {
-  // window.currentUser já está preenchido pelo global.js (app:ready)
   if (!window.currentUser) {
     e.preventDefault();
     document.getElementById('mode-signup')?.click();
     mostrarWelcome();
   }
-  // Se autenticado, o href normal navega para user/user.html
 });
 
 

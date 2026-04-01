@@ -424,21 +424,13 @@ async function submeterInscricao(e) {
   await loadEnrollments();
   renderModalidades();
 
-  // Notificar admin por email (fire-and-forget)
-  if (window.emailAdminNovaInscricao) {
-    const nomeM = [currentProfile.first_name, currentProfile.last_name]
+  // Notificação ao admin (fire-and-forget)
+  if (typeof emailAdminNovaInscricao === 'function') {
+    const nomeCompleto = [currentProfile.first_name, currentProfile.last_name]
       .filter(Boolean).join(' ') || 'Membro';
-    const modLabel = {
-      musculacao:   'Musculação',
-      cardio:       'Cardio',
-      yoga_pilates: 'Yoga & Pilates',
-      lutas:        'Lutas e Artes Marciais',
-      zumba_danca:  'Zumba e Danças',
-      natacao:      'Natação',
-    }[selectedModality] || selectedModality;
-    window.emailAdminNovaInscricao({
-      nomeMembro: nomeM,
-      modalidade: modLabel,
+    emailAdminNovaInscricao({
+      nomeMembro: nomeCompleto,
+      modalidade: modalidadesData[selectedModality]?.titulo || selectedModality,
       temSaude:   payload.has_health || payload.physio || payload.medical_ref,
     });
   }
