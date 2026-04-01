@@ -645,6 +645,8 @@ body#admin-page {
         width: 32px;
         height: 32px;
         font-size: 0.7rem;
+        background-size: cover;
+        background-position: center;
       }
  
       & .mod-admin-membro-info {
