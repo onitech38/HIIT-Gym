@@ -3,7 +3,7 @@
 // Atualiza CACHE_NAME a cada deploy relevante
 // ============================================
 
-const CACHE_NAME = 'hiitgym-v6';
+const CACHE_NAME = 'hiitgym-v7';
 
 // Assets estáticos: CSS, HTML, imagens, manifesto.
 // JS está FORA desta lista — serve sempre da rede.

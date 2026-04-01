@@ -209,6 +209,126 @@ Pretendo que:
 
 ========================================== -->
 
+========================================== -->
+
+PROMPT DE CONTINUAÇÃO — HIIT-Gym PWA
+Contexto: Sou o developer do HIIT-Gym Montijo (onitech38/HIIT-Gym), uma PWA vanilla JS/HTML/CSS deployada no Cloudflare Pages (hiit-gym.pages.dev). Backend: Supabase auth/DB. Pagamentos: Stripe. Email: Resend. AI: Anthropic.
+
+✅ FEITO E DEPLOYED
+Infraestrutura:
+
+Supabase auth + DB (profiles, enrollments, trainings, chat_history)
+SW v5 (Network Only para JS, fix do "Wait" state)
+global.js com arquitectura app:ready + window.currentUser
+_headers com no-store para todos os JS
+
+Stripe (100% funcional):
+
+Checkout end-to-end (index → Stripe → user)
+Webhook → Supabase (plan actualizado)
+Billing Portal
+Price IDs (Área Restrita): Básico price_1TDlVH77sfEVvt5IUrlmnFp2, Standard price_1TDlVh77sfEVvt5INOWoW8D9, Premium price_1TDlWC77sfEVvt5It1l75JNO
+
+Páginas funcionais:
+
+index.html — home, planos com checkout, destaque plano activo
+user/user.html — dashboard, treinos, modalidades, perfil, QR, plano+portal
+admin/admin.html — inscrições pendentes, membros (com badges de modalidades), tab Modalidades (accordion por modalidade com membros), gestão de planos
+modalidades/modalidades.html — cards, inscrição 2 passos, fix getStatus (cancelled→disponivel)
+blog/blog.html — gated (só autenticados)
+
+Resend (deployed, NÃO testado ainda):
+
+functions/api/send-email.js — REST API, sem npm, usa context.env.RESEND_API_KEY
+js/email.js — 3 funções globais: emailBoasVindas, emailAdminNovaInscricao, emailInscricaoConfirmada
+email.js carregado em index.html, modalidades.html, admin/admin.html
+Coluna email adicionada à tabela profiles
+SQL executado: UPDATE profiles p SET email = u.email FROM auth.users u WHERE p.id = u.id AND p.email IS NULL
+RESEND_API_KEY no Cloudflare (estava Plaintext, mudar para Secret)
+Sender: onboarding@resend.dev (sem domínio verificado — só envia para onitech38@gmail.com)
+
+
+🔴 POR FAZER (por ordem)
+1. Testar Resend ← começar aqui
+
+Verificar se RESEND_API_KEY está como Secret no Cloudflare
+Testar email de boas-vindas (criar conta nova)
+Testar notificação admin (submeter inscrição em modalidade)
+Testar confirmação membro (admin confirmar inscrição no painel)
+
+2. Admin inbox/reply — messages + UI ← segunda tarefa
+
+Criar tabela messages no Supabase:
+
+sqlCREATE TABLE messages (
+  id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
+  from_user_id uuid REFERENCES profiles(id),
+  to_user_id uuid REFERENCES profiles(id),
+  subject text NOT NULL,
+  body text NOT NULL,
+  read boolean DEFAULT false,
+  created_at timestamptz DEFAULT now()
+);
+ALTER TABLE messages ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Admin vê tudo" ON messages FOR ALL USING (
+  EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND is_admin = true)
+);
+CREATE POLICY "User vê as suas" ON messages FOR SELECT USING (
+  from_user_id = auth.uid() OR to_user_id = auth.uid()
+);
+
+Nova tab "Mensagens" no admin com lista de membros + botão "Enviar mensagem"
+Modal de compose (para, assunto, corpo)
+Enviar também por email via /api/send-email
+No user/user.html — tab ou badge de mensagens recebidas
+
+3. Chat → Anthropic (rápido, 1 ficheiro)
+
+functions/api/chat.js ainda está em OpenAI — reverter para Anthropic
+ANTHROPIC_API_KEY já está no Cloudflare
+
+4. Login social Google (Supabase OAuth)
+5. Pagamentos adicionais (PayPal via Stripe)
+6. Light/dark theme toggle (UI já preparada)
+7. SEO (meta tags, og:image)
+8. Polimento final
+
+⚙️ ARQUITECTURA TÉCNICA
+
+Cloudflare Pages Functions: NUNCA usar const { request, env } = context — sempre context.env.X e context.request directamente
+Supabase: nunca .catch() em queries — usar try/catch. signOut() deve ser awaited
+SW: cache hiitgym-v5, JS = Network Only
+Admin UUID: 0be84215-d1cd-4f75-bc7f-1fd4b5e21d22
+Supabase project: kwvvoisnmqghkzllgegx
+Resend sender: onboarding@resend.dev; admin email: onitech38@gmail.com
+
+
+🎨 CSS/DESIGN
+
+Custom properties: --clr-1 (branco), --clr-2 (azul claro), --clr-3 (escuro), --clr-4 (âmbar #fba002)
+.glass utility, golden-border, dark theme
+CSS nesting puro, hierarquia espelha HTML
+Animações e media queries em @layer
+Fontes: Saira (títulos), Jost (corpo)
+IMPORTANTE: José faz customizações de estilo próprias — SEMPRE pedir o ficheiro actual antes de entregar código completo
+
+
+📁 FICHEIROS A PEDIR NO INÍCIO
+Para o Resend + Admin inbox, pede upload de:
+
+admin/admin.html (actual)
+admin/admin.js (actual)
+admin/admin.css (actual)
+user/user.html (actual — para adicionar tab/badge de mensagens)
+user/user.css (actual)
+
+
+Instrução: Assim que eu colar este prompt, começa imediatamente por confirmar o estado do Resend — pergunta se o RESEND_API_KEY está como Secret no Cloudflare, se o SQL do email foi executado, e guia o teste do primeiro email antes de avançar para o Admin inbox.
+
+31/03/2026
+========================================== -->
+
+
 Contexto: Projecto HIIT-Gym — PWA em vanilla JS/HTML/CSS deployado em Cloudflare Pages (hiit-gym.pages.dev), repo github.com/onitech38/HIIT-Gym, Supabase para auth/DB.
 
 ═══════════════════════════════════
