@@ -31,7 +31,7 @@ body#blog-page {
       padding: 3rem 1rem 4rem;
       max-width: var(--container-max);
       margin-inline: auto;
-      background: url(/src/video.mp4);
+      background-image: url(/src/exterior_day.png);
       width: 100%;
   
       .blog-hero-content {
