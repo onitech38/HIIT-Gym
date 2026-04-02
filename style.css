@@ -889,10 +889,10 @@ main {
     color: var(--clr-1);
     * { text-align: start; }
     video {
-      background-size: cover; height: auto; min-width: 100%; min-height: 100%;
+      background-size: cover; height: auto; min-width: 100%; min-height: 100%; object-fit: contain;
       -webkit-transform: translateX(-50%) translateY(-50%);
               transform: translateX(-50%) translateY(-50%);
-      width: 100%; position: absolute; top: 50%; right: 0; bottom: 0; left: 50%;
+      position: absolute; width: 100%; top: 50%; right: 0; bottom: 0; left: 50%;
     }
     .sobre-text {
       padding: 1rem; max-width: 515px; display: grid; gap: var(--gap-items);
