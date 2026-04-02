@@ -1,5 +1,45 @@
-<!-- ESTRUTURA ===============================
-ESTRUTURA: ficheiros já existentes
+<!-- PARTE TÉCNICA DO PROJETO ================
+
+Contexto: Projecto HIIT-Gym — PWA em vanilla JS/HTML/CSS deployado em Cloudflare Pages (hiit-gym.pages.dev), repo github.com/onitech38/HIIT-Gym, Supabase para auth/DB.
+
+═══════════════════════════════════
+ESTADO ACTUAL DA ARQUITECTURA
+═══════════════════════════════════
+
+FICHEIROS PRINCIPAIS:
+• supabase.js → window.supabaseClient (cliente partilhado)
+• js/global.js → fonte única de auth, splash, nav, boot()
+• js/script.js → index.html (welcome modal, mapa, modalidades, carrossel)
+• js/user.js → perfil do utilizador
+• js/modalidades.js → página de modalidades e inscrições
+• js/blog.js → blog com artigos
+• admin/admin.js → painel de administração
+• sw.js → service worker
+• js/data/ → config.js, data-gym.js, data-actividades.js, data-blog.js
+
+CONTRATO GLOBAL (fonte única de verdade):
+• window.supabaseClient → cliente Supabase
+• window.currentUser → null | User (definido pelo global.js antes de app:ready)
+• app:ready → evento que todas as páginas ouvem para iniciar
+• actualizarNav() → exportada pelo global.js
+• ini(str) → exportada pelo global.js
+• getSession() → chamado UMA vez em global.js boot(), nunca nos page scripts
+
+SPLASH SCREEN (CSS puro, zero JS):
+• html::before + html::after no <head> de cada página
+• global.js adiciona classe html.splash-done para fade out
+• Máx 1.5s via safetyTimer
+
+SERVICE WORKER:
+• CACHE = 'hiitgym-v5'
+• JS → nunca em cache (network only)
+• HTML → network-first
+• CSS/imagens → cache-first
+• skipWaiting() no install + message listener para SKIP_WAITING
+• global.js envia postMessage('SKIP_WAITING') no boot()
+
+========================================== -->
+<!-- ESTRUTURA DE FICHEIROS ==================
 
 HIIT Gym/(RAIZ)
 |
@@ -17,6 +57,7 @@ HIIT Gym/(RAIZ)
 |__ functions
 |   |__ api
 |       |__ chat.js
+|       |__ send-email.js
 |       |__ stripe-checkout.js
 |       |__ stripe-portsl.js
 |       |__ stripe-webhook.js
@@ -31,6 +72,7 @@ HIIT Gym/(RAIZ)
 |   |
 |   |
 |   |__ blog.js
+|   |__ email.js
 |   |__ global.js
 |   |__ modalidades.js
 |   |__ script.js
@@ -65,8 +107,7 @@ HIIT Gym/(RAIZ)
 |__ sw.js
 
 ========================================== -->
-
-<!-- MEMÓRIA: =============================
+<!-- MEMÓRIA: ================================
 MEMÓRIA:
 
 Purpose & context
@@ -135,8 +176,7 @@ GitHub (onitech38/HIIT-Gym) — source repository with Cloudflare CI/CD integrat
 Service Worker (sw.js) — PWA caching, versioned manually
 
 ========================================== -->
-
-<!-- INSTRUÇÕES: ===========================
+<!-- INSTRUÇÕES: =============================
 INSTRUÇÕES:
 Pretendo que:
 - sejas um ajudante senyor de front-end/back-end web dev;
@@ -147,9 +187,8 @@ Pretendo que:
 - tentes evitar a utilização de JS(mas informes no fim caso seja a melhor opção e 
   perguntes se quero ver/que seja implementada);
 ========================================== -->
-
 <!-- O QUE FALTA: ============================
-1. Resolver SW "Wait" + user.js warnings (diagnóstico pendente)
+
 2. Stripe (modo teste) — quase quase
 3. Resend (emails transaccionais, plano gratuito 3000/mês)
    • Confirmação de inscrição em modalidade
@@ -169,50 +208,14 @@ Pretendo que:
    • Testes completos novo utilizador do zero
    • SEO e meta tags
 
------------------------------------------------
--- POR RESOLVER -------------------------------
------------------------------------------------
-1º tentar continuar: 
-   Enquanto esperava para poder voltar a falar com o claude, tentei continuar com o copilot a parte do recend e fiz alterações 
-   no script.js(antes de ter colocado as alterações no código, criei uma cópia) e adicionei novo ficheiro no functions/api/send-emails.js e criei conta no recend tenho o api re_... e não adiantei mais...fiz deploy...
-
-   I'm using the Resend API. Help me add this code to my project.
-
-"
-   Ask the user to replace `re_xxxxxxxxx` with their real API key.
-
-   ```javascript
-   import { Resend } from 'resend';
-
-   const resend = new Resend('re_xxxxxxxxx');
-
-   resend.emails.send({
-   from: 'onboarding@resend.dev',
-   to: 'onitech38@gmail.com',
-   subject: 'Hello World',
-   html: '<p>Congrats on sending your <strong>first email</strong>!</p>'
-   });
-"
-  *nota: Isto foi retirado do site recend. o meu projeto tem as linguagens de código hmtl, css e js e estou a trabalhar em conjunto com o claude. tenho a chave api
------- / / ------
-
-2º TESTE - Quando pedi para outra pessoa criarem o seu perfil:
-   - pelo telemovel (samsung A51);
-   - abriu página, abriu .welcome e conseguiu criar conta. (admin não atualizou novo membro, supabase tem info de novo utilizador)
-   - utilizador foi transportado para o perfil. 
-   - no perfil adicionou nova modalidade e apareceu avido de a aaguardar confirmação (admin não atualizou novo membro, supabase tem info de novo utilizador)
-   - no perfil user tentou carregar nova foto, sem sucesso.
-   - na página modalidades, na secção de inscrição aparece pendente a modalidade inscrita (admin não atualizou novo membro, supabase tem info de novo utilizador).
-
-*nota - Estado atual:
-   Fiz hard reset(sevice worker e clear site data) e não apareceu o .welcome(antes disso tentei forçar nova versão sw.js de 'hiitgym-v5' para 'hiitgym-v6') pois tinha tudo ficado congelado. e o resto do teste com outro user.
-
 ========================================== -->
 
-========================================== -->
+
+<!-- Prompt para trabalho atual ==============
+==== 30 / 04 / 2026 ==========================
 
 PROMPT DE CONTINUAÇÃO — HIIT-Gym PWA
-Contexto: Sou o developer do HIIT-Gym Montijo (onitech38/HIIT-Gym), uma PWA vanilla JS/HTML/CSS deployada no Cloudflare Pages (hiit-gym.pages.dev). Backend: Supabase auth/DB. Pagamentos: Stripe. Email: Resend. AI: Anthropic.
+Contexto: Sou o developer do HIIT-Gym Montijo (onitech38/HIIT-Gym), uma PWA vanilla JS/HTML/CSS deployed no Cloudflare Pages (hiit-gym.pages.dev). Backend: Supabase auth/DB. Pagamentos: Stripe. Email: Resend. AI: Anthropic.
 
 ✅ FEITO E DEPLOYED
 Infraestrutura:
@@ -323,114 +326,5 @@ user/user.html (actual — para adicionar tab/badge de mensagens)
 user/user.css (actual)
 
 
-Instrução: Assim que eu colar este prompt, começa imediatamente por confirmar o estado do Resend — pergunta se o RESEND_API_KEY está como Secret no Cloudflare, se o SQL do email foi executado, e guia o teste do primeiro email antes de avançar para o Admin inbox.
-
 31/03/2026
 ========================================== -->
-
-
-Contexto: Projecto HIIT-Gym — PWA em vanilla JS/HTML/CSS deployado em Cloudflare Pages (hiit-gym.pages.dev), repo github.com/onitech38/HIIT-Gym, Supabase para auth/DB.
-
-═══════════════════════════════════
-ESTADO ACTUAL DA ARQUITECTURA
-═══════════════════════════════════
-
-FICHEIROS PRINCIPAIS:
-• supabase.js → window.supabaseClient (cliente partilhado)
-• js/global.js → fonte única de auth, splash, nav, boot()
-• js/script.js → index.html (welcome modal, mapa, modalidades, carrossel)
-• js/user.js → perfil do utilizador
-• js/modalidades.js → página de modalidades e inscrições
-• js/blog.js → blog com artigos
-• admin/admin.js → painel de administração
-• sw.js → service worker
-• js/data/ → config.js, data-gym.js, data-actividades.js, data-blog.js
-
-CONTRATO GLOBAL (fonte única de verdade):
-• window.supabaseClient → cliente Supabase
-• window.currentUser → null | User (definido pelo global.js antes de app:ready)
-• app:ready → evento que todas as páginas ouvem para iniciar
-• actualizarNav() → exportada pelo global.js
-• ini(str) → exportada pelo global.js
-• getSession() → chamado UMA vez em global.js boot(), nunca nos page scripts
-
-SPLASH SCREEN (CSS puro, zero JS):
-• html::before + html::after no <head> de cada página
-• global.js adiciona classe html.splash-done para fade out
-• Máx 1.5s via safetyTimer
-
-SERVICE WORKER:
-• CACHE = 'hiitgym-v5'
-• JS → nunca em cache (network only)
-• HTML → network-first
-• CSS/imagens → cache-first
-• skipWaiting() no install + message listener para SKIP_WAITING
-• global.js envia postMessage('SKIP_WAITING') no boot()
-
-═══════════════════════════════════
-RESOLVIDO NESTA SESSÃO
-═══════════════════════════════════
-
-✅ Auth race condition — global.js usa getSession() uma vez, page scripts confiam em window.currentUser
-✅ Perfil (user.html) abre sem reload manual na maioria dos casos
-✅ Inscrição de modalidades funcional end-to-end
-✅ Admin — confirmar/cancelar inscrições, ver membros, alterar planos
-✅ Splash screen CSS puro — zero flash visual entre páginas
-✅ SW estabilizado — sem cache de JS, skipWaiting imediato
-✅ ?v=# removido de todos os JS (SW nunca os cacheia)
-✅ Eruda removido
-✅ body.loading removido dos HTMLs (global.js trata)
-✅ Anchor links com scroll suave (global.js)
-✅ bfcache/pageshow tratado no global.js (sem duplicação nos page scripts)
-✅ Admin — rejected → cancelled (valor válido na DB)
-✅ Supabase enrollments: coluna é modality (não modality_key)
-✅ is_admin flag na tabela profiles para acesso ao admin
-
-
-🟡 SW ainda em "Wait" após múltiplos Unregister + hard refresh
-   • postMessage SKIP_WAITING implementado mas não resolve completamente
-   • Precisa investigar os 5 erros do sw.js
-
-🟡 Modalidades mostra "A aguardar confirmação" com dados antigos
-   • Causa: enrollments antigos no Supabase não limpos
-   • Fix temporário: DELETE FROM enrollments WHERE user_id = '...'
-   • Fix permanente: lógica de desactivação no perfil precisa de revisão
-
-═══════════════════════════════════
-TAREFAS SEGUINTES (por ordem)
-═══════════════════════════════════
-
-1. Resolver SW "Wait" + user.js warnings (diagnóstico pendente)
-2. Stripe (modo teste) — checkout para os 3 planos do index
-   • Botões "Começar/Aderir" nos planos → Stripe Checkout
-   • Webhook → actualiza profiles.plan no Supabase
-   • Gestão de subscrições no perfil
-3. Resend (emails transaccionais, plano gratuito 3000/mês)
-   • Confirmação de inscrição em modalidade
-   • Boas-vindas no signup
-   • Notificação ao admin de nova inscrição pendente
-   • Confirmação quando admin aceita inscrição
-4. Chat assistant (Claude Haiku via Anthropic API — já tem ANTHROPIC_API_KEY no Cloudflare)
-   • Reverter functions/api/chat.js para Anthropic (estava OpenAI)
-   • Testar proxy /api/chat end-to-end
-5. Fase de polimento final
-   • Treinos no perfil (adicionar/sincronizar)
-   • QR Code (testar geração)
-   • Admin — mostrar email real dos membros
-   • Testes completos novo utilizador do zero
-   • SEO e meta tags
-
-═══════════════════════════════════
-NOTAS TÉCNICAS IMPORTANTES
-═══════════════════════════════════
-
-• Supabase: projeto kwvvoisnmqghkzllgegx, anon key sb_publishable_EdQ9IY...
-• Admin UUID: 0be84215-d1cd-4f75-bc7f-1fd4b5e21d22
-• Tabelas: profiles, enrollments, trainings, chat_history, subscriptions
-• profiles.is_admin = true para acesso ao /admin/admin
-• profiles.plan = 'basico' | 'standard' | 'premium' | null
-• enrollments.status = 'pending' | 'active' | 'cancelled'
-• Chat gating: standard/premium → fitness/nutrição desbloqueado
-• Cloudflare Pages Functions: functions/api/chat.js (proxy Anthropic)
-• SW cache name: hiitgym-v5
-• Todos os HTMLs têm splash CSS como primeira linha do <head>
