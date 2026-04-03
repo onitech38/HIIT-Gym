@@ -1,24 +1,33 @@
-// functions/api/chat.js
-export async function onRequestPost({ request, env }) {
-  const headers = {
-    'Content-Type': 'application/json',
-    'Access-Control-Allow-Origin': '*'
-  };
+// ============================================
+// functions/api/chat.js — Assistente HIIT-Gym
+// Anthropic claude-haiku-4-5 via API REST
+// ANTHROPIC_API_KEY configurado no Cloudflare
+// ============================================
 
-  if (!env.OPENAI_API_KEY) {
+const CORS = {
+  'Content-Type': 'application/json',
+  'Access-Control-Allow-Origin': '*',
+};
+
+export async function onRequestOptions() {
+  return new Response(null, { status: 204, headers: { 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Methods': 'POST, OPTIONS', 'Access-Control-Allow-Headers': 'Content-Type' } });
+}
+
+export async function onRequestPost(context) {
+  if (!context.env.ANTHROPIC_API_KEY) {
     return new Response(
-      JSON.stringify({ error: 'OpenAI API key não configurada' }),
-      { status: 500, headers }
+      JSON.stringify({ error: 'ANTHROPIC_API_KEY não configurada' }),
+      { status: 500, headers: CORS }
     );
   }
 
   let body;
   try {
-    body = await request.json();
+    body = await context.request.json();
   } catch {
     return new Response(
       JSON.stringify({ error: 'Body inválido' }),
-      { status: 400, headers }
+      { status: 400, headers: CORS }
     );
   }
 
@@ -26,46 +35,40 @@ export async function onRequestPost({ request, env }) {
   if (!userMessage) {
     return new Response(
       JSON.stringify({ error: 'Mensagem em falta' }),
-      { status: 400, headers }
+      { status: 400, headers: CORS }
     );
   }
 
-  const res = await fetch('https://api.openai.com/v1/chat/completions', {
+  const res = await fetch('https://api.anthropic.com/v1/messages', {
     method: 'POST',
     headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${env.OPENAI_API_KEY}`
+      'Content-Type':      'application/json',
+      'x-api-key':         context.env.ANTHROPIC_API_KEY,
+      'anthropic-version': '2023-06-01',
     },
     body: JSON.stringify({
-      model: 'gpt-4o-mini',
+      model:      'claude-haiku-4-5-20251001',
+      max_tokens: 400,
+      system:     'És o assistente virtual da HIIT-Gym Montijo. Responde sempre em português europeu de forma concisa e útil. Podes ajudar com horários, modalidades, planos de subscrição e inscrições. Para questões de fitness e nutrição, informa que esse apoio está disponível nos planos Standard e Premium.',
       messages: [
-        {
-          role: 'system',
-          content: 'És o assistente virtual da HIIT-Gym. Responde sempre em português europeu.'
-        },
-        {
-          role: 'user',
-          content: userMessage
-        }
+        { role: 'user', content: userMessage }
       ],
-      temperature: 0.4,
-      max_tokens: 300
-    })
+    }),
   });
 
   const data = await res.json();
 
   if (!res.ok) {
     return new Response(
-      JSON.stringify({ error: data?.error?.message || 'Erro OpenAI' }),
-      { status: 500, headers }
+      JSON.stringify({ error: data?.error?.message || 'Erro Anthropic' }),
+      { status: res.status, headers: CORS }
     );
   }
 
+  const text = data.content?.[0]?.text || '';
+
   return new Response(
-    JSON.stringify({
-      text: data.choices[0].message.content
-    }),
-    { status: 200, headers }
+    JSON.stringify({ text }),
+    { status: 200, headers: CORS }
   );
 }
