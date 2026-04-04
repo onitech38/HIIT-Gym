@@ -189,7 +189,6 @@ Pretendo que:
 ========================================== -->
 <!-- O QUE FALTA: ============================
 
-2. Stripe (modo teste) — quase quase
 3. Resend (emails transaccionais, plano gratuito 3000/mês)
    • Confirmação de inscrição em modalidade
    • Boas-vindas no signup
@@ -198,15 +197,11 @@ Pretendo que:
 4. pagamentos podem ser feitos pelo paypal, visa, mastercar, (o que conseguir simular FREE)
 5. Theme toggle - light dark mode
 6. os utilizadores poderem abrir sessão com conta google, etc..
-7. Chat assistant (Claude Haiku via Anthropic API — já tem ANTHROPIC_API_KEY no Cloudflare)
-   • Reverter functions/api/chat.js para Anthropic (estava OpenAI)
-   • Testar proxy /api/chat end-to-end
 8. Fase de polimento final
    • Treinos no perfil (adicionar/sincronizar)
    • QR Code (testar geração)
    • Admin — mostrar email real dos membros
    • Testes completos novo utilizador do zero
-   • SEO e meta tags
 
 ========================================== -->
 

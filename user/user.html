@@ -199,6 +199,9 @@
                     <i class="fa-solid fa-watch"></i>
                     <span>Última sincronização: <strong id="sync-time">Hoje, 07:42</strong></span>
                     <button class="btn-small glass" id="btn-sync"><i class="fa-solid fa-rotate"></i> Sincronizar</button>
+                    <button class="btn glass live-treino-btn" id="btn-live-treino">
+                        <i class="fa-solid fa-bolt"></i> Treino ao Vivo
+                    </button>
                 </div>
                 <details class="add-treino-details glass">
                     <summary class="btn glass add-treino-summary">
@@ -378,6 +381,120 @@
          OVERLAY — QR Code ampliado
          Activado pelo JS ao clicar no card
     ══════════════════════════════════════ -->
+    <!-- ══════════════════════════════════════
+         OVERLAY — Treino ao Vivo (BLE)
+    ══════════════════════════════════════ -->
+    <div id="live-overlay" class="live-overlay hidden" role="dialog" aria-modal="true" aria-label="Treino ao Vivo">
+        <div class="live-overlay-backdrop" id="live-overlay-backdrop"></div>
+        <div class="live-overlay-card golden-border">
+
+            <!-- Cabeçalho -->
+            <div class="live-header">
+                <span class="live-titulo"><i class="fa-solid fa-bolt"></i> Treino ao Vivo</span>
+                <button class="btn icon glass" id="live-fechar" aria-label="Fechar">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <!-- STEP 1: Configurar -->
+            <div id="live-step-config">
+                <div class="live-config-form">
+                    <div class="campo">
+                        <label for="live-modalidade">Modalidade</label>
+                        <select id="live-modalidade">
+                            <option value="" disabled selected>Escolhe…</option>
+                            <option value="musculacao">Musculação</option>
+                            <option value="cardio">Cardio</option>
+                            <option value="yoga_pilates">Yoga & Pilates</option>
+                            <option value="lutas">Lutas e Artes Marciais</option>
+                            <option value="zumba_danca">Zumba e Danças</option>
+                            <option value="natacao">Natação</option>
+                        </select>
+                    </div>
+                    <p class="live-ble-nota">
+                        <i class="fa-solid fa-circle-info"></i>
+                        O relógio deve estar em <strong>modo de exercício activo</strong> para o BLE funcionar.
+                        Se a ligação falhar, podes introduzir o BPM manualmente no fim.
+                    </p>
+                    <div class="live-config-btns">
+                        <button class="btn glass" id="live-btn-ble">
+                            <i class="fa-brands fa-bluetooth"></i> Ligar Smartwatch
+                        </button>
+                        <button class="btn glass" id="live-btn-start">
+                            <i class="fa-solid fa-play"></i> Iniciar sem Smartwatch
+                        </button>
+                    </div>
+                    <span class="live-ble-status" id="live-ble-status"></span>
+                </div>
+            </div>
+
+            <!-- STEP 2: Treino a decorrer -->
+            <div id="live-step-active" class="hidden">
+                <div class="live-stats">
+                    <div class="live-stat">
+                        <span class="live-stat-val" id="live-timer">00:00</span>
+                        <span class="live-stat-label">Duração</span>
+                    </div>
+                    <div class="live-stat live-bpm-stat">
+                        <span class="live-stat-val" id="live-bpm">--</span>
+                        <span class="live-stat-label">BPM</span>
+                        <span class="live-bpm-dot" id="live-bpm-dot"></span>
+                    </div>
+                    <div class="live-stat">
+                        <span class="live-stat-val" id="live-kcal">0</span>
+                        <span class="live-stat-label">kcal est.</span>
+                    </div>
+                </div>
+                <div class="live-modalidade-badge" id="live-mod-badge"></div>
+                <button class="btn glass live-stop-btn" id="live-btn-stop">
+                    <i class="fa-solid fa-stop"></i> Terminar Treino
+                </button>
+            </div>
+
+            <!-- STEP 3: Guardar -->
+            <div id="live-step-save" class="hidden">
+                <div class="live-resumo">
+                    <h3>Resumo do Treino</h3>
+                    <div class="live-resumo-grid">
+                        <div class="live-resumo-item">
+                            <i class="fa-solid fa-clock"></i>
+                            <span id="live-res-dur">--</span>
+                            <small>minutos</small>
+                        </div>
+                        <div class="live-resumo-item">
+                            <i class="fa-solid fa-heart-pulse"></i>
+                            <span id="live-res-bpm">--</span>
+                            <small>BPM médio</small>
+                        </div>
+                        <div class="live-resumo-item">
+                            <i class="fa-solid fa-fire"></i>
+                            <span id="live-res-kcal">--</span>
+                            <small>kcal</small>
+                        </div>
+                    </div>
+                    <!-- BPM manual se sem BLE -->
+                    <div class="campo" id="live-bpm-manual-wrap">
+                        <label for="live-bpm-manual">BPM médio <span class="opt">(opcional — corrige o valor)</span></label>
+                        <input type="number" id="live-bpm-manual" min="40" max="220" placeholder="ex: 145">
+                    </div>
+                    <div class="campo">
+                        <label for="live-notas">Notas <span class="opt">(opcional)</span></label>
+                        <input type="text" id="live-notas" placeholder="Como correu o treino?">
+                    </div>
+                </div>
+                <div class="live-save-btns">
+                    <button class="btn glass" id="live-btn-guardar">
+                        <i class="fa-solid fa-floppy-disk"></i> Guardar Treino
+                    </button>
+                    <button class="btn glass" id="live-btn-descartar">
+                        Descartar
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
     <div id="qr-overlay" class="qr-overlay hidden" role="dialog" aria-modal="true" aria-label="QR Code ampliado">
         <div class="qr-overlay-backdrop" id="qr-overlay-backdrop"></div>
         <div class="qr-overlay-card golden-border">

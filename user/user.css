@@ -982,3 +982,262 @@ body#user-page {
     & .user-main .campos-row { grid-template-columns: 1fr; }
   }
 }
+
+/* ── BOTÃO TREINO AO VIVO ──────────────────── */
+body#user-page .live-treino-btn {
+  margin-left: auto;
+  font-size: 0.75rem;
+  color: var(--clr-4);
+  border-color: rgba(251,160,2,0.3);
+  background: rgba(251,160,2,0.06);
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+
+  &:hover {
+    background: rgba(251,160,2,0.12);
+    border-color: var(--clr-4);
+  }
+}
+
+/* ── OVERLAY TREINO AO VIVO ────────────────── */
+body#user-page .live-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+
+  & .live-overlay-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(18,13,15,0.92);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+
+  & .live-overlay-card {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 460px;
+    padding: 2rem;
+    border-radius: var(--border-radius);
+    background: rgba(18,13,15,0.85);
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    animation: tabReveal 0.3s cubic-bezier(0.34,1.56,0.64,1) both;
+
+    & .live-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      & .live-titulo {
+        font-family: var(--fnt-sign);
+        font-size: 0.9rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+        color: var(--clr-4);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+    }
+
+    /* Config */
+    & .live-config-form {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+
+      & .live-ble-nota {
+        font-size: 0.72rem;
+        color: var(--clr-2);
+        opacity: 0.7;
+        line-height: 1.6;
+        padding: 0.75rem 1rem;
+        border-left: 2px solid rgba(251,160,2,0.3);
+        background: rgba(251,160,2,0.04);
+        border-radius: 0 var(--border-radius) var(--border-radius) 0;
+        margin: 0;
+        text-align: start;
+
+        & strong { color: var(--clr-1); }
+        & i { color: var(--clr-4); margin-right: 0.35rem; }
+      }
+
+      & .live-config-btns {
+        display: flex;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+
+        & .btn {
+          flex: 1;
+          min-width: 140px;
+          font-size: 0.78rem;
+          justify-content: center;
+        }
+      }
+
+      & .live-ble-status {
+        font-size: 0.72rem;
+        color: var(--clr-sucesso);
+        text-align: center;
+        min-height: 1rem;
+        letter-spacing: 0.04em;
+      }
+    }
+
+    /* Stats ao vivo */
+    & .live-stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 1rem;
+      text-align: center;
+
+      & .live-stat {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.25rem;
+        padding: 1.25rem 0.5rem;
+        border: 1px solid var(--glass-surface);
+        border-radius: var(--border-radius);
+        background: rgba(18,13,15,0.5);
+        position: relative;
+
+        & .live-stat-val {
+          font-family: var(--fnt-sign);
+          font-size: 2rem;
+          font-weight: 700;
+          color: var(--clr-4);
+          line-height: 1;
+        }
+
+        & .live-stat-label {
+          font-size: 0.62rem;
+          color: var(--clr-2);
+          opacity: 0.6;
+          text-transform: uppercase;
+          letter-spacing: 0.1em;
+        }
+      }
+
+      & .live-bpm-stat {
+        border-color: rgba(255,107,107,0.2);
+
+        & .live-stat-val { color: #ff6b6b; }
+
+        & .live-bpm-dot {
+          position: absolute;
+          top: 0.5rem;
+          right: 0.5rem;
+          width: 8px;
+          height: 8px;
+          border-radius: 50%;
+          background: #ff6b6b;
+          opacity: 0.5;
+
+          &.pulse {
+            animation: bpm-pulse 0.4s ease both;
+          }
+        }
+      }
+    }
+
+    & .live-modalidade-badge {
+      text-align: center;
+      font-size: 0.78rem;
+      color: var(--clr-4);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      padding: 0.35rem 0.85rem;
+      border: 1px solid rgba(251,160,2,0.25);
+      border-radius: 100px;
+      background: var(--glass-surface);
+      align-self: center;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    & .live-stop-btn {
+      width: 100%;
+      justify-content: center;
+      color: var(--clr-aviso);
+      border-color: var(--clr-aviso-brdr);
+
+      &:hover { background: var(--clr-aviso-bg); }
+    }
+
+    /* Resumo */
+    & .live-resumo {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+
+      & h3 {
+        font-size: 0.85rem;
+        color: var(--clr-1);
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        margin: 0;
+        text-align: center;
+      }
+
+      & .live-resumo-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 0.75rem;
+        text-align: center;
+
+        & .live-resumo-item {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 0.2rem;
+          padding: 1rem 0.5rem;
+          border: 1px solid var(--glass-surface);
+          border-radius: var(--border-radius);
+
+          & i { color: var(--clr-4); font-size: 1.1rem; }
+
+          & span {
+            font-family: var(--fnt-sign);
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--clr-4);
+            line-height: 1;
+          }
+
+          & small {
+            font-size: 0.6rem;
+            color: var(--clr-2);
+            opacity: 0.6;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+          }
+        }
+      }
+    }
+
+    & .live-save-btns {
+      display: flex;
+      gap: 0.75rem;
+
+      & .btn { flex: 1; justify-content: center; font-size: 0.78rem; }
+    }
+  }
+}
+
+@layer animations {
+  @keyframes bpm-pulse {
+    0%   { opacity: 1; transform: scale(1.8); }
+    100% { opacity: 0.5; transform: scale(1); }
+  }
+}

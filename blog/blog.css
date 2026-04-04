@@ -31,7 +31,7 @@ body#blog-page {
       padding: 3rem 1rem 4rem;
       max-width: var(--container-max);
       margin-inline: auto;
-      background-image: url(/src/exterior_day.png);
+      background-image: linear-gradient(25deg, black 10%, rgba(0, 0, 0, 0.294) 80%),url(/src/exterior_day.png);
       width: 100%;
   
       .blog-hero-content {

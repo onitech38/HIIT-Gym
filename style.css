@@ -79,8 +79,8 @@
     --icon-logo-hamb-size: 2.5rem;    
     --size-user-avatar: 1.625rem;
 
-    --fs-h1: clamp(2rem, 4vw, 5rem);
-    --fs-h1-big: clamp(2.5rem, 5vw, 6rem);
+    --fs-h1: clamp(2rem, calc(4vw + 0.2rem), 3.44rem);
+    --fs-h1-big: clamp(2.5rem, calc(5vw + 0.2rem), 5rem);
     --fs-h2: calc(var(--fs-h1) - 0.5rem);
     --fs-h2-big: var(--fs-h1);
     --fs-h3: calc(var(--fs-h2) - 0.25rem);

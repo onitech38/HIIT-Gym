@@ -697,3 +697,301 @@ if (new URLSearchParams(window.location.search).get('checkout') === 'success') {
   document.body.appendChild(toast);
   setTimeout(() => toast.remove(), 4000);
 }
+
+
+// ============================================
+// TREINO AO VIVO — BLE (Web Bluetooth API)
+//
+// Compatibilidade:
+//   Chrome/Android ✓ | Edge ✓ | iOS ✗ (Apple bloqueia)
+//   Huawei GT 2: funciona em modo exercício activo
+//
+// Serviço BLE standard:
+//   Heart Rate Service    0x180D
+//   HR Measurement Char   0x2A37
+// ============================================
+
+// ── Estado ───────────────────────────────────
+let liveBleDevice     = null;
+let liveBleChar       = null;
+let liveTimerInterval = null;
+let liveBpmInterval   = null;
+let liveStartTime     = null;
+let liveBpmReadings   = [];
+let liveCurrentBpm    = 0;
+let liveModalidade    = '';
+let liveTotalKcal     = 0;
+
+
+// ── Abrir / fechar overlay ────────────────────
+document.getElementById('btn-live-treino')?.addEventListener('click', abrirLiveOverlay);
+
+function abrirLiveOverlay() {
+  document.getElementById('live-overlay')?.classList.remove('hidden');
+  document.body.style.overflow = 'hidden';
+  liveReset();
+}
+
+function fecharLiveOverlay() {
+  liveParar();
+  document.getElementById('live-overlay')?.classList.add('hidden');
+  document.body.style.overflow = '';
+}
+
+document.getElementById('live-fechar')?.addEventListener('click', () => {
+  if (liveTimerInterval) {
+    if (!confirm('O treino está a decorrer. Tens a certeza que queres sair?')) return;
+  }
+  fecharLiveOverlay();
+});
+
+document.getElementById('live-overlay-backdrop')?.addEventListener('click', () => {
+  if (liveTimerInterval) return; // bloqueia fechar acidental durante treino
+  fecharLiveOverlay();
+});
+
+
+// ── Reset ao estado inicial ───────────────────
+function liveReset() {
+  liveParar();
+  liveBpmReadings = [];
+  liveCurrentBpm  = 0;
+  liveTotalKcal   = 0;
+  liveModalidade  = '';
+
+  document.getElementById('live-step-config').classList.remove('hidden');
+  document.getElementById('live-step-active').classList.add('hidden');
+  document.getElementById('live-step-save').classList.add('hidden');
+  document.getElementById('live-ble-status').textContent = '';
+  document.getElementById('live-timer').textContent = '00:00';
+  document.getElementById('live-bpm').textContent   = '--';
+  document.getElementById('live-kcal').textContent  = '0';
+}
+
+function liveParar() {
+  clearInterval(liveTimerInterval);
+  clearInterval(liveBpmInterval);
+  liveTimerInterval = null;
+
+  // Desligar BLE
+  try {
+    liveBleChar?.removeEventListener('characteristicvaluechanged', liveOnBpm);
+    liveBleDevice?.gatt?.disconnect();
+  } catch {}
+  liveBleDevice = null;
+  liveBleChar   = null;
+}
+
+
+// ── Ligar via BLE ─────────────────────────────
+document.getElementById('live-btn-ble')?.addEventListener('click', async () => {
+  const mod = document.getElementById('live-modalidade').value;
+  if (!mod) { alert('Escolhe uma modalidade primeiro.'); return; }
+  liveModalidade = mod;
+
+  if (!navigator.bluetooth) {
+    document.getElementById('live-ble-status').textContent =
+      '⚠ Web Bluetooth não disponível neste browser. Usa Chrome no Android.';
+    return;
+  }
+
+  const statusEl = document.getElementById('live-ble-status');
+  statusEl.textContent = 'A procurar dispositivo BLE…';
+
+  try {
+    liveBleDevice = await navigator.bluetooth.requestDevice({
+      filters: [{ services: ['heart_rate'] }],
+      optionalServices: ['heart_rate'],
+    });
+
+    statusEl.textContent = 'A ligar…';
+    const server  = await liveBleDevice.gatt.connect();
+    const service = await server.getPrimaryService('heart_rate');
+    liveBleChar   = await service.getCharacteristic('heart_rate_measurement');
+
+    await liveBleChar.startNotifications();
+    liveBleChar.addEventListener('characteristicvaluechanged', liveOnBpm);
+
+    statusEl.textContent = '✓ Smartwatch ligado!';
+    liveBleDevice.addEventListener('gattserverdisconnected', () => {
+      statusEl.textContent = '⚠ Smartwatch desligado.';
+    });
+
+    liveIniciar();
+
+  } catch (err) {
+    if (err.name === 'NotFoundError') {
+      statusEl.textContent = 'Cancelado. Podes iniciar sem smartwatch.';
+    } else {
+      statusEl.textContent = `Erro BLE: ${err.message}. Inicia sem smartwatch.`;
+    }
+    console.warn('[BLE]', err);
+  }
+});
+
+
+// ── Iniciar sem BLE ───────────────────────────
+document.getElementById('live-btn-start')?.addEventListener('click', () => {
+  const mod = document.getElementById('live-modalidade').value;
+  if (!mod) { alert('Escolhe uma modalidade primeiro.'); return; }
+  liveModalidade = mod;
+  liveIniciar();
+});
+
+
+// ── Handler BPM ───────────────────────────────
+function liveOnBpm(event) {
+  const val   = event.target.value;
+  const flags = val.getUint8(0);
+  const bpm   = (flags & 0x01) ? val.getUint16(1, true) : val.getUint8(1);
+
+  liveCurrentBpm = bpm;
+  liveBpmReadings.push(bpm);
+
+  document.getElementById('live-bpm').textContent = bpm;
+
+  // Pulsar o dot
+  const dot = document.getElementById('live-bpm-dot');
+  dot.classList.remove('pulse');
+  void dot.offsetWidth; // reflow para reiniciar animação
+  dot.classList.add('pulse');
+
+  // Recalcular calorias
+  liveRecalcKcal();
+}
+
+
+// ── Estimativa de calorias (Keytel simplificado) ──
+// Usa BPM médio + peso do perfil + idade
+// Se sem BPM, usa METs standard por modalidade
+function liveRecalcKcal() {
+  const peso  = currentProfile?.weight || 70;
+  const idade = currentProfile?.age    || 30;
+  const duracaoMin = liveStartTime ? (Date.now() - liveStartTime) / 60000 : 0;
+
+  if (liveBpmReadings.length > 0) {
+    const bpmMedio = liveBpmReadings.reduce((a, b) => a + b, 0) / liveBpmReadings.length;
+    // Fórmula Keytel (unissexo)
+    const kcalMin = (-20.4022 + (0.4472 * bpmMedio) + (0.074 * idade) - (0.05741 * peso)) / 4.184;
+    liveTotalKcal = Math.max(0, Math.round(kcalMin * duracaoMin));
+  } else {
+    // METs por modalidade se sem BLE
+    const mets = { musculacao: 5, cardio: 8, yoga_pilates: 3, lutas: 7, zumba_danca: 6, natacao: 7 };
+    const met  = mets[liveModalidade] || 5;
+    liveTotalKcal = Math.round(met * peso * 0.0175 * duracaoMin);
+  }
+
+  document.getElementById('live-kcal').textContent = liveTotalKcal;
+}
+
+
+// ── Iniciar treino ────────────────────────────
+function liveIniciar() {
+  liveStartTime = Date.now();
+
+  // Trocar para step active
+  document.getElementById('live-step-config').classList.add('hidden');
+  document.getElementById('live-step-active').classList.remove('hidden');
+
+  // Badge da modalidade
+  const m = MODALIDADES[liveModalidade];
+  document.getElementById('live-mod-badge').innerHTML =
+    `<i class="fa-solid ${m.icon}"></i> ${m.titulo}`;
+
+  // Timer
+  liveTimerInterval = setInterval(() => {
+    const seg = Math.floor((Date.now() - liveStartTime) / 1000);
+    const mm  = String(Math.floor(seg / 60)).padStart(2, '0');
+    const ss  = String(seg % 60).padStart(2, '0');
+    document.getElementById('live-timer').textContent = `${mm}:${ss}`;
+    liveRecalcKcal();
+  }, 1000);
+}
+
+
+// ── Terminar treino ───────────────────────────
+document.getElementById('live-btn-stop')?.addEventListener('click', liveTerminar);
+
+function liveTerminar() {
+  clearInterval(liveTimerInterval);
+  liveTimerInterval = null;
+
+  const duracaoMin = Math.max(1, Math.round((Date.now() - liveStartTime) / 60000));
+  const bpmMedio   = liveBpmReadings.length > 0
+    ? Math.round(liveBpmReadings.reduce((a, b) => a + b, 0) / liveBpmReadings.length)
+    : null;
+
+  // Recalc final
+  liveRecalcKcal();
+
+  // Preencher resumo
+  document.getElementById('live-res-dur').textContent  = duracaoMin;
+  document.getElementById('live-res-bpm').textContent  = bpmMedio ?? '--';
+  document.getElementById('live-res-kcal').textContent = liveTotalKcal;
+
+  // Se não teve BLE, mostra campo manual de BPM
+  const bpmManualWrap = document.getElementById('live-bpm-manual-wrap');
+  bpmManualWrap.style.display = bpmMedio ? 'none' : '';
+
+  // Trocar para step save
+  document.getElementById('live-step-active').classList.add('hidden');
+  document.getElementById('live-step-save').classList.remove('hidden');
+}
+
+
+// ── Guardar no Supabase ───────────────────────
+document.getElementById('live-btn-guardar')?.addEventListener('click', async () => {
+  const btn = document.getElementById('live-btn-guardar');
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> A guardar…';
+
+  const duracaoMin = parseInt(document.getElementById('live-res-dur').textContent) || 1;
+  const bpmResEl   = document.getElementById('live-res-bpm').textContent;
+  const bpmManual  = parseInt(document.getElementById('live-bpm-manual').value) || null;
+  const bpmFinal   = bpmManual || (bpmResEl !== '--' ? parseInt(bpmResEl) : null);
+  const notas      = document.getElementById('live-notas').value.trim();
+
+  // Recalcular calorias se BPM manual foi introduzido
+  let kcalFinal = liveTotalKcal;
+  if (bpmManual && bpmManual > 0) {
+    const peso  = currentProfile?.weight || 70;
+    const idade = currentProfile?.age    || 30;
+    const kcalMin = (-20.4022 + (0.4472 * bpmManual) + (0.074 * idade) - (0.05741 * peso)) / 4.184;
+    kcalFinal = Math.max(1, Math.round(Math.max(0, kcalMin) * duracaoMin));
+  }
+
+  const novoTreino = {
+    user_id:  currentUser.id,
+    date:     new Date().toISOString().split('T')[0],
+    modality: liveModalidade,
+    duration: duracaoMin,
+    calories: kcalFinal || 1,
+    bpm:      bpmFinal,
+    source:   liveBleDevice ? 'smartwatch' : 'manual',
+    notes:    notas || null,
+  };
+
+  try {
+    const { data, error } = await supabase
+      .from('trainings')
+      .insert(novoTreino)
+      .select()
+      .single();
+
+    if (!error && data) {
+      currentTrainings.unshift(data);
+      preencherTreinos();
+      preencherDashboard();
+      fecharLiveOverlay();
+    } else {
+      throw error;
+    }
+  } catch (err) {
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Guardar Treino';
+    alert('Erro ao guardar. Tenta novamente.');
+    console.error('[live]', err);
+  }
+});
+
+document.getElementById('live-btn-descartar')?.addEventListener('click', fecharLiveOverlay);
