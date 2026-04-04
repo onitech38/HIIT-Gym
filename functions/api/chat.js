@@ -1,7 +1,11 @@
 // ============================================
 // functions/api/chat.js — Assistente HIIT-Gym
-// Anthropic claude-haiku-4-5 via API REST
-// ANTHROPIC_API_KEY configurado no Cloudflare
+// Cloudflare Workers AI — 100% free tier
+// Modelo: @cf/meta/llama-3.1-8b-instruct
+//
+// Configuração necessária no Cloudflare:
+//   Pages → Settings → Functions → AI Bindings
+//   → Add binding → Variable name: AI
 // ============================================
 
 const CORS = {
@@ -10,13 +14,21 @@ const CORS = {
 };
 
 export async function onRequestOptions() {
-  return new Response(null, { status: 204, headers: { 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Methods': 'POST, OPTIONS', 'Access-Control-Allow-Headers': 'Content-Type' } });
+  return new Response(null, {
+    status: 204,
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'POST, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type',
+    },
+  });
 }
 
 export async function onRequestPost(context) {
-  if (!context.env.ANTHROPIC_API_KEY) {
+  // Verificar binding Workers AI
+  if (!context.env.AI) {
     return new Response(
-      JSON.stringify({ error: 'ANTHROPIC_API_KEY não configurada' }),
+      JSON.stringify({ error: 'Workers AI não configurado. Adiciona o binding AI nas configurações do Pages.' }),
       { status: 500, headers: CORS }
     );
   }
@@ -39,36 +51,33 @@ export async function onRequestPost(context) {
     );
   }
 
-  const res = await fetch('https://api.anthropic.com/v1/messages', {
-    method: 'POST',
-    headers: {
-      'Content-Type':      'application/json',
-      'x-api-key':         context.env.ANTHROPIC_API_KEY,
-      'anthropic-version': '2023-06-01',
-    },
-    body: JSON.stringify({
-      model:      'claude-haiku-4-5-20251001',
-      max_tokens: 400,
-      system:     'És o assistente virtual da HIIT-Gym Montijo. Responde sempre em português europeu de forma concisa e útil. Podes ajudar com horários, modalidades, planos de subscrição e inscrições. Para questões de fitness e nutrição, informa que esse apoio está disponível nos planos Standard e Premium.',
+  try {
+    const response = await context.env.AI.run('@cf/meta/llama-3.1-8b-instruct', {
       messages: [
-        { role: 'user', content: userMessage }
+        {
+          role: 'system',
+          content: 'És o assistente virtual da HIIT-Gym Montijo. Responde SEMPRE em português europeu de forma concisa e útil. Podes ajudar com horários (seg-sex 06h-22h, sáb-dom 08h-20h), modalidades (musculação, cardio, yoga, lutas, zumba, natação), planos (Básico 29€, Standard 49€, Premium 79€/mês) e inscrições. Sê simpático e motivador. Máximo 3 parágrafos por resposta.',
+        },
+        {
+          role: 'user',
+          content: userMessage,
+        },
       ],
-    }),
-  });
+      max_tokens: 400,
+    });
 
-  const data = await res.json();
+    const text = response?.response || '';
 
-  if (!res.ok) {
     return new Response(
-      JSON.stringify({ error: data?.error?.message || 'Erro Anthropic' }),
-      { status: res.status, headers: CORS }
+      JSON.stringify({ text }),
+      { status: 200, headers: CORS }
+    );
+
+  } catch (err) {
+    console.error('[chat] Workers AI erro:', err.message);
+    return new Response(
+      JSON.stringify({ error: 'Erro ao processar mensagem' }),
+      { status: 500, headers: CORS }
     );
   }
-
-  const text = data.content?.[0]?.text || '';
-
-  return new Response(
-    JSON.stringify({ text }),
-    { status: 200, headers: CORS }
-  );
 }
