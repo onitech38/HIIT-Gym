@@ -66,8 +66,10 @@ body#admin-page {
     margin-inline: auto;
     width: 100%;
     padding-inline: 1.5rem;
+    overflow-x: auto;
 
-    overflow-x: hidden;
+    &::-webkit-scrollbar { background-color: var(--clr-3);  height: 12px;}
+    &::-webkit-scrollbar-thumb {background-color: var(--clr-4); ; border-radius: var(--border-radius); cursor: pointer; }
 
 
     & .admin-tab {
