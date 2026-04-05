@@ -66,13 +66,8 @@ body#admin-page {
     margin-inline: auto;
     width: 100%;
     padding-inline: 1.5rem;
-    
-    overflow-x: auto;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-    &::-webkit-scrollbar {
-      display: none;
-    }
+
+    overflow-x: hidden;
 
 
     & .admin-tab {
