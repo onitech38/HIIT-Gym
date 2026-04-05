@@ -146,6 +146,7 @@ async function onAppReady() {
   preencherModalidades();
   preencherFormPerfil();
   preencherQR();
+  preencherMensagens();
   bindAvatarUpload('avatar-upload');
   bindAvatarUpload('avatar-upload-perfil');
   bindAddTreino();
@@ -696,6 +697,81 @@ if (new URLSearchParams(window.location.search).get('checkout') === 'success') {
   toast.textContent = '✓ Subscrição activada com sucesso!';
   document.body.appendChild(toast);
   setTimeout(() => toast.remove(), 4000);
+}
+
+
+// ============================================
+// MENSAGENS DO UTILIZADOR
+// ============================================
+async function preencherMensagens() {
+  const lista = document.getElementById('user-mensagens-lista');
+  if (!lista) return;
+
+  try {
+    const { data, error } = await supabase
+      .from('messages')
+      .select('id, subject, body, read, created_at')
+      .eq('to_user_id', currentUser.id)
+      .order('created_at', { ascending: false });
+
+    if (error) throw error;
+
+    const msgs = data || [];
+
+    // Badge de não lidas
+    const naoLidas = msgs.filter(m => !m.read).length;
+    const badge    = document.getElementById('msg-badge');
+    if (badge) {
+      if (naoLidas > 0) {
+        badge.textContent = naoLidas;
+        badge.classList.remove('hidden');
+      } else {
+        badge.classList.add('hidden');
+      }
+    }
+
+    if (msgs.length === 0) {
+      lista.innerHTML = `<p style="font-size:.8rem;color:var(--clr-2);opacity:.6;padding:1rem 0;">Não tens mensagens.</p>`;
+      return;
+    }
+
+    lista.innerHTML = msgs.map(m => {
+      const data = new Date(m.created_at).toLocaleDateString('pt-PT');
+      return `
+        <div class="user-msg-card ${m.read ? '' : 'nao-lida'}" data-msg-id="${m.id}">
+          <div class="user-msg-header">
+            ${!m.read ? '<span class="user-msg-nova"></span>' : ''}
+            <span class="user-msg-assunto">${m.subject}</span>
+            <span class="user-msg-data">${data}</span>
+          </div>
+          <p class="user-msg-body">${m.body.replace(/\n/g, '<br>')}</p>
+          <span class="user-msg-de">Equipa HIIT-Gym Montijo</span>
+        </div>`;
+    }).join('');
+
+    // Marcar como lidas ao clicar
+    lista.querySelectorAll('.user-msg-card[data-msg-id]').forEach(card => {
+      card.addEventListener('click', async () => {
+        const msgId = card.dataset.msgId;
+        if (card.classList.contains('nao-lida')) {
+          card.classList.remove('nao-lida');
+          card.querySelector('.user-msg-nova')?.remove();
+          await supabase.from('messages').update({ read: true }).eq('id', msgId);
+          // Actualizar badge
+          const novasNaoLidas = lista.querySelectorAll('.nao-lida').length;
+          const b = document.getElementById('msg-badge');
+          if (b) {
+            if (novasNaoLidas > 0) { b.textContent = novasNaoLidas; }
+            else { b.classList.add('hidden'); }
+          }
+        }
+      });
+    });
+
+  } catch (err) {
+    lista.innerHTML = `<p style="font-size:.8rem;color:var(--clr-2);opacity:.6;">Erro ao carregar mensagens.</p>`;
+    console.error('[msgs]', err);
+  }
 }
 
 

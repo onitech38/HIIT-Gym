@@ -96,6 +96,10 @@
       <i class="fa-solid fa-credit-card"></i>
       Planos
     </button>
+    <button class="admin-tab" data-tab="mensagens">
+      <i class="fa-solid fa-envelope"></i>
+      Mensagens
+    </button>
   </div>
 
   <!-- CONTEÚDO -->
@@ -142,7 +146,54 @@
       <div id="planos-lista" class="admin-lista"></div>
     </section>
 
+    <!-- TAB: MENSAGENS -->
+    <section id="tab-mensagens" class="admin-section glass hidden">
+      <div class="section-header">
+        <h2>Mensagens</h2>
+        <button class="btn glass btn-small" id="btn-nova-mensagem">
+          <i class="fa-solid fa-pen-to-square"></i> Nova Mensagem
+        </button>
+      </div>
+      <div id="mensagens-lista" class="admin-lista"></div>
+    </section>
+
   </main>
+
+  <!-- MODAL COMPOSE MENSAGEM -->
+  <div id="msg-modal" class="msg-modal hidden" role="dialog" aria-modal="true">
+    <div class="msg-modal-backdrop" id="msg-modal-backdrop"></div>
+    <div class="msg-modal-card golden-border">
+      <div class="msg-modal-header">
+        <span><i class="fa-solid fa-envelope"></i> Nova Mensagem</span>
+        <button class="btn icon glass" id="msg-modal-fechar">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <div class="campo">
+        <label for="msg-para">Para (membro)</label>
+        <select id="msg-para">
+          <option value="" disabled selected>Seleciona um membro…</option>
+        </select>
+      </div>
+      <div class="campo">
+        <label for="msg-assunto">Assunto</label>
+        <input type="text" id="msg-assunto" placeholder="Ex: Confirmação de inscrição" maxlength="120">
+      </div>
+      <div class="campo">
+        <label for="msg-corpo">Mensagem</label>
+        <textarea id="msg-corpo" rows="5" placeholder="Escreve a tua mensagem…" maxlength="1000"></textarea>
+      </div>
+      <div class="msg-modal-acoes">
+        <label class="msg-email-check">
+          <input type="checkbox" id="msg-enviar-email" checked>
+          <span>Enviar também por email</span>
+        </label>
+        <button class="btn glass" id="msg-btn-enviar">
+          <i class="fa-solid fa-paper-plane"></i> Enviar
+        </button>
+      </div>
+    </div>
+  </div>
 
   <!-- TOAST -->
   <div id="admin-toast" class="admin-toast hidden"></div>

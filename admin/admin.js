@@ -47,11 +47,13 @@ document.addEventListener('app:ready', async () => {
     carregarInscricoes(),
     carregarMembros(),
     carregarModalidadesAdmin(),
+    carregarMensagens(),
   ]);
 
   bindTabs();
   bindLogout();
   bindSearchMembros();
+  bindMensagens();
   document.getElementById('btn-refresh-insc')
     ?.addEventListener('click', carregarInscricoes);
 });
@@ -178,30 +180,42 @@ async function accionarInscricao(id, novoStatus) {
 
   // Após o update com sucesso, antes de remover o card
   if (novoStatus === 'active') {
-    // Buscar dados do membro para o email
     try {
-      const card = document.querySelector(`.insc-card[data-id="${id}"]`);
       const nomeEl = card?.querySelector('.insc-nome');
       const modEl  = card?.querySelector('.insc-modalidade');
-      const nome   = nomeEl?.textContent || 'Membro';
-      const mod    = modEl?.textContent  || '';
+      const nome   = nomeEl?.textContent?.trim() || 'Membro';
+      const mod    = modEl?.textContent?.trim()  || '';
 
-      // Buscar email via profiles (coluna email que adicionámos)
-      const enrollData = await sb
+      // Buscar enrollment com user_id para depois buscar email
+      const { data: enrData } = await sb
         .from('enrollments')
-        .select('user_id, profiles:user_id(email)')
+        .select('user_id')
         .eq('id', id)
         .single();
 
-      const emailMembro = enrollData?.data?.profiles?.email;
-      if (emailMembro && typeof emailInscricaoConfirmada === 'function') {
-        emailInscricaoConfirmada({
-          email:       emailMembro,
-          nomeMembro:  nome,
-          modalidade:  mod,
+      if (enrData?.user_id) {
+        // Buscar email directo de profiles (populated pelo signup)
+        const { data: profData } = await sb
+          .from('profiles')
+          .select('email, first_name, last_name')
+          .eq('id', enrData.user_id)
+          .single();
+
+        const emailMembro = profData?.email;
+        const nomeFinal   = [profData?.first_name, profData?.last_name].filter(Boolean).join(' ') || nome;
+
+        if (emailMembro && typeof emailInscricaoConfirmada === 'function') {
+          emailInscricaoConfirmada({ email: emailMembro, nomeMembro: nomeFinal, modalidade: mod });
+        }
+
+        // Guardar mensagem interna
+        await sb.from('messages').insert({
+          to_user_id: enrData.user_id,
+          subject: `Inscrição confirmada — ${mod}`,
+          body: `Olá ${nomeFinal}! A tua inscrição em ${mod} foi confirmada pela equipa HIIT-Gym. Já podes frequentar as aulas. Bom treino! 💪`,
         });
       }
-    } catch { /* email falha silenciosamente — não bloqueia */ }
+    } catch (e) { console.warn('[admin] email/msg:', e); }
   }
 
   card.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
@@ -236,7 +250,7 @@ async function carregarMembros() {
 
   // Carrega perfis + todas as inscrições activas de cada membro
   const [{ data: perfis, error }, { data: enrolls }] = await Promise.all([
-    sb.from('profiles').select('id, first_name, last_name, avatar_url, plan, is_admin').order('first_name'),
+    sb.from('profiles').select('id, first_name, last_name, avatar_url, plan, is_admin, email').order('first_name'),
     sb.from('enrollments').select('user_id, modality, status').eq('status', 'active'),
   ]);
 
@@ -249,6 +263,9 @@ async function carregarMembros() {
     ...p,
     modalidades: (enrolls || []).filter(e => e.user_id === p.id).map(e => e.modality),
   }));
+
+  // Guardar referência para o compose de mensagens (inclui email)
+  todosMembrosParaMensagem = todosMembros;
 
   renderMembros(todosMembros);
   renderPlanos(todosMembros);
@@ -353,6 +370,35 @@ async function guardarPlano(userId, novoPlano, btn) {
   toast(`Plano actualizado: ${novoPlano === 'none' ? 'sem plano' : novoPlano}`, 'ok');
   const membro = todosMembros.find(m => m.id === userId);
   if (membro) membro.plan = novoPlano === 'none' ? null : novoPlano;
+
+  // Email + mensagem interna de confirmação de plano
+  if (novoPlano !== 'none') {
+    try {
+      const { data: prof } = await sb
+        .from('profiles')
+        .select('email, first_name, last_name')
+        .eq('id', userId)
+        .single();
+
+      const nome  = [prof?.first_name, prof?.last_name].filter(Boolean).join(' ') || 'Membro';
+      const label = { basico: 'Básico · 29€/mês', standard: 'Standard · 49€/mês', premium: 'Premium · 79€/mês' };
+
+      if (prof?.email && typeof enviarEmail === 'function') {
+        enviarEmail({
+          to:      prof.email,
+          subject: `Plano ${novoPlano} activado — HIIT-Gym`,
+          html: `<p>Olá ${nome}! O teu plano <strong>${label[novoPlano] || novoPlano}</strong> foi activado com sucesso. Aproveita todos os benefícios! 💪</p><a href="https://hiit-gym.pages.dev/user/user.html" style="background:#fba002;color:#120D0F;padding:.75rem 1.5rem;text-decoration:none;border-radius:4px;font-weight:700;display:inline-block;margin-top:1rem">Ver o meu perfil</a>`,
+        });
+      }
+
+      // Mensagem interna
+      await sb.from('messages').insert({
+        to_user_id: userId,
+        subject: `Plano ${novoPlano} activado`,
+        body: `Olá ${nome}! O teu plano ${label[novoPlano] || novoPlano} foi activado com sucesso pela equipa HIIT-Gym. Aproveita todos os benefícios!`,
+      });
+    } catch (e) { console.warn('[admin] plano email:', e); }
+  }
 }
 
 
@@ -465,4 +511,125 @@ function toast(msg, tipo = 'ok') {
   el.textContent = msg;
   el.className   = `admin-toast toast-${tipo}`;
   _toastTimer    = setTimeout(() => el.classList.add('hidden'), 3000);
+}
+
+
+// ============================================
+// MENSAGENS
+// ============================================
+let todosMembrosParaMensagem = [];
+
+async function carregarMensagens() {
+  const lista = document.getElementById('mensagens-lista');
+  if (!lista) return;
+  lista.innerHTML = `<div class="loading-state"><i class="fa-solid fa-rotate fa-spin"></i> A carregar…</div>`;
+
+  const { data, error } = await sb
+    .from('messages')
+    .select('id, subject, body, created_at, read, to_user_id, profiles:to_user_id(first_name, last_name, avatar_url)')
+    .order('created_at', { ascending: false });
+
+  if (error || !data?.length) {
+    lista.innerHTML = `<div class="empty-state"><i class="fa-solid fa-envelope-open"></i> Sem mensagens enviadas.</div>`;
+    return;
+  }
+
+  lista.innerHTML = data.map(m => {
+    const p    = m.profiles || {};
+    const nome = [p.first_name, p.last_name].filter(Boolean).join(' ') || '—';
+    const data = new Date(m.created_at).toLocaleDateString('pt-PT');
+    const avatarStyle = p.avatar_url ? `style="background-image:url('${p.avatar_url}')"` : '';
+    const initials = ((p.first_name?.[0] || '') + (p.last_name?.[0] || '')).toUpperCase() || '?';
+
+    return `
+      <div class="msg-card">
+        <div class="membro-avatar small" ${avatarStyle}>${p.avatar_url ? '' : initials}</div>
+        <div class="msg-info">
+          <span class="msg-para">Para: <strong>${nome}</strong></span>
+          <span class="msg-assunto">${m.subject}</span>
+          <span class="msg-preview">${m.body.slice(0, 80)}${m.body.length > 80 ? '…' : ''}</span>
+        </div>
+        <span class="msg-data">${data}</span>
+      </div>`;
+  }).join('');
+}
+
+function bindMensagens() {
+  // Abrir modal
+  document.getElementById('btn-nova-mensagem')?.addEventListener('click', async () => {
+    // Popular select de membros
+    const sel = document.getElementById('msg-para');
+    if (sel.options.length <= 1) {
+      todosMembrosParaMensagem.forEach(m => {
+        const nome = [m.first_name, m.last_name].filter(Boolean).join(' ') || m.id.slice(0,8);
+        const opt  = document.createElement('option');
+        opt.value       = m.id;
+        opt.textContent = nome;
+        sel.appendChild(opt);
+      });
+    }
+    document.getElementById('msg-modal').classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+  });
+
+  // Fechar modal
+  const fecharModal = () => {
+    document.getElementById('msg-modal').classList.add('hidden');
+    document.body.style.overflow = '';
+  };
+  document.getElementById('msg-modal-fechar')?.addEventListener('click', fecharModal);
+  document.getElementById('msg-modal-backdrop')?.addEventListener('click', fecharModal);
+
+  // Enviar mensagem
+  document.getElementById('msg-btn-enviar')?.addEventListener('click', async () => {
+    const btn     = document.getElementById('msg-btn-enviar');
+    const userId  = document.getElementById('msg-para').value;
+    const assunto = document.getElementById('msg-assunto').value.trim();
+    const corpo   = document.getElementById('msg-corpo').value.trim();
+    const comEmail = document.getElementById('msg-enviar-email').checked;
+
+    if (!userId || !assunto || !corpo) {
+      toast('Preenche todos os campos.', 'erro'); return;
+    }
+
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> A enviar…';
+
+    try {
+      // Guardar no Supabase
+      const { error } = await sb.from('messages').insert({
+        to_user_id: userId,
+        subject:    assunto,
+        body:       corpo,
+      });
+      if (error) throw error;
+
+      // Enviar por email se checkbox activo
+      if (comEmail) {
+        const membro = todosMembrosParaMensagem.find(m => m.id === userId);
+        if (membro?.email && typeof enviarEmail === 'function') {
+          const nome = [membro.first_name, membro.last_name].filter(Boolean).join(' ') || 'Membro';
+          enviarEmail({
+            to:      membro.email,
+            subject: assunto,
+            html:    `<p>Olá ${nome}!</p><p>${corpo.replace(/\n/g, '<br>')}</p><p style="margin-top:1.5rem;font-size:.85rem;opacity:.7;">— Equipa HIIT-Gym Montijo</p>`,
+          });
+        }
+      }
+
+      toast('✓ Mensagem enviada!', 'ok');
+      fecharModal();
+      document.getElementById('msg-para').value    = '';
+      document.getElementById('msg-assunto').value = '';
+      document.getElementById('msg-corpo').value   = '';
+      carregarMensagens();
+
+    } catch (e) {
+      toast('Erro ao enviar mensagem.', 'erro');
+      console.error('[msg]', e);
+    }
+
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Enviar';
+  });
 }
