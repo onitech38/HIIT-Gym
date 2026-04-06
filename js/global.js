@@ -171,6 +171,66 @@ function bindAnchorLinks() {
 }
 
 
+// ── THEME TOGGLE ──────────────────────────────
+// Fluxo:
+//   1. Lê preferência guardada em localStorage
+//   2. Se não existe → usa preferência do sistema (prefers-color-scheme)
+//   3. Aplica ao <html> via color-scheme style
+//   4. Sincroniza o checkbox #themeSlider
+//   5. Escuta mudanças do sistema e actualiza automaticamente
+//   6. Persiste escolha manual do utilizador
+
+const THEME_KEY = 'hiitgym_theme';
+
+function aplicarTema(modo) {
+  // 'light' | 'dark' | 'auto'
+  const efectivo = modo === 'auto'
+    ? (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark')
+    : modo;
+
+  document.documentElement.style.colorScheme = efectivo;
+
+  // Sincronizar checkbox (checked = light, unchecked = dark)
+  const slider = document.getElementById('themeSlider');
+  if (slider) slider.checked = (efectivo === 'light');
+}
+
+function initTheme() {
+  const guardado = localStorage.getItem(THEME_KEY); // 'light' | 'dark' | null
+  aplicarTema(guardado || 'auto');
+
+  // Escuta mudança de preferência do sistema
+  window.matchMedia('(prefers-color-scheme: light)')
+    .addEventListener('change', () => {
+      if (!localStorage.getItem(THEME_KEY)) {
+        aplicarTema('auto'); // só actualiza se o user não escolheu manualmente
+      }
+    });
+
+  // Escuta clique no toggle (pode ser injectado depois do DOM estar pronto)
+  const bindSlider = () => {
+    const slider = document.getElementById('themeSlider');
+    if (!slider) return false;
+    slider.addEventListener('change', () => {
+      const modo = slider.checked ? 'light' : 'dark';
+      localStorage.setItem(THEME_KEY, modo);
+      aplicarTema(modo);
+    });
+    return true;
+  };
+
+  if (!bindSlider()) {
+    const obs = new MutationObserver(() => {
+      if (bindSlider()) obs.disconnect();
+    });
+    obs.observe(document.body, { childList: true, subtree: true });
+  }
+}
+
+// Corre imediatamente — evita flash antes do splash
+initTheme();
+
+
 // ── BOOT ──────────────────────────────────────
 // Ponto de entrada único.
 //
