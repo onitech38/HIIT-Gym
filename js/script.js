@@ -145,6 +145,28 @@ function bindWelcomeClose() {
   });
 }
 
+/** Google OAuth — partilhado por login e signup */
+function bindGoogleAuth() {
+  const handler = async () => {
+    try {
+      const { error } = await window.supabaseClient.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: `${window.location.origin}/user/user.html`,
+        },
+      });
+      if (error) throw error;
+      // O Supabase redireciona para o Google — não há mais código aqui
+    } catch (err) {
+      console.error('[google auth]', err);
+      alert('Erro ao iniciar autenticação Google. Tenta novamente.');
+    }
+  };
+
+  document.getElementById('btn-google-login')?.addEventListener('click', handler);
+  document.getElementById('btn-google-signup')?.addEventListener('click', handler);
+}
+
 let _scriptInited = false;
 
 document.addEventListener('app:ready', () => {
@@ -154,6 +176,7 @@ document.addEventListener('app:ready', () => {
     bindLoginForm();
     bindSignupForm();
     bindWelcomeClose();
+    bindGoogleAuth();
   }
 
   if (window.currentUser) {
